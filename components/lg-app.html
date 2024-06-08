@@ -1,5 +1,5 @@
 <script>
-  import page from "/node_modules/page/page.mjs"
+  // import page from "/node_modules/page/page.mjs"
   const state = { page: "index" }
 
   const methods = {
@@ -9,15 +9,15 @@
   }
 
   function connected() {
-    // const router = new Navigo('/', { hash: true })
-    // router.on('/', function () { displayPage("index") })
-    // router.on('/carte', function () { displayPage("map") })
-    // router.resolve()
+    const router = new Navigo('/', { hash: true })
+    router.on('/', () => this.displayPage("index") )
+    router.on('/carte', () => this.displayPage("map") )
+    router.resolve()
 
-    page("", () => this.displayPage("index"))
-    page("carte", () => this.displayPage("map"))
-    page("*", () => this.displayPage("404"))
-    page({ hashbang: true })
+    // page("", () => this.displayPage("index"))
+    // page("carte", () => this.displayPage("map"))
+    // page("*", () => this.displayPage("404"))
+    // page({ hashbang: true })
   }
 </script>
 
