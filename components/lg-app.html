@@ -14,8 +14,8 @@
     // router.on('/carte', function () { displayPage("map") })
     // router.resolve()
 
-    page("/", () => this.displayPage("index"))
-    page("/carte", () => this.displayPage("map"))
+    page("", () => this.displayPage("index"))
+    page("carte", () => this.displayPage("map"))
     page("*", () => this.displayPage("404"))
     page({ hashbang: true })
   }

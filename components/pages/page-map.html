@@ -1,7 +1,48 @@
+<script>
+  function connected() {
+    const map = L.map(this.document.querySelector("#map")).setView([46.8,3.4], 6)
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map)
+
+    const LeafIcon = L.Icon.extend({
+      options: {
+        shadowUrl: 'leaf-shadow.png',
+        iconSize:     [38, 95],
+        shadowSize:   [50, 64],
+        iconAnchor:   [22, 94],
+        shadowAnchor: [4, 62],
+        popupAnchor:  [-3, -76]
+      }
+    })
+
+    const greenIcon = new LeafIcon({iconUrl: 'leaf-green.png'})
+    const redIcon = new LeafIcon({iconUrl: 'leaf-red.png'})
+    const orangeIcon = new LeafIcon({iconUrl: 'leaf-orange.png'})
+
+    const mGreen = L.marker([51.5, -0.09], {icon: greenIcon}).bindPopup('I am a green leaf.').addTo(map)
+    const mRed = L.marker([51.495, -0.083], {icon: redIcon}).bindPopup('I am a red leaf.').addTo(map)
+    const mOrange = L.marker([51.49, -0.1], {icon: orangeIcon}).bindPopup('I am an orange leaf.').addTo(map)
+  }
+</script>
+
 <template>
-  <div class="fr-container">
+  <div class="fr-container fr-py-6w">
     <div class="fr-grid-row fr-grid-row--gutters">
       <h2>Carte des plantations</h2>
     </div>
+    <div class="fr-col-12">
+      <div id="map"></div>
+    </div>
   </div>
 </template>
+
+<style>
+  #map {
+    height: 500px;
+    width: 100%;
+    max-width: 100%;
+    max-height: 100%;
+  }
+</style>
