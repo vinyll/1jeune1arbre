@@ -1,0 +1,32 @@
+<script>
+  import page from "/node_modules/page/page.mjs"
+  const state = { page: "index" }
+
+  const methods = {
+    displayPage(name) {
+      this.render({ page: name })
+    }
+  }
+
+  function connected() {
+    // const router = new Navigo('/', { hash: true })
+    // router.on('/', function () { displayPage("index") })
+    // router.on('/carte', function () { displayPage("map") })
+    // router.resolve()
+
+    page("/", () => this.displayPage("index"))
+    page("/carte", () => this.displayPage("map"))
+    page("*", () => this.displayPage("404"))
+    page({ hashbang: true })
+  }
+</script>
+
+<template>
+    <lg-header></lg-header>
+    <main>
+      <page-index :if="state.page === 'index'"></page-index>
+      <page-map :if="state.page === 'map'"></page-map>
+      <page-404 :if="state.page === '404'"></page-404>
+    </main>
+    <lg-footer></lg-footer>
+</template>
