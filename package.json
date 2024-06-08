@@ -3,7 +3,7 @@
   "dependencies": {
     "@gouvfr/dsfr": "^1.11.2",
     "@polight/lego": "^2.0.0-beta.8",
-    "page": "^1.11.6"
+    "navigo": "^8.11.1"
   },
   "scripts": {
     "dev": "lego components -w",

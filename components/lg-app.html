@@ -1,6 +1,6 @@
 <script>
-  // import page from "/node_modules/page/page.mjs"
-  const state = { page: "index" }
+  import * as navigo from "/node_modules/navigo/lib/navigo.min.js"
+  const state = { page: "" }
 
   const methods = {
     displayPage(name) {
@@ -13,11 +13,6 @@
     router.on('/', () => this.displayPage("index") )
     router.on('/carte', () => this.displayPage("map") )
     router.resolve()
-
-    // page("", () => this.displayPage("index"))
-    // page("carte", () => this.displayPage("map"))
-    // page("*", () => this.displayPage("404"))
-    // page({ hashbang: true })
   }
 </script>
 
