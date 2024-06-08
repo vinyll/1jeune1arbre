@@ -2,6 +2,11 @@
   "type": "module",
   "dependencies": {
     "@gouvfr/dsfr": "^1.11.2",
-    "@polight/lego": "^2.0.0-beta.8"
+    "@polight/lego": "^2.0.0-beta.8",
+    "page": "^1.11.6"
+  },
+  "scripts": {
+    "dev": "lego components -w",
+    "build": "lego components"
   }
 }
