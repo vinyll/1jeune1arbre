@@ -9,7 +9,10 @@
     console.debug(pois)
     pois.forEach((poi) => 
       L.marker([poi.latitude, poi.longitude])
-      .bindPopup(poi.title)
+      .bindPopup(`
+        <h2><img src="https://admin.1jeune1arbre.fr/assets/${poi.logo}?key=system-small-contain">${poi.title}</h2>
+        <p>${poi.description}</p>
+      `)
       .addTo(map)
     )
   }

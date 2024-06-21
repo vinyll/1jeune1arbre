@@ -20,14 +20,17 @@ const actions = {
   async loadPois() {
     const response = await api.query(gql`
       {
-        pois {
+        farmyard {
           title
           latitude
           longitude
+          description
+          max_attendees
+          logo
         }
       }
-    `)
-    this.state.pois = response.data.pois
+    `);
+    this.state.pois = response.data.farmyard
     return this.state.pois
   },
 }
