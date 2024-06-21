@@ -27,9 +27,17 @@ const actions = {
           description
           max_attendees
           logo
+          start_date
+          end_date
+          contact_name
+          phone
+          email
+          website
+          region
+          department
         }
       }
-    `);
+    `)
     this.state.pois = response.data.farmyard
     return this.state.pois
   },

@@ -12,6 +12,13 @@
       .bindPopup(`
         <h2><img src="https://admin.1jeune1arbre.fr/assets/${poi.logo}?key=system-small-contain">${poi.title}</h2>
         <p>${poi.description}</p>
+        <address>${poi.department} (${poi.region})</address>
+        <h3>Prendre contact</h3>
+        <ul>
+          <li :if="poi.phone">tél : ${poi.phone}</li>
+          <li :if="poi.email">email : <a href="mailto:${poi.website}?subject=1 jeune 1 arbre…">${poi.email}</a></li>
+          <li :if="poi.website">site internet : <a href="${poi.website}" target="_blank">${poi.website}</a></li>
+        </ul>
       `)
       .addTo(map)
     )
