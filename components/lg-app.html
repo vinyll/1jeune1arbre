@@ -1,6 +1,6 @@
 <script>
   import * as navigo from "/node_modules/navigo/lib/navigo.min.js"
-  const state = { page: "" }
+  const state = { page: "index" }
 
   const methods = {
     displayPage(name) {
@@ -9,10 +9,10 @@
   }
 
   function connected() {
-    const router = new Navigo('/', { hash: true })
-    router.on('/', () => this.displayPage("index") )
-    router.on('/carte', () => this.displayPage("map") )
-    router.resolve()
+    // const router = new Navigo('/', { hash: true })
+    // router.on('/', () => this.displayPage("index") )
+    // router.on('/carte', () => this.displayPage("map") )
+    // router.resolve()
   }
 </script>
 
