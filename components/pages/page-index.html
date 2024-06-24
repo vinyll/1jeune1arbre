@@ -46,14 +46,14 @@
             <div class="fr-col-6 fr-py-2w">
               <button class="fr-btn fr-btn--secondary">Me localiser</button>
             </div>
-            <div class="fr-col-6">
+            <!-- <div class="fr-col-6">
               <div class="fr-search-bar fr-my-2w" id="header-search" role="search"> <label class="fr-label"
                   for="search-784-input"> Recherche
                 </label> <input class="fr-input" placeholder="Saisissez votre ville" type="search" id="search-784-input"
                   name="search-784-input">
-                <button class="fr-btn" title="Rechercher"> Rechercher </button>
+                <button class="fr-btn" title="Rechercher">Rechercher</button>
               </div>
-            </div>
+            </div> -->
             <div class="fr-col-12">
               <lg-map></lg-map>
             </div>
@@ -68,27 +68,27 @@
 
         <form class="fr-grid-row">
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="text-input-text">Prénom et nom</label><input class="fr-input" type="text"
+            <label class="fr-label" for="text-input-text">Nom / Prénom</label><input class="fr-input" type="text"
               id="text-input-text" name="text-input-text" required>
           </div>
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="text-input-text">Adresse email</label><input class="fr-input" type="email"
+            <label class="fr-label" for="text-input-text">Mail</label><input class="fr-input" type="email"
               id="text-input-text" name="text-input-text" required>
+          </div>
+          <div class="fr-col-6 fr-p-2v">
+            <label class="fr-label" for="text-input-text">Ville de l’établissement</label><input class="fr-input"
+              type="text" id="text-input-text" name="text-input-text" required>
           </div>
           <div class="fr-col-6 fr-p-2v">
             <label class="fr-label" for="text-input-text">Nom de l'établissement</label><input class="fr-input"
               type="text" id="text-input-text" name="text-input-text" required>
           </div>
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="text-input-text">Ville de l'établissement</label><input class="fr-input"
-              type="email" id="text-input-text" name="text-input-text" required>
-          </div>
-          <div class="fr-col-6 fr-p-2v">
             <label class="fr-label" for="text-input-text">Dans quel département souhaitez-vous planter ?</label><input
-              class="fr-input" type="email" id="text-input-text" name="text-input-text" required>
+              class="fr-input" type="text" id="text-input-text" name="text-input-text" required>
           </div>
           <div class="fr-col-12 fr-py-2v">
-            <button type="submit" class="fr-btn fr-btn--primary">Envoyer ma demande</button>
+            <button type="submit" class="fr-btn fr-btn--primary" onclick="alert('Ce fomulaire sera bientôt actif')">Envoyer ma demande</button>
           </div>
         </form>
       </div>
