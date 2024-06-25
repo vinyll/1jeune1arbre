@@ -1,0 +1,18 @@
+<script>
+	const state = { partners: [] }
+
+	async function connected() {
+		const partners = await store.actions.loadPartners()
+		this.render({ partners })
+	}
+</script>
+
+<template>
+	<div class="fr-container">
+		<div class="fr-grid-row">
+			<figure :for="partner in state.partners" class="fr-col-3 fr-p-2v">
+				<img src="http://admin.1jeune1arbre.fr/assets/${partner.logo}" :alt="partner.title">
+			</figure>
+		</div>	
+	</div>
+</template>

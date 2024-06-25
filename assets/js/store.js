@@ -41,6 +41,20 @@ const actions = {
     this.state.pois = response.data.farmyard
     return this.state.pois
   },
+
+  async loadPartners() {
+    const response = await api.query(gql`
+      {
+        yard_providers {
+          id
+          title
+          logo
+        }
+      }
+    `)
+    this.state.partners = response.data.yard_providers
+    return this.state.partners
+  },
 }
 
 export default new LegoStore(state, actions)
