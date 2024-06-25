@@ -49,6 +49,7 @@ const actions = {
           id
           title
           logo
+          website
         }
       }
     `)
