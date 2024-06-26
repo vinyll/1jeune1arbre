@@ -1,3 +1,11 @@
+<script>
+  const methods = {
+    localize() {
+      this.document.querySelector('lg-map').localize(10)
+    }
+  }
+</script>
+
 <template>
   <div class="hero__startup fr-container-fluid fr-py-6w">
     <div class="fr-container">
@@ -44,7 +52,7 @@
         <div class="fr-grid-container">
           <div class="fr-grid-row">
             <div class="fr-col-6 fr-py-2w">
-              <button class="fr-btn fr-btn--secondary">Me localiser</button>
+              <button class="fr-btn fr-btn--secondary" @click="localize">Me localiser</button>
             </div>
             <!-- <div class="fr-col-6">
               <div class="fr-search-bar fr-my-2w" id="header-search" role="search"> <label class="fr-label"
