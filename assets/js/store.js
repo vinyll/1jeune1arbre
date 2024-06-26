@@ -13,7 +13,7 @@ const api = new Client({
 })
 
 const state = {
-  pois: []
+  pois: [],
 }
 
 const actions = {
@@ -38,9 +38,9 @@ const actions = {
         }
       }
     `)
-    this.state.pois = response.data.farmyard
-    return this.state.pois
-  },
+        this.state.pois = response.data.farmyard
+        return this.state.pois
+    },
 
   async loadPartners() {
     const response = await api.query(gql`
@@ -50,10 +50,30 @@ const actions = {
           title
           logo
           website
+          phone
         }
       }
     `)
-    this.state.partners = response.data.yard_providers
+        this.state.partners = response.data.yard_providers
+        return this.state.partners
+    },
+
+  async loadYardProvider(id) {
+    const response = await api.query(
+      gql`
+        query GetYardProviderById($id: ID!) {
+          yard_providers_by_id(id: $id) {
+            id
+            title
+            logo
+            website
+            phone
+          }
+        }
+      `,
+      { id }
+    )
+    this.state.partners = response.data.yard_providers_by_id
     return this.state.partners
   },
 }

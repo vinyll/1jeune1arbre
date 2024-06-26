@@ -1,0 +1,33 @@
+<script>
+  const state = { id: null, provider: {} }
+
+  async function connected() {
+    const provider = await store.actions.loadYardProvider(Number(this.state.id))
+    this.render({ provider })
+  }
+</script>
+
+<template>
+  <div class="fr-card fr-container fr-my-4w">
+    <div class="fr-card__body">
+      <div class="fr-card__content">
+        <h3 class="fr-card__title"> <a :href="state.provider.website" target="_blank">${ state.provider.title }</a> </h3>
+        <p class="fr-card__desc">${ state.provider.description || "" }</p>
+        <div class="fr-card__start">
+          <p class="fr-card__detail fr-icon-warning-fill">France</p>
+        </div>
+      </div>
+      <div class="fr-card__footer">
+        <ul class="fr-links-group">
+          <li> <a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="mailto:${state.provider.email}">Envoyer un mail</a> </li>
+          <li> <a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="tel:${state.provider.phone}">Appeler</a> </li>
+        </ul>
+      </div>
+    </div>
+    <div class="fr-card__header">
+      <div class="fr-card__img"> <img class="fr-img" style="max-height: 300px;" src="http://admin.1jeune1arbre.fr/assets/${state.provider.logo}" :alt="state.provider.title" />
+        <!-- L’alternative de l’image (attribut alt) doit toujours être présente, sa valeur peut-être vide (image n’apportant pas de sens supplémentaire au contexte) ou non (porteuse de texte ou apportant du sens) selon votre contexte -->
+      </div>
+    </div>
+  </div>
+</template>

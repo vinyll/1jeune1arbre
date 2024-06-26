@@ -11,7 +11,7 @@
 	<div class="fr-container">
 		<div class="fr-grid-row">
 			<figure :for="partner in state.partners" class="fr-col-3 fr-p-2v">
-				<a :href="partner.website" target="_blank">
+				<a href="#/pourvoyeur/${partner.id}">
 					<img src="http://admin.1jeune1arbre.fr/assets/${partner.logo}" :alt="partner.title">
 				</a>
 			</figure>

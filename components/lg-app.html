@@ -3,16 +3,18 @@
   const state = { page: "index" }
 
   const methods = {
-    displayPage(name) {
-      this.render({ page: name })
+    displayPage(name, params) {
+      this.render({ page: name, ...params })
     }
   }
 
   function connected() {
-    // const router = new Navigo('/', { hash: true })
-    // router.on('/', () => this.displayPage("index") )
-    // router.on('/carte', () => this.displayPage("map") )
-    // router.resolve()
+    const router = new Navigo('', { hash: true })
+    router.on('', () => this.displayPage("index") )
+    router.on('/pourvoyeur/:id', ({ data: { id } }) => {
+      this.displayPage("provider", { id })
+    })
+    router.resolve()
   }
 </script>
 
@@ -20,7 +22,7 @@
     <lg-header></lg-header>
     <main>
       <page-index :if="state.page === 'index'"></page-index>
-      <page-map :if="state.page === 'map'"></page-map>
+      <page-provider :if="state.page === 'provider'" :id="state.id"></page-provider>
       <page-404 :if="state.page === '404'"></page-404>
     </main>
     <lg-footer></lg-footer>
