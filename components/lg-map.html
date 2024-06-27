@@ -17,7 +17,11 @@
     pois.forEach((poi) => 
       L.marker([poi.latitude, poi.longitude])
       .bindPopup(`
-        <h2><img src="https://admin.1jeune1arbre.fr/assets/${poi.logo.id}?key=system-small-contain">${poi.title}</h2>
+        ${poi.logo?.id
+          ? '<img src="https://admin.1jeune1arbre.fr/assets/'+poi.logo.id+'?key=system-small-contain">'
+          : ''
+        }
+        <h2><a href="#/pourvoyeur/${poi.provider.id}">${poi.title}</a></h2>
         <p>${poi.description}</p>
         <address>${poi.department} (${poi.region})</address>
         <h3>Prendre contact</h3>
@@ -26,6 +30,7 @@
           <li :if="poi.email">email : <a href="mailto:${poi.website}?subject=1 jeune 1 arbre…">${poi.email}</a></li>
           <li :if="poi.website">site internet : <a href="${poi.website}" target="_blank">${poi.website}</a></li>
         </ul>
+        <a class="fr-btn fr-btn--primary" href="#/pourvoyeur/${poi.provider.id}">Fiche du pourvoyeur</a>
       `)
       .addTo(map)
     )
@@ -42,5 +47,8 @@
     width: 100%;
     max-width: 100%;
     max-height: 100%;
+  }
+  h2 {
+    color: inherit !important;
   }
 </style>

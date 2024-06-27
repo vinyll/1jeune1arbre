@@ -35,6 +35,9 @@ const actions = {
           website
           region
           department
+          provider {
+            id
+          }
         }
       }
     `)
