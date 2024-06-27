@@ -26,7 +26,7 @@ const actions = {
           longitude
           description
           max_attendees
-          logo
+          logo {id}
           start_date
           end_date
           contact_name
@@ -48,7 +48,7 @@ const actions = {
         yard_providers {
           id
           title
-          logo
+          logo {id}
           website
           phone
         }
@@ -65,7 +65,9 @@ const actions = {
           yard_providers_by_id(id: $id) {
             id
             title
-            logo
+            logo {
+              id
+            }
             website
             phone
           }
