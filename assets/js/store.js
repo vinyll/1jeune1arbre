@@ -26,6 +26,8 @@ const actions = {
           longitude
           description
           max_attendees
+          department
+          region
           logo {
             id
           }

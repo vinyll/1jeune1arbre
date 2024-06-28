@@ -24,7 +24,7 @@
         <h2><a href="#/pourvoyeur/${poi.provider.id}">${poi.title}</a></h2>
         <p>${poi.description}</p>
         <address>${poi.department} (${poi.region})</address>
-        <h3>Prendre contact</h3>
+        <p>Prendre contact</p>
         <ul>
           <li :if="poi.phone">tél : ${poi.provider.phone}</li>
           <li :if="poi.email">email : <a href="mailto:${poi.website}?subject=1 jeune 1 arbre…">${poi.email || poi.provider.user.email}</a></li>
