@@ -33,6 +33,7 @@ const actions = {
           end_date
           contact_name
           provider {
+            id
             phone
             website
             logo {
@@ -75,6 +76,9 @@ const actions = {
             }
             website
             phone
+            user {
+              email
+            }
           }
         }
       `,

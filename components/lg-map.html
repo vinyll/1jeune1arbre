@@ -26,9 +26,9 @@
         <address>${poi.department} (${poi.region})</address>
         <h3>Prendre contact</h3>
         <ul>
-          <li :if="poi.phone">tél : ${poi.phone || poi.provider.phone}</li>
+          <li :if="poi.phone">tél : ${poi.provider.phone}</li>
           <li :if="poi.email">email : <a href="mailto:${poi.website}?subject=1 jeune 1 arbre…">${poi.email || poi.provider.user.email}</a></li>
-          <li :if="poi.website">site internet : <a href="${poi.website}" target="_blank">${poi.website}</a></li>
+          <li :if="poi.provider.website">site internet : <a href="${poi.provider.website}" target="_blank">${poi.provider.website}</a></li>
         </ul>
         <a class="fr-btn fr-btn--primary" href="#/pourvoyeur/${poi.provider.id}">Fiche du pourvoyeur</a>
       `)
