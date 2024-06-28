@@ -26,17 +26,19 @@ const actions = {
           longitude
           description
           max_attendees
-          logo {id}
+          logo {
+            id
+          }
           start_date
           end_date
           contact_name
-          phone
-          email
-          website
-          region
-          department
           provider {
-            id
+            phone
+            website
+            logo {
+              id
+            }
+            user
           }
         }
       }

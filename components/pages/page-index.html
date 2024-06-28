@@ -2,8 +2,14 @@
   const methods = {
     localize() {
       this.document.querySelector('lg-map').localize(10)
+    },
+
+    sendMail(event) {
+      event.preventDefault()
+      debugger
     }
   }
+
 </script>
 
 <template>
@@ -73,7 +79,7 @@
         remplir le formulaire ci-dessous pour signaler votre souhait de participer à un chantier de
         plantation pédagogique.</p>
 
-        <form class="fr-grid-row">
+        <form class="fr-grid-row" @action="sendMail">
           <div class="fr-col-6 fr-p-2v">
             <label class="fr-label" for="text-input-text">Nom / Prénom</label><input class="fr-input" type="text"
               id="text-input-text" name="text-input-text" required>
@@ -95,7 +101,7 @@
               class="fr-input" type="text" id="text-input-text" name="text-input-text" required>
           </div>
           <div class="fr-col-12 fr-py-2v">
-            <button type="submit" class="fr-btn fr-btn--primary" onclick="alert('Ce fomulaire sera bientôt actif')">Envoyer ma demande</button>
+            <button type="submit" class="fr-btn fr-btn--primary">Envoyer ma demande</button>
           </div>
         </form>
       </div>
