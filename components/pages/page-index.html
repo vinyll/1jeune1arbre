@@ -4,9 +4,17 @@
       this.document.querySelector('lg-map').localize(10)
     },
 
-    sendMail(event) {
-      event.preventDefault()
-      debugger
+    async sendMail(event) {
+        event.preventDefault()
+        const values = Array.from(event.target.elements).filter(input=>input.name).reduce(
+          (accumulateur, input) => { 
+            accumulateur[input.name] = input.value
+            return accumulateur
+          },
+          {}
+        ) 
+        const created = await store.actions.saveSchoolDemand(values)
+        console.debug(created)
     }
   }
 
@@ -79,26 +87,26 @@
         remplir le formulaire ci-dessous pour signaler votre souhait de participer à un chantier de
         plantation pédagogique.</p>
 
-        <form class="fr-grid-row" @action="sendMail">
+        <form class="fr-grid-row" @submit="sendMail">
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="text-input-text">Nom / Prénom</label><input class="fr-input" type="text"
-              id="text-input-text" name="text-input-text" required>
+            <label class="fr-label" for="contact_name_input">Nom / Prénom</label><input class="fr-input" type="text"
+              id="contact_name_input" name="contact_name" required>
           </div>
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="text-input-text">Mail</label><input class="fr-input" type="email"
-              id="text-input-text" name="text-input-text" required>
+            <label class="fr-label" for="email_input">Mail</label><input class="fr-input" type="email"
+              id="email_input" name="email" required>
           </div>
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="text-input-text">Ville de l’établissement</label><input class="fr-input"
-              type="text" id="text-input-text" name="text-input-text" required>
+            <label class="fr-label" for="city_input">Ville de l’établissement</label><input class="fr-input"
+              type="text" id="city_input" name="city" required>
           </div>
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="text-input-text">Nom de l'établissement</label><input class="fr-input"
-              type="text" id="text-input-text" name="text-input-text" required>
+            <label class="fr-label" for="school_name_input">Nom de l'établissement</label><input class="fr-input"
+              type="text" id="school_name_input" name="school_name" required>
           </div>
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="text-input-text">Dans quel département souhaitez-vous planter ?</label><input
-              class="fr-input" type="text" id="text-input-text" name="text-input-text" required>
+            <label class="fr-label" for="departement_input">Dans quel département souhaitez-vous planter ?</label><input
+              class="fr-input" type="text" id="departement_input" name="departement" required>
           </div>
           <div class="fr-col-12 fr-py-2v">
             <button type="submit" class="fr-btn fr-btn--primary">Envoyer ma demande</button>

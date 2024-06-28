@@ -91,6 +91,32 @@ const actions = {
     this.state.partners = response.data.yard_providers_by_id
     return this.state.partners
   },
+
+  async saveSchoolDemand(values) {
+    const response = await api.query(
+      gql`
+        mutation CreateSchoolDemand(
+          $contact_name: String!
+          $email: String!
+          $city: String!
+          $school_name: String!
+          $department: String!
+        ) {
+          create_school_demand_item(
+            data: {
+              contact_name: $contact_name
+              email: $email
+              city: $city
+              school_name: $school_name
+              department: $department
+            }
+          )
+        }
+      `,
+      values
+    )
+    return response.data.create_school_demand_item
+  },
 }
 
 export default new LegoStore(state, actions)
