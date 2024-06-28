@@ -39,7 +39,9 @@ const actions = {
             logo {
               id
             }
-            user
+            user {
+              email
+            }
           }
         }
       }
