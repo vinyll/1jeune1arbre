@@ -14,8 +14,9 @@
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map)
     const treeIcon = L.icon({ iconUrl: "/assets/images/tree-icon.png", iconSize: [20, 30], iconAnchor: [10, 30] })
+    const circleOptions = { color: '#009900', fillOpacity: 0.5, radius: 5000 }
     pois.forEach((poi) => 
-      L.marker([poi.latitude, poi.longitude], { icon: treeIcon })
+      L.circle([poi.latitude, poi.longitude], circleOptions)
       .bindPopup(`
         ${poi.logo?.id
           ? '<img src="https://admin.1jeune1arbre.fr/assets/'+poi.logo.id+'?key=system-small-contain">'
