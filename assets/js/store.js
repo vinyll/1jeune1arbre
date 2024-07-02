@@ -28,6 +28,7 @@ const actions = {
           max_attendees
           department
           region
+          availability
           logo {
             id
           }

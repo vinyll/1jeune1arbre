@@ -15,26 +15,51 @@
     }).addTo(map)
     const treeIcon = L.icon({ iconUrl: "/assets/images/tree-icon.png", iconSize: [20, 30], iconAnchor: [10, 30] })
     const circleOptions = { color: '#009900', fillOpacity: 0.5, radius: 5000 }
-    pois.forEach((poi) => 
+    pois.forEach((poi) => {
+      const unavailable = poi.availability !== "disponible"
+      let unavailabilityTitle = ""
+      let unavailabilityBody = ""
+      if(poi.availability === "reserve") {
+        unavailabilityTitle = "Ce chantier est déjà reservé."
+        unavailabilityBody = "Nous vous communiquerons bientôt les détails de la réservation !"
+      }
+      if(poi.availability === "realise") {
+        unavailabilityTitle = "Ce chantier est déjà réalisé."
+        unavailabilityBody = "Nous vous communiquerons bientôt les détails de ce chantier !"
+      }
       L.circle([poi.latitude, poi.longitude], circleOptions)
       .bindPopup(`
-        ${poi.logo?.id
-          ? '<img src="https://admin.1jeune1arbre.fr/assets/'+poi.logo.id+'?key=system-small-contain">'
-          : ''
-        }
-        <h2><a href="#/pourvoyeur/${poi.provider.id}">${poi.title}</a></h2>
-        <p>${poi.description}</p>
-        <address>${poi.department} (${poi.region})</address>
-        <p>Prendre contact</p>
-        <ul>
-          <li :if="poi.phone">tél : ${poi.provider.phone}</li>
-          <li :if="poi.email">email : <a href="mailto:${poi.website}?subject=1 jeune 1 arbre…">${poi.email || poi.provider.user.email}</a></li>
-          <li :if="poi.provider.website">site internet : <a href="${poi.provider.website}" target="_blank">${poi.provider.website}</a></li>
-        </ul>
-        <a class="fr-btn fr-btn--primary" href="#/pourvoyeur/${poi.provider.id}">Fiche du pourvoyeur</a>
+        ${poi.logo?.id ?
+          '<img src="https://admin.1jeune1arbre.fr/assets/'+poi.logo.id+'?key=system-small-contain">' : "" }
+        <article class="${poi.availability}">
+          <h2><a href="#/pourvoyeur/${poi.provider.id}">${poi.title}</a></h2>
+          <p>${poi.description}</p>
+          <address>${poi.department} (${poi.region})</address>
+          <section class="contact">
+            <p>Prendre contact</p>
+            <ul>
+              <li :if="poi.phone">tél : ${poi.provider.phone}</li>
+              <li :if="poi.email">email : <a href="mailto:${poi.website}?subject=1 jeune 1 arbre…">${poi.email || poi.provider.user.email}</a></li>
+              <li :if="poi.provider.website">site internet : <a href="${poi.provider.website}" target="_blank">${poi.provider.website}</a></li>
+            </ul>
+            <a class="fr-btn fr-btn--primary" href="#/pourvoyeur/${poi.provider.id}">Fiche du pourvoyeur</a>
+          </section>
+          ${unavailable ? `
+            <div class="fr-notice fr-notice--info">
+              <div class="fr-container">
+                <div class="fr-notice__body">
+                  <p>
+                    <span class="fr-notice__title">${unavailabilityTitle}</span>
+                    <span class="fr-notice__desc">${unavailabilityBody}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          ` : "" }
+        </article>
       `)
       .addTo(map)
-    )
+    })
   }
 </script>
 
@@ -51,5 +76,10 @@
   }
   h2 {
     color: inherit !important;
+  }
+
+  /* on affiche les contacts que pour les chantiers disponibles */
+  article:not(.disponible) .contact {
+    display: none;
   }
 </style>
