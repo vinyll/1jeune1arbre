@@ -20,12 +20,12 @@
       let unavailabilityTitle = ""
       let unavailabilityBody = ""
       if(poi.availability === "reserve") {
-        unavailabilityTitle = "Ce chantier est déjà reservé."
-        unavailabilityBody = "Nous vous communiquerons bientôt les détails de la réservation !"
+        unavailabilityTitle = "Ce chantier est déjà réservé par une classe."
+        unavailabilityBody = "Si vous souhaitez participer à une plantation pédagogique dans ce secteur, vous pouvez remplir le formulaire ci-dessous."
       }
       if(poi.availability === "realise") {
-        unavailabilityTitle = "Ce chantier est déjà réalisé."
-        unavailabilityBody = "Nous vous communiquerons bientôt les détails de ce chantier !"
+        unavailabilityTitle = "Ce chantier est déjà réalisé par une classe."
+        unavailabilityBody = "Si vous souhaitez participer à une plantation pédagogique dans ce secteur, vous pouvez remplir le formulaire ci-dessous."
       }
       L.circle([poi.latitude, poi.longitude], circleOptions)
       .bindPopup(`
