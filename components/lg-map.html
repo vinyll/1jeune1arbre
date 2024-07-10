@@ -17,7 +17,7 @@
     const circleOptions = { color: '#009900', fillOpacity: 0.5, radius: 5000 }
     pois.forEach((poi) => {
       const fullName = poi.contact_name || `${poi.provider.user.first_name} ${poi.provider.user.last_name}`
-      const role = poi.contact_position
+      const role = poi.contact_position || poi.provider.position
       const phone = poi.phone || poi.provider.phone
       const email = poi.email || poi.provider.user.email
       const unavailable = poi.availability !== "disponible"
@@ -73,7 +73,7 @@
 
 <style>
   #map {
-    height: 500px;
+    height: 600px;
     width: 100%;
     max-width: 100%;
     max-height: 100%;

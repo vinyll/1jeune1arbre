@@ -42,6 +42,7 @@ const actions = {
             id
             phone
             website
+            position
             logo {
               id
             }
