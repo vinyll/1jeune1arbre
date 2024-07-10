@@ -16,6 +16,10 @@
     const treeIcon = L.icon({ iconUrl: "/assets/images/tree-icon.png", iconSize: [20, 30], iconAnchor: [10, 30] })
     const circleOptions = { color: '#009900', fillOpacity: 0.5, radius: 5000 }
     pois.forEach((poi) => {
+      const fullName = poi.contact_name || `${poi.provider.user.first_name} ${poi.provider.user.last_name}`
+      const role = poi.contact_position
+      const phone = poi.phone || poi.provider.phone
+      const email = poi.email || poi.provider.user.email
       const unavailable = poi.availability !== "disponible"
       let unavailabilityTitle = ""
       let unavailabilityBody = ""
@@ -36,10 +40,10 @@
           <p>${poi.description}</p>
           <address>${poi.department} (${poi.region})</address>
           <section class="contact">
-            <p>Prendre contact</p>
+            <p>Prendre contact avec ${fullName} ${role ? `(${role})` : ''}</p>
             <ul>
-              <li :if="poi.phone">tél : ${poi.provider.phone}</li>
-              <li :if="poi.email">email : <a href="mailto:${poi.website}?subject=1 jeune 1 arbre…">${poi.email || poi.provider.user.email}</a></li>
+              <li :if="phone">tél : ${ phone }</li>
+              <li :if="email">email : <a href="mailto:${email}?subject=1 jeune 1 arbre…">${email}</a></li>
               <li :if="poi.provider.website">site internet : <a href="${poi.provider.website}" target="_blank">${poi.provider.website}</a></li>
             </ul>
             <a class="fr-btn fr-btn--primary" href="#/pourvoyeur/${poi.provider.id}">Fiche du pourvoyeur</a>

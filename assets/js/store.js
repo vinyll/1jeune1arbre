@@ -35,6 +35,9 @@ const actions = {
           start_date
           end_date
           contact_name
+          contact_position
+          phone
+          email
           provider {
             id
             phone
@@ -44,6 +47,8 @@ const actions = {
             }
             user {
               email
+              first_name
+              last_name
             }
           }
         }
