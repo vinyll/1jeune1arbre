@@ -14,6 +14,7 @@ const api = new Client({
 
 const state = {
   pois: [],
+  modal: { title: "", body: "", visible: false }
 }
 
 const actions = {
@@ -21,6 +22,7 @@ const actions = {
     const response = await api.query(gql`
       {
         farmyard {
+          id
           title
           latitude
           longitude
@@ -123,6 +125,36 @@ const actions = {
       values
     )
     return response.data.create_school_demand_item
+  },
+
+  async saveContactFarmyard(values) {
+    const response = await api.query(
+      gql`
+        mutation CreateFarmyardContact(
+          $farmyard: Int!
+          $first_name: String!
+          $last_name: String!
+          $email: String
+          $phone: String
+          $subject: String!
+          $body: String!
+        ) {
+          create_farmyard_contact_item(
+            data: {
+              farmyard: $farmyard
+              first_name: $first_name
+              last_name: $last_name
+              email: $email
+              phone: $phone
+              subject: $subject
+              body: $body
+            }
+          )
+        }
+      `,
+      values
+    );
+    return response.data.create_farmyard_contact_item
   },
 }
 

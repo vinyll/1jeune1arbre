@@ -4,7 +4,7 @@
   const methods = {
     localize(maxZoom = 10) {
       map.locate({ setView: true, maxZoom })
-    }
+    },
   }
   async function connected() {
     const pois = await store.actions.loadPois()
@@ -39,15 +39,7 @@
           <h2><a href="#/pourvoyeur/${poi.provider.id}">${poi.title}</a></h2>
           <p>${poi.description}</p>
           <address>${poi.department} (${poi.region})</address>
-          <section class="contact">
-            <p>Prendre contact avec ${fullName} ${role ? `(${role})` : ''}</p>
-            <ul>
-              <li :if="phone">tél : ${ phone }</li>
-              <li :if="email">email : <a href="mailto:${email}?subject=1 jeune 1 arbre…">${email}</a></li>
-              <li :if="poi.provider.website">site internet : <a href="${poi.provider.website}" target="_blank">${poi.provider.website}</a></li>
-            </ul>
-            <a class="fr-btn fr-btn--primary" href="#/pourvoyeur/${poi.provider.id}">Fiche du pourvoyeur</a>
-          </section>
+
           ${unavailable ? `
             <div class="fr-notice fr-notice--info">
               <div class="fr-container">
@@ -59,7 +51,11 @@
                 </div>
               </div>
             </div>
-          ` : "" }
+          ` : `
+            <hr>
+            <h6 class="fr-p-2v">Réserver ce chantier</h6>
+            <lg-form-contact-farmyard farmyard-id="${poi.id}"></lg-form-contact-farmyard>
+          ` }
         </article>
       `)
       .addTo(map)
@@ -73,7 +69,7 @@
 
 <style>
   #map {
-    height: 600px;
+    height: 800px;
     width: 100%;
     max-width: 100%;
     max-height: 100%;
