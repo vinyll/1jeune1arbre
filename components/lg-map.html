@@ -36,7 +36,7 @@
         ${poi.logo?.id ?
           '<img src="https://admin.1jeune1arbre.fr/assets/'+poi.logo.id+'?key=system-small-contain">' : "" }
         <article class="${poi.availability}">
-          <h2><a href="#/pourvoyeur/${poi.provider.id}">${poi.title}</a></h2>
+          <h2><a href="/pourvoyeur/${poi.provider.id}">${poi.title}</a></h2>
           <p>${poi.description}</p>
           <address>${poi.department} (${poi.region})</address>
 
@@ -53,7 +53,7 @@
             </div>
           ` : `
             <hr>
-            <h6 class="fr-p-2v">Réserver ce chantier</h6>
+            <h6 class="fr-p-2v">Faire une demande de réservation pour ce chantier</h6>
             <lg-form-contact-farmyard farmyard-id="${poi.id}"></lg-form-contact-farmyard>
           ` }
         </article>
