@@ -1,7 +1,8 @@
 {
   "type": "module",
   "scripts": {
-    "dev": "concurrently 'lego components dist -w' 'http-server'",
+    "dev": "concurrently 'lego components dist -w' 'npm run start'",
+    "start": "node server.js",
     "build": "lego components"
   },
   "dependencies": {
