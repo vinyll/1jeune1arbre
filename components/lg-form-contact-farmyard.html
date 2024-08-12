@@ -39,12 +39,16 @@
         id="contact_farmyard_phone" name="phone">
     </div>
     <div class="fr-col-12 fr-p-2v">
-      <label class="fr-label" for="contact_farmyard_subject">Sujet</label><input class="fr-input" type="text"
-        id="contact_farmyard_subject" name="subject" required>
+      <label class="fr-label" for="contact_farmyard_school">Etablissement scolaire</label><input class="fr-input" type="text"
+        id="contact_farmyard_school" name="school" required>
+    </div>
+    <div class="fr-col-12 fr-p-2v">
+      <label class="fr-label" for="contact_farmyard_classlevel">Classe concernée</label><input class="fr-input" type="text"
+        id="contact_farmyard_classlevel" name="classlevel" required>
     </div>
     <div class="fr-col-12 fr-p-2v">
       <label class="fr-label" for="contact_farmyard_body">Message</label>
-      <textarea class="fr-input" id="contact_farmyard_body" name="body" required></textarea>
+      <textarea class="fr-input" id="contact_farmyard_body" name="body" placeholder="Questions ou remarques complémentaires"></textarea>
     </div>
     <div class="fr-col-12 fr-py-2v">
       <button type="submit" class="fr-btn fr-btn--primary">Envoyer ma demande</button>
@@ -53,6 +57,6 @@
 
   <div :if="state.sent" class="fr-alert fr-alert--success">
     <h3 class="fr-alert__title">Votre demande est envoyée</h3>
-    <p>Vous serez très prochainement mis en relation avec le responsable de site.</p>
+    <p>Vous serez très prochainement recontacté par l'organisateur du chantier.</p>
   </div>
 </template>
