@@ -104,7 +104,6 @@ const actions = {
     const departments = await Promise.all((provider.departments_list || "")
       .split(",")
       .map((d) => d.trim())
-      .filter((d) => d)
       .map(async (code) => {
         const response = await fetch(
           `https://geo.api.gouv.fr/departements?code=${code}`,
@@ -113,7 +112,7 @@ const actions = {
         try {
           const data = await response.json()
           const department = data[0]
-          return { name: department.nom, code: department.code }
+          return department ? { name: department.nom, code: department.code } : {}
         } catch (e) {
           console.error(`Error fetching department ${code} for ${provider.title}: ${e}`)
         }
@@ -122,7 +121,7 @@ const actions = {
 
     this.state.partners = {
       ...provider,
-      departments,
+      departments: departments.filter(d => d.name),
     }
     return this.state.partners
   },
