@@ -3,6 +3,7 @@
 
   async function connected() {
     const provider = await store.actions.loadYardProvider(Number(this.state.id))
+    console.debug(provider)
     this.render({ provider })
   }
 </script>
@@ -30,23 +31,14 @@
         <div class="fr-card__start">
           <p class="fr-card__detail fr-icon-warning-fill">France</p>
         </div>
-        <div :if="state.provider.departments_list">
+        <div :if="state.provider.departments">
           <p class="fr-card__detail">Départements :</p>
           <ul class="fr-tags-group">
-            <li
-              class="fr-tag"
-              :for="department in state.provider.departments_list"
-            >
-              ${department.name}
+            <li class="fr-tag" :for="department in state.provider.departments">
+              ${ department.name }
             </li>
           </ul>
         </div>
-        <p
-          :if="!state.provider.departments_list"
-          class="fr-card__detail fr-text--warning"
-        >
-          Aucun département
-        </p>
       </div>
     </div>
   </div>

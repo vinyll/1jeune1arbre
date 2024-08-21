@@ -99,59 +99,32 @@ const actions = {
       { id }
     )
 
-    //TODO: export to utility file?
-    // transform departments_list as such: "06,13" --> [{ name: "Alpes-Maritimes", code: "06"}, { name: "Bouches-du-Rhône", code: "13"}]
-    let departements;
-    let currentProviderTitle = response.data.yard_providers_by_id.title;
-    if (response.data.yard_providers_by_id.departments_list) {
-      // string --> array of codes as strings
-      const departmentsList =
-        response.data.yard_providers_by_id.departments_list;
-      const noSpaceDepartmentsList = departmentsList.replace(/\s+/g, ""); // remove extra spaces as they were causing issues with api
-      const departementCodes = noSpaceDepartmentsList.split(",");
+    // Récupération du nom du département depuis la liste des codes : [{ name: "Alpes-Maritimes", code: "06"}, { name: "Bouches-du-Rhône", code: "13"}]
+    const provider = response.data.yard_providers_by_id
+    const departments = await Promise.all((provider.departments_list || "")
+      .split(",")
+      .map((d) => d.trim())
+      .filter((d) => d)
+      .map(async (code) => {
+        const response = await fetch(
+          `https://geo.api.gouv.fr/departements?code=${code}`,
+          { method: "GET", headers: { "Content-Type": "application/json" } }
+        )
+        try {
+          const data = await response.json()
+          const department = data[0]
+          return { name: department.nom, code: department.code }
+        } catch (e) {
+          console.error(`Error fetching department ${code} for ${provider.title}: ${e}`)
+        }
+      })
+    )
 
-      // fetching department names
-      try {
-        const departmentPromises = departementCodes.map((code) =>
-          fetch(`https://geo.api.gouv.fr/departements?code=${code}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          })
-        );
-        const responses = await Promise.all(departmentPromises);
-        departements = await Promise.all(
-          responses.map(async (response) => {
-            const dataArray = await response.json();
-            if (dataArray.length === 0) {
-              console.error(
-                `Error fetching department in position ${responses.indexOf(
-                  response
-                )} of ${currentProviderTitle}`
-              );
-              return { name: "notFound", code: "notFound" };
-            }
-
-            const data = dataArray[0];
-            return {
-              name: data.nom,
-              code: data.code,
-            };
-          })
-        );
-      } catch (error) {
-        console.error("Error fetching department data:", error);
-        departements = [];
-      }
-    }
-
-    // setting partners state with department data
     this.state.partners = {
-      ...response.data.yard_providers_by_id,
-      departments_list: departements,
-    };
-    return this.state.partners;
+      ...provider,
+      departments,
+    }
+    return this.state.partners
   },
 
   async saveSchoolDemand(values) {
