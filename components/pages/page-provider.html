@@ -31,7 +31,7 @@
         <div class="fr-card__start">
           <p class="fr-card__detail fr-icon-warning-fill">France</p>
         </div>
-        <div :if="state.provider.departments">
+        <div :if="state.provider.departments?.length">
           <p class="fr-card__detail">Départements :</p>
           <ul class="fr-tags-group">
             <li class="fr-tag" :for="department in state.provider.departments">
