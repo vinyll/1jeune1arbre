@@ -9,7 +9,7 @@
   }
 
   function connected() {
-    const router = new Navigo('', { hash: true })
+    const router = new Navigo('', { hash: false })
     router.on('', () => this.displayPage("index") )
     router.on('/pourvoyeur/:id', ({ data: { id } }) => {
       this.displayPage("provider", { id })
