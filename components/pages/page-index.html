@@ -7,12 +7,12 @@
     async sendMail(event) {
         event.preventDefault()
         const values = Array.from(event.target.elements).filter(input=>input.name).reduce(
-          (accumulateur, input) => { 
+          (accumulateur, input) => {
             accumulateur[input.name] = input.value
             return accumulateur
           },
           {}
-        ) 
+        )
         const created = await store.actions.saveSchoolDemand(values)
         console.debug(created)
     }

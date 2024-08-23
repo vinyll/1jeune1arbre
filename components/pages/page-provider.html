@@ -3,23 +3,42 @@
 
   async function connected() {
     const provider = await store.actions.loadYardProvider(Number(this.state.id))
+    console.debug(provider)
     this.render({ provider })
   }
 </script>
 
 <template>
   <div class="fr-card fr-container fr-my-4w">
+    <div :if="state.provider.logo" class="fr-card__header">
+      <div class="fr-card__img">
+        <img
+          class="fr-img"
+          style="max-height: 300px"
+          src="http://admin.1jeune1arbre.fr/assets/${state.provider.logo?.id}"
+          :alt="state.provider.title"
+        />
+      </div>
+    </div>
     <div class="fr-card__body">
       <div class="fr-card__content">
-        <h3 class="fr-card__title"> <a :href="state.provider.website" target="_blank">${ state.provider.title }</a> </h3>
-        <p class="fr-card__desc">${ state.provider.description || "" }</p>
+        <h3 class="fr-card__title">
+          <a :href="state.provider.website" target="_blank"
+            >${state.provider.title}</a
+          >
+        </h3>
+        <p class="fr-card__desc">${state.provider.description || ""}</p>
         <div class="fr-card__start">
           <p class="fr-card__detail fr-icon-warning-fill">France</p>
         </div>
-      </div>
-    </div>
-    <div :if="state.provider.logo" class="fr-card__header">
-      <div class="fr-card__img"> <img class="fr-img" style="max-height: 300px;" src="http://admin.1jeune1arbre.fr/assets/${state.provider.logo?.id}" :alt="state.provider.title" />
+        <div :if="state.provider.departments?.length">
+          <p class="fr-card__detail">Départements :</p>
+          <ul class="fr-tags-group">
+            <li class="fr-tag" :for="department in state.provider.departments">
+              ${ department.name }
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
