@@ -26,6 +26,7 @@ const actions = {
           title
           latitude
           longitude
+          location
           description
           max_attendees
           department
