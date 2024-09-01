@@ -1,21 +1,21 @@
-import { LegoStore } from "/node_modules/@polight/store/dist/store.min.js"
+import { LegoStore } from "/node_modules/@polight/store/dist/store.min.js";
 
 import {
   Client,
   gql,
   cacheExchange,
   fetchExchange,
-} from "https://cdn.jsdelivr.net/npm/urql@4.1.0/+esm"
+} from "https://cdn.jsdelivr.net/npm/urql@4.1.0/+esm";
 
 const api = new Client({
   url: "https://admin.1jeune1arbre.fr/graphql",
   exchanges: [cacheExchange, fetchExchange],
-})
+});
 
 const state = {
   pois: [],
-  modal: { title: "", body: "", visible: false }
-}
+  modal: { title: "", body: "", visible: false },
+};
 
 const actions = {
   async loadPois() {
@@ -24,8 +24,8 @@ const actions = {
         farmyard {
           id
           title
-          latitude
-          longitude
+          fakeLat
+          fakeLong
           location
           description
           max_attendees
@@ -57,10 +57,10 @@ const actions = {
           }
         }
       }
-    `)
-        this.state.pois = response.data.farmyard
-        return this.state.pois
-    },
+    `);
+    this.state.pois = response.data.farmyard;
+    return this.state.pois;
+  },
 
   async loadPartners() {
     const response = await api.query(gql`
@@ -68,15 +68,17 @@ const actions = {
         yard_providers {
           id
           title
-          logo {id}
+          logo {
+            id
+          }
           website
           phone
         }
       }
-    `)
-        this.state.partners = response.data.yard_providers
-        return this.state.partners
-    },
+    `);
+    this.state.partners = response.data.yard_providers;
+    return this.state.partners;
+  },
 
   async loadYardProvider(id) {
     const response = await api.query(
@@ -98,33 +100,38 @@ const actions = {
         }
       `,
       { id }
-    )
+    );
 
     // Récupération du nom du département depuis la liste des codes : [{ name: "Alpes-Maritimes", code: "06"}, { name: "Bouches-du-Rhône", code: "13"}]
-    const provider = response.data.yard_providers_by_id
-    const departments = await Promise.all((provider.departments_list || "")
-      .split(",")
-      .map((d) => d.trim())
-      .map(async (code) => {
-        const response = await fetch(
-          `https://geo.api.gouv.fr/departements?code=${code}`,
-          { method: "GET", headers: { "Content-Type": "application/json" } }
-        )
-        try {
-          const data = await response.json()
-          const department = data[0]
-          return department ? { name: department.nom, code: department.code } : {}
-        } catch (e) {
-          console.error(`Error fetching department ${code} for ${provider.title}: ${e}`)
-        }
-      })
-    )
+    const provider = response.data.yard_providers_by_id;
+    const departments = await Promise.all(
+      (provider.departments_list || "")
+        .split(",")
+        .map((d) => d.trim())
+        .map(async (code) => {
+          const response = await fetch(
+            `https://geo.api.gouv.fr/departements?code=${code}`,
+            { method: "GET", headers: { "Content-Type": "application/json" } }
+          );
+          try {
+            const data = await response.json();
+            const department = data[0];
+            return department
+              ? { name: department.nom, code: department.code }
+              : {};
+          } catch (e) {
+            console.error(
+              `Error fetching department ${code} for ${provider.title}: ${e}`
+            );
+          }
+        })
+    );
 
     this.state.partners = {
       ...provider,
-      departments: departments.filter(d => d.name),
-    }
-    return this.state.partners
+      departments: departments.filter((d) => d.name),
+    };
+    return this.state.partners;
   },
 
   async saveSchoolDemand(values) {
@@ -149,8 +156,8 @@ const actions = {
         }
       `,
       values
-    )
-    return response.data.create_school_demand_item
+    );
+    return response.data.create_school_demand_item;
   },
 
   async saveContactFarmyard(values) {
@@ -180,8 +187,8 @@ const actions = {
       `,
       values
     );
-    return response.data.create_farmyard_contact_item
+    return response.data.create_farmyard_contact_item;
   },
-}
+};
 
-export default new LegoStore(state, actions)
+export default new LegoStore(state, actions);
