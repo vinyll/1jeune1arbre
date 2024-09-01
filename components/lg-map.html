@@ -1,69 +1,49 @@
 <script>
-  let map = null;
+  let map = null
 
   const methods = {
     localize(maxZoom = 10) {
-      map.locate({ setView: true, maxZoom });
+      map.locate({ setView: true, maxZoom })
     },
-  };
+  }
   async function connected() {
-    const pois = await store.actions.loadPois();
-    map = L.map(this.document.querySelector("#map")).setView([46.8, 3.4], 6);
+    const pois = await store.actions.loadPois()
+    map = L.map(this.document.querySelector("#map")).setView([46.8,3.4], 6)
 
-    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo(map);
-    const treeIcon = L.icon({
-      iconUrl: "/assets/images/tree-icon.png",
-      iconSize: [20, 30],
-      iconAnchor: [10, 30],
-    });
-    const circleOptions = { color: "#009900", fillOpacity: 0.5, radius: 5000 };
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map)
+    const treeIcon = L.icon({ iconUrl: "/assets/images/tree-icon.png", iconSize: [20, 30], iconAnchor: [10, 30] })
+    const circleOptions = { color: '#009900', fillOpacity: 0.5, radius: 5000 }
     pois.forEach((poi) => {
-      const provider = poi.provider || { user: {} };
-      const fullName =
-        poi.contact_name ||
-        `${provider.user.first_name} ${provider.user.last_name}`;
-      const role = poi.contact_position || provider.position;
-      const phone = poi.phone || provider.phone;
-      const email = poi.email || provider.user.email;
+      const provider = poi.provider || { user: {} }
+      const fullName = poi.contact_name || `${provider.user.first_name} ${provider.user.last_name}`
+      const role = poi.contact_position || provider.position
+      const phone = poi.phone || provider.phone
+      const email = poi.email || provider.user.email
       // [poi.latitude, poi.longitude] est l'ancienne écriture -> à effacer si la carte/location est avérée sur Directus
-      const coordinates = poi.location?.coordinates?.reverse() || [
-        poi.fakeLat,
-        poi.fakeLong,
-      ];
-      const unavailable = poi.availability !== "disponible";
-      let unavailabilityTitle = "";
-      let unavailabilityBody = "";
-      if (poi.availability === "reserve") {
-        unavailabilityTitle = "Ce chantier est déjà réservé par une classe.";
-        unavailabilityBody =
-          "Si vous souhaitez participer à une plantation pédagogique dans ce secteur, vous pouvez remplir le formulaire ci-dessous.";
+      const coordinates = poi.location?.coordinates?.reverse() || [poi.latitude, poi.longitude]
+      const unavailable = poi.availability !== "disponible"
+      let unavailabilityTitle = ""
+      let unavailabilityBody = ""
+      if(poi.availability === "reserve") {
+        unavailabilityTitle = "Ce chantier est déjà réservé par une classe."
+        unavailabilityBody = "Si vous souhaitez participer à une plantation pédagogique dans ce secteur, vous pouvez remplir le formulaire ci-dessous."
       }
-      if (poi.availability === "realise") {
-        unavailabilityTitle = "Ce chantier est déjà réalisé par une classe.";
-        unavailabilityBody =
-          "Si vous souhaitez participer à une plantation pédagogique dans ce secteur, vous pouvez remplir le formulaire ci-dessous.";
+      if(poi.availability === "realise") {
+        unavailabilityTitle = "Ce chantier est déjà réalisé par une classe."
+        unavailabilityBody = "Si vous souhaitez participer à une plantation pédagogique dans ce secteur, vous pouvez remplir le formulaire ci-dessous."
       }
       L.circle(coordinates, circleOptions)
-        .bindPopup(
-          `
-        ${
-          poi.logo?.id
-            ? '<img src="https://admin.1jeune1arbre.fr/assets/' +
-              poi.logo.id +
-              '?key=system-small-contain">'
-            : ""
-        }
+      .bindPopup(`
+        ${poi.logo?.id ?
+          '<img src="https://admin.1jeune1arbre.fr/assets/'+poi.logo.id+'?key=system-small-contain">' : "" }
         <article class="${poi.availability}">
           <h2><a href="/pourvoyeur/${poi.provider?.id}">${poi.title}</a></h2>
           <p>${poi.description}</p>
           <address>${poi.department} (${poi.region})</address>
 
-          ${
-            unavailable
-              ? `
+          ${unavailable ? `
             <div class="fr-notice fr-notice--info">
               <div class="fr-container">
                 <div class="fr-notice__body">
@@ -74,18 +54,15 @@
                 </div>
               </div>
             </div>
-          `
-              : `
+          ` : `
             <hr>
             <h6 class="fr-p-2v">Faire une demande de réservation pour ce chantier</h6>
             <lg-form-contact-farmyard farmyard-id="${poi.id}"></lg-form-contact-farmyard>
-          `
-          }
+          ` }
         </article>
-      `
-        )
-        .addTo(map);
-    });
+      `)
+      .addTo(map)
+    })
   }
 </script>
 
