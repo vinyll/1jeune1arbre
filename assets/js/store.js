@@ -24,8 +24,8 @@ const actions = {
         farmyard {
           id
           title
-          latitude
-          longitude
+          fakeLat
+          fakeLong
           location
           description
           max_attendees
