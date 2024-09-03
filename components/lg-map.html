@@ -14,7 +14,7 @@
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map)
     const treeIcon = L.icon({ iconUrl: "/assets/images/tree-icon.png", iconSize: [20, 30], iconAnchor: [10, 30] })
-    const circleOptions = { color: '#009900', fillOpacity: 0.5, radius: 5000 }
+    const circleOptions = { color: '#009900', fillOpacity: 0.5, radius: 2500 }
     pois.forEach((poi) => {
       const provider = poi.provider || { user: {} }
       const fullName = poi.contact_name || `${provider.user.first_name} ${provider.user.last_name}`
