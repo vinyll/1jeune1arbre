@@ -32,9 +32,6 @@ const actions = {
           department
           region
           availability
-          logo {
-            id
-          }
           start_date
           end_date
           contact_name
@@ -46,9 +43,6 @@ const actions = {
             phone
             website
             position
-            logo {
-              id
-            }
             user {
               email
               first_name
