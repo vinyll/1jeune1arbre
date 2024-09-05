@@ -1,0 +1,68 @@
+<script>
+  const state = {
+    farmyards: [{}]
+  }
+
+  const methods = {
+    addFarmyard(event) {
+      this.state.farmyards.push({})
+      this.render()
+    }
+  }
+</script>
+
+<template>
+  <div class="fr-container">
+  <section class="fr-grid-row fr-grid-row--gutters fr-py-8w">
+    <h1>Vous souhaitez proposer des chantiers pédagogique ?</h1>
+    <p>
+      Créez votre profil et renseignez vos chantiers pédagogiques.
+      Une fois validé, vos chantiers seront en consultation pour les enseignants.
+    </p>
+    <div class="fr-col-8">
+      <form class="fr-grid-row">
+        <div class="fr-col-6 fr-p-2v">
+          <label class="fr-label" for="provider_firstname_input">Votre prénom</label>
+          <input class="fr-input" type="text" id="provider_firstname_input" name="provider_lastname" required>
+        </div>
+        <div class="fr-col-6 fr-p-2v">
+          <label class="fr-label" for="provider_lastname_input">Votre nom</label>
+          <input class="fr-input" type="text" id="provider_lastname_input" name="provider_lastname" required>
+        </div>
+        <div class="fr-col-6 fr-p-2v">
+          <label class="fr-label" for="provider_title_input">Votre organisme</label>
+          <input class="fr-input" type="text" id="provider_title_input" name="provider_title_input" required>
+        </div>
+        <div class="fr-col-6 fr-p-2v">
+          <label class="fr-label" for="email_input">Votre email</label>
+          <input class="fr-input" type="email" id="email_input"
+            name="email" required>
+        </div>
+
+        <h2>Vos chantiers pédagogiques</h2>
+        <section :for="farmyard in state.farmyards" class="fr-col-12 fr-p-2v">
+          <div class="fr-col-6 fr-p-2v">
+            <label class="fr-label" for="farmyard_title_input">Nom du chantier</label>
+            <input class="fr-input" type="text" id="farmyard_title_input" name="farmyard_title_input" required>
+          </div>
+          <div class="fr-col-6 fr-p-2v">
+            <label class="fr-label" for="farmyard_category_input">Catégorie</label>
+            <select class="fr-input" id="farmyard_category_input" name="farmyard_title_input" required>
+              <option value="forestier">Forestier</option>
+              <option value="communal">Plantation en ville</option>
+            </select>
+          </div>
+          <div class="fr-col-6 fr-p-2v">
+            <label class="fr-label" for="farmyard_description_input">Description</label>
+            <textarea class="fr-input" id="farmyard_description_input" name="farmyard_title_input">
+            </textarea>
+          </div>
+        </section>
+        <button class="fr-btn fr-btn--primary" @click="addFarmyard">
+          Ajouter un chantier
+        </button>
+      </form>
+    </div>
+  </section>
+  </div>
+</template>
