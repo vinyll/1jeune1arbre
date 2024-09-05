@@ -1,15 +1,10 @@
 import { LegoStore } from "/node_modules/@polight/store/dist/store.min.js"
 
-import {
-  Client,
-  gql,
-  cacheExchange,
-  fetchExchange,
-} from "https://cdn.jsdelivr.net/npm/urql@4.1.0/+esm"
+import { Client, gql, cacheExchange, fetchExchange } from "https://cdn.jsdelivr.net/npm/urql@4.1.0/+esm"
 
 const api = new Client({
   url: "https://admin.1jeune1arbre.fr/graphql",
-  exchanges: [cacheExchange, fetchExchange],
+  exchanges: [cacheExchange, fetchExchange]
 })
 
 const state = {
@@ -32,9 +27,6 @@ const actions = {
           department
           region
           availability
-          logo {
-            id
-          }
           start_date
           end_date
           contact_name
@@ -46,9 +38,6 @@ const actions = {
             phone
             website
             position
-            logo {
-              id
-            }
             user {
               email
               first_name
@@ -58,9 +47,9 @@ const actions = {
         }
       }
     `)
-        this.state.pois = response.data.farmyard
-        return this.state.pois
-    },
+    this.state.pois = response.data.farmyard
+    return this.state.pois
+  },
 
   async loadPartners() {
     const response = await api.query(gql`
@@ -68,15 +57,17 @@ const actions = {
         yard_providers {
           id
           title
-          logo {id}
+          logo {
+            id
+          }
           website
           phone
         }
       }
     `)
-        this.state.partners = response.data.yard_providers
-        return this.state.partners
-    },
+    this.state.partners = response.data.yard_providers
+    return this.state.partners
+  },
 
   async loadYardProvider(id) {
     const response = await api.query(
@@ -102,27 +93,28 @@ const actions = {
 
     // Récupération du nom du département depuis la liste des codes : [{ name: "Alpes-Maritimes", code: "06"}, { name: "Bouches-du-Rhône", code: "13"}]
     const provider = response.data.yard_providers_by_id
-    const departments = await Promise.all((provider.departments_list || "")
-      .split(",")
-      .map((d) => d.trim())
-      .map(async (code) => {
-        const response = await fetch(
-          `https://geo.api.gouv.fr/departements?code=${code}`,
-          { method: "GET", headers: { "Content-Type": "application/json" } }
-        )
-        try {
-          const data = await response.json()
-          const department = data[0]
-          return department ? { name: department.nom, code: department.code } : {}
-        } catch (e) {
-          console.error(`Error fetching department ${code} for ${provider.title}: ${e}`)
-        }
-      })
+    const departments = await Promise.all(
+      (provider.departments_list || "")
+        .split(",")
+        .map((d) => d.trim())
+        .map(async (code) => {
+          const response = await fetch(`https://geo.api.gouv.fr/departements?code=${code}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" }
+          })
+          try {
+            const data = await response.json()
+            const department = data[0]
+            return department ? { name: department.nom, code: department.code } : {}
+          } catch (e) {
+            console.error(`Error fetching department ${code} for ${provider.title}: ${e}`)
+          }
+        })
     )
 
     this.state.partners = {
       ...provider,
-      departments: departments.filter(d => d.name),
+      departments: departments.filter((d) => d.name)
     }
     return this.state.partners
   },
@@ -179,9 +171,110 @@ const actions = {
         }
       `,
       values
-    );
+    )
     return response.data.create_farmyard_contact_item
   },
+
+  // TODO: passer en graphql?
+  async saveYardProvider(body) {
+    delete body.userInfo
+    // Création des chantiers avec sauvegarde des ids pour relation M2O
+    const farmyardIds = []
+
+    for (const yard of body.farmyards) {
+      const url = "https://admin.1jeune1arbre.fr/items/farmyard"
+      const headers = {
+        "Content-Type": "application/json"
+      }
+
+      try {
+        delete yard.id
+        const response = await fetch(url, {
+          headers,
+          method: "POST",
+          body: JSON.stringify(yard)
+        })
+
+        if (!response.ok) {
+          console.log(response)
+          throw new Error("Network response was not ok " + response.statusText)
+        }
+
+        const data = await response.json()
+        if (!data) {
+          throw new Error("Unable to create yard")
+        }
+
+        farmyardIds.push(data.data.id)
+      } catch (error) {
+        console.error("Error creating yard:", error)
+      }
+    }
+
+    // création du pourvoyeur (avec relation chantiers)
+    const url = "https://admin.1jeune1arbre.fr/items/yard_providers"
+    const headers = {
+      "Content-Type": "application/json"
+    }
+
+    try {
+      const response = await fetch(url, {
+        headers,
+        method: "POST",
+        body: JSON.stringify({ ...body, farmyards: farmyardIds })
+      })
+
+      if (!response.ok) {
+        console.log(response)
+        throw new Error("Network response was not ok " + response.statusText)
+      }
+      const { data } = await response.json()
+
+      return { wasYardProviderUploaded: true, id: data.id }
+    } catch (error) {
+      console.error("There was a problem posting data:", error)
+    }
+  },
+  async loadOrganisations() {
+    const response = await api.query(gql`
+      {
+        yard_organisation {
+          id
+          date_created
+          name
+          website
+          logo {
+            id
+          }
+        }
+      }
+    `)
+
+    this.state.yard_organisations = response.data.yard_organisation
+    return this.state.yard_organisations
+  },
+  async saveProviderUser(user, id) {
+    const url = "https://admin.1jeune1arbre.fr/users"
+    const headers = {
+      "Content-Type": "application/json"
+    }
+    try {
+      const response = await fetch(url, {
+        headers,
+        method: "POST",
+        body: JSON.stringify({ ...user, yard_providers: [id] })
+      })
+
+      if (!response.ok) {
+        console.log(response)
+        throw new Error("Network response was not ok " + response.statusText)
+      }
+      return true
+      // l'endpoint ne renvoit aucune donnée de création
+    } catch (error) {
+      console.error(error)
+    }
+  }
 }
 
 export default new LegoStore(state, actions)

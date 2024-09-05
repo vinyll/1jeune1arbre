@@ -4,51 +4,55 @@
   const methods = {
     async sendMail(event) {
       event.preventDefault()
-      const values = Array.from(event.target.elements).filter(input => input.name).reduce(
-        (acc, input) => {
+      const values = Array.from(event.target.elements)
+        .filter((input) => input.name)
+        .reduce((acc, input) => {
           acc[input.name] = input.value
           return acc
-        },
-        {}
-      )
-      values['farmyard'] = Number(values['farmyard'])
+        }, {})
+      values["farmyard"] = Number(values["farmyard"])
       const created = await store.actions.saveContactFarmyard(values)
       console.info(created)
-      if(created) this.render({ sent: true })
+      if (created) this.render({ sent: true })
     }
   }
 </script>
 
 <template>
   <form :if="!state.sent" class="fr-grid-row" @submit="sendMail">
-    <input type="hidden" name="farmyard" :value="state.farmyardId">
+    <input type="hidden" name="farmyard" :value="state.farmyardId" />
     <div class="fr-col-6 fr-p-2v">
-      <label class="fr-label" for="contact_farmyard_first_name">Prénom</label><input class="fr-input" type="text"
-        id="contact_farmyard_first_name" name="first_name" required>
+      <label class="fr-label" for="contact_farmyard_first_name">Prénom</label
+      ><input class="fr-input" type="text" id="contact_farmyard_first_name" name="first_name" required />
     </div>
     <div class="fr-col-6 fr-p-2v">
-      <label class="fr-label" for="contact_farmyard_last_name">Nom</label><input class="fr-input" type="text"
-        id="contact_farmyard_last_name" name="last_name" required>
+      <label class="fr-label" for="contact_farmyard_last_name">Nom</label
+      ><input class="fr-input" type="text" id="contact_farmyard_last_name" name="last_name" required />
     </div>
     <div class="fr-col-6 fr-p-2v">
-      <label class="fr-label" for="contact_farmyard_email">Email</label><input class="fr-input" type="text"
-        id="contact_farmyard_email" name="email" required>
+      <label class="fr-label" for="contact_farmyard_email">Email</label
+      ><input class="fr-input" type="text" id="contact_farmyard_email" name="email" required />
     </div>
     <div class="fr-col-6 fr-p-2v">
-      <label class="fr-label" for="contact_farmyard_phone">Téléphone</label><input class="fr-input" type="text"
-        id="contact_farmyard_phone" name="phone">
+      <label class="fr-label" for="contact_farmyard_phone">Téléphone</label
+      ><input class="fr-input" type="text" id="contact_farmyard_phone" name="phone" />
     </div>
     <div class="fr-col-12 fr-p-2v">
-      <label class="fr-label" for="contact_farmyard_school">Etablissement scolaire</label><input class="fr-input" type="text"
-        id="contact_farmyard_school" name="school" required>
+      <label class="fr-label" for="contact_farmyard_school">Etablissement scolaire</label
+      ><input class="fr-input" type="text" id="contact_farmyard_school" name="school" required />
     </div>
     <div class="fr-col-12 fr-p-2v">
-      <label class="fr-label" for="contact_farmyard_classlevel">Classe concernée</label><input class="fr-input" type="text"
-        id="contact_farmyard_classlevel" name="classlevel" required>
+      <label class="fr-label" for="contact_farmyard_classlevel">Classe concernée</label
+      ><input class="fr-input" type="text" id="contact_farmyard_classlevel" name="classlevel" required />
     </div>
     <div class="fr-col-12 fr-p-2v">
       <label class="fr-label" for="contact_farmyard_body">Message</label>
-      <textarea class="fr-input" id="contact_farmyard_body" name="body" placeholder="Questions ou remarques complémentaires"></textarea>
+      <textarea
+        class="fr-input"
+        id="contact_farmyard_body"
+        name="body"
+        placeholder="Questions ou remarques complémentaires"
+      ></textarea>
     </div>
     <div class="fr-col-12 fr-py-2v">
       <button type="submit" class="fr-btn fr-btn--primary">Envoyer ma demande</button>
