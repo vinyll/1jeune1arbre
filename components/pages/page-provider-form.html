@@ -7,6 +7,11 @@
     addFarmyard(event) {
       this.state.farmyards.push({})
       this.render()
+    },
+
+    saveForm(event) {
+      event.preventDefault()
+      alert("TODO")
     }
   }
 </script>
@@ -20,7 +25,7 @@
       Une fois validé, vos chantiers seront en consultation pour les enseignants.
     </p>
     <div class="fr-col-8">
-      <form class="fr-grid-row">
+      <form class="fr-grid-row" @submit="saveForm">
         <div class="fr-col-6 fr-p-2v">
           <label class="fr-label" for="provider_firstname_input">Votre prénom</label>
           <input class="fr-input" type="text" id="provider_firstname_input" name="provider_lastname" required>
@@ -58,9 +63,19 @@
             </textarea>
           </div>
         </section>
-        <button class="fr-btn fr-btn--primary" @click="addFarmyard">
-          Ajouter un chantier
-        </button>
+        
+        <ul class="fr-btns-group">
+          <li>
+            <button type="button" class="fr-btn fr-btn--secondary" @click="addFarmyard">
+              Ajouter un chantier
+            </button>
+          </li>
+          <li>
+            <button type="submit" class="fr-btn fr-btn--primary" @click="saveForm">
+              Enregistrer
+            </button>
+          </li>
+        </ul>
       </form>
     </div>
   </section>
