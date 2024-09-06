@@ -1,23 +1,21 @@
 <script>
   const methods = {
     localize() {
-      this.document.querySelector('lg-map').localize(10)
+      this.document.querySelector("lg-map").localize(10)
     },
 
     async sendMail(event) {
-        event.preventDefault()
-        const values = Array.from(event.target.elements).filter(input=>input.name).reduce(
-          (accumulateur, input) => {
-            accumulateur[input.name] = input.value
-            return accumulateur
-          },
-          {}
-        )
-        const created = await store.actions.saveSchoolDemand(values)
-        console.debug(created)
+      event.preventDefault()
+      const values = Array.from(event.target.elements)
+        .filter((input) => input.name)
+        .reduce((accumulateur, input) => {
+          accumulateur[input.name] = input.value
+          return accumulateur
+        }, {})
+      const created = await store.actions.saveSchoolDemand(values)
+      console.debug(created)
     }
   }
-
 </script>
 
 <template>
@@ -26,9 +24,15 @@
       <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
         <figure class="fr-content-media fr-m-0 fr-col-5" role="group" aria-label="">
           <div class="fr-content-media__img">
-            <img class="fr-responsive-img image-style-node-visuel"
+            <img
+              class="fr-responsive-img image-style-node-visuel"
               src="https://agriculture.gouv.fr/sites/default/files/styles/node_visuel/public/vignette%20CP%201%20jeune%201%20arbre.jpg"
-              width="400" alt="Logo 1 jeune 1 arbre" loading="lazy" typeof="foaf:Image" data-fr-js-ratio="true" />
+              width="400"
+              alt="Logo 1 jeune 1 arbre"
+              loading="lazy"
+              typeof="foaf:Image"
+              data-fr-js-ratio="true"
+            />
           </div>
           <figcaption class="fr-content-media__caption" id="legend-file-147926"></figcaption>
         </figure>
@@ -44,23 +48,20 @@
           <span>28 février 2024</span>
           Communiqué de presse
         </p> -->
-        <h2 class="fr-mb-8v">
-          Faites participer vos élèves à un chantier de plantation !
-        </h2>
+        <h2 class="fr-mb-8v">Faites participer vos élèves à un chantier de plantation !</h2>
         <p>
-          Accompagnés par des professionnels locaux, vos élèves découvriront les métiers et les enjeux environnementaux du monde
-          forestier. En devenant acteur du renouvellement de la forêt ils découvriront son fonctionnement et son importance.
+          Accompagnés par des professionnels locaux, vos élèves découvriront les métiers et les enjeux environnementaux
+          du monde forestier. En devenant acteur du renouvellement de la forêt ils découvriront son fonctionnement et
+          son importance.
         </p>
         <p>
           Avec la plateforme « 1 Jeune 1 Arbre » accédez à un panel d'offres de chantiers pédagogiques proposés par nos
           partenaires et prenez contact avec eux afin d’organiser votre sortie scolaire.
         </p>
+        <p>Ces chantiers sont ouverts de l'automne au printemps, en fonction des essences et des territoires.</p>
         <p>
-          Ces chantiers sont ouverts de l'automne au printemps, en fonction des essences et des territoires.
-        </p>
-        <p>
-          Vous trouverez ci-dessous une carte géolocalisant des chantiers de plantation d'arbres en forêt, en campagne (haies,
-          vergers), ou en zone urbaine.
+          Vous trouverez ci-dessous une carte géolocalisant des chantiers de plantation d'arbres en forêt, en campagne
+          (haies, vergers), ou en zone urbaine.
         </p>
       </div>
     </section>
@@ -89,30 +90,31 @@
       </div>
 
       <div class="fr-col-12 fr-container">
-        <p>Vous ne trouvez pas de chantier à proximité de votre établissement scolaire ? Vous pouvez
-        remplir le formulaire ci-dessous pour signaler votre souhait de participer à un chantier de
-        plantation pédagogique.</p>
+        <p>
+          Vous ne trouvez pas de chantier à proximité de votre établissement scolaire ? Vous pouvez remplir le
+          formulaire ci-dessous pour signaler votre souhait de participer à un chantier de plantation pédagogique.
+        </p>
 
         <form class="fr-grid-row" @submit="sendMail">
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="contact_name_input">Nom / Prénom</label><input class="fr-input" type="text"
-              id="contact_name_input" name="contact_name" required>
+            <label class="fr-label" for="contact_name_input">Nom / Prénom</label
+            ><input class="fr-input" type="text" id="contact_name_input" name="contact_name" required />
           </div>
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="email_input">Mail</label><input class="fr-input" type="email"
-              id="email_input" name="email" required>
+            <label class="fr-label" for="email_input">Mail</label
+            ><input class="fr-input" type="email" id="email_input" name="email" required />
           </div>
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="city_input">Commune de l’établissement</label><input class="fr-input"
-              type="text" id="city_input" name="city" required>
+            <label class="fr-label" for="city_input">Commune de l’établissement</label
+            ><input class="fr-input" type="text" id="city_input" name="city" required />
           </div>
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="school_name_input">Nom de l'établissement</label><input class="fr-input"
-              type="text" id="school_name_input" name="school_name" required>
+            <label class="fr-label" for="school_name_input">Nom de l'établissement</label
+            ><input class="fr-input" type="text" id="school_name_input" name="school_name" required />
           </div>
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="departement_input">Dans quel département souhaitez-vous planter ?</label><input
-              class="fr-input" type="text" id="departement_input" name="departement" required>
+            <label class="fr-label" for="departement_input">Dans quel département souhaitez-vous planter ?</label
+            ><input class="fr-input" type="text" id="departement_input" name="departement" required />
           </div>
           <div class="fr-col-12 fr-py-2v">
             <button type="submit" class="fr-btn fr-btn--primary">Envoyer ma demande</button>

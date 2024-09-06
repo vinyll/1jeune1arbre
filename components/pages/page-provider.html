@@ -23,9 +23,7 @@
     <div class="fr-card__body">
       <div class="fr-card__content">
         <h3 class="fr-card__title">
-          <a :href="state.provider.website" target="_blank"
-            >${state.provider.title}</a
-          >
+          <a :href="state.provider.website" target="_blank">${state.provider.title}</a>
         </h3>
         <p class="fr-card__desc">${state.provider.description || ""}</p>
         <div class="fr-card__start">
@@ -34,9 +32,7 @@
         <div :if="state.provider.departments?.length">
           <p class="fr-card__detail">Départements :</p>
           <ul class="fr-tags-group">
-            <li class="fr-tag" :for="department in state.provider.departments">
-              ${ department.name }
-            </li>
+            <li class="fr-tag" :for="department in state.provider.departments">${ department.name }</li>
           </ul>
         </div>
       </div>
