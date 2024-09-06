@@ -173,6 +173,65 @@ const actions = {
       values
     )
     return response.data.create_farmyard_contact_item
+  },
+
+  // TODO: passer en graphql?
+  async saveYardProvider(body) {
+    // Création des chantiers avec sauvegarde des ids pour relation M2O
+    const farmyardIds = []
+
+    for (const yard of body.farmyards) {
+      const url = "https://admin.1jeune1arbre.fr/items/farmyard"
+      const headers = {
+        "Content-Type": "application/json"
+      }
+
+      try {
+        delete yard.id
+        const response = await fetch(url, {
+          headers,
+          method: "POST",
+          body: JSON.stringify(yard)
+        })
+
+        if (!response.ok) {
+          console.log(response)
+          throw new Error("Network response was not ok " + response.statusText)
+        }
+
+        const data = await response.json()
+        if (!data) {
+          throw new Error("Unable to create yard")
+        }
+
+        farmyardIds.push(data.data.id)
+      } catch (error) {
+        console.error("Error creating yard:", error)
+      }
+    }
+
+    // création du pourvoyeur (avec relation chantiers)
+    const url = "https://admin.1jeune1arbre.fr/items/yard_providers"
+    const headers = {
+      "Content-Type": "application/json"
+    }
+
+    try {
+      const response = await fetch(url, {
+        headers,
+        method: "POST",
+        body: JSON.stringify({ ...body, farmyards: farmyardIds })
+      })
+
+      if (!response.ok) {
+        console.log(response)
+        throw new Error("Network response was not ok " + response.statusText)
+      }
+
+      return alert("Téléchargement réalisé avec succès")
+    } catch (error) {
+      console.error("There was a problem posting data:", error)
+    }
   }
 }
 
