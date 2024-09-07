@@ -233,6 +233,26 @@ const actions = {
       console.error("There was a problem posting data:", error)
     }
   }
+  /* TODO: implémenter quand la relation pourvoyeur <-> organisation est faite.
+  async loadOrganisations() {
+    const response = await api.query(gql`
+    TODO: remplacer
+      {
+        yard_providers {
+          id
+          title
+          logo {
+            id
+          }
+          website
+          phone
+        }
+      }
+    `)
+    TODO: remplacer
+    this.state.partners = response.data.yard_providers
+    return this.state.partners
+  }*/
 }
 
 export default new LegoStore(state, actions)
