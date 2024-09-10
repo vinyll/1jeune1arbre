@@ -177,7 +177,6 @@ const actions = {
 
   // TODO: passer en graphql?
   async saveYardProvider(body) {
-    console.log(body)
     delete body.userInfo
     // Création des chantiers avec sauvegarde des ids pour relation M2O
     const farmyardIds = []

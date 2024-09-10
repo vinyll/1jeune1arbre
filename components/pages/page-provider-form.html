@@ -1,4 +1,5 @@
 <script>
+
   function generateBasicId() {
     // création d'ids qui sert seulement en frontend
     return Math.random().toString(36).substr(2, 10)
@@ -11,7 +12,7 @@
         id: initialFarmyardId
       } ],
       organisations: [],
-        isSuccessful: false
+      isSuccessful: false
   }
   const methods = {
     addFarmyard(event) {
@@ -20,17 +21,15 @@
         id: farmyardId
       })
       this.render()
-
       const map = this.initMap(farmyardId)
     },
     removeFarmyard(event) {
       const confirmation = confirm("Êtes-vous sur de vouloir supprimer ce chantier ?")
       if (this.state.farmyards.length == 1 || !confirmation) return
-
       const farmyardId = event.target.id
       const newFarmyardArray = this.state.farmyards.filter((farmyard) => farmyard.id !== farmyardId)
-      this.state.farmyards = newFarmyardArray
-      this.render()
+      state.farmyards = newFarmyardArray
+      this.render({...state,farmyards:newFarmyardArray})
     },
     async saveForm(event) {
       event.preventDefault()
@@ -151,8 +150,8 @@
       const wasYardProviderUploaded = await store.actions.saveYardProvider(body)
       if (wasYardProviderUploaded) {
         state.isSuccessful = true
-        this.render()
-    }
+        this.render({...state,isSuccessful:true})
+      }
     },
     initMap(farmyardId) {
       const mapId = "map_" + farmyardId
@@ -199,8 +198,10 @@
   async function connected() {
     const map = this.initMap(state.farmyards[0].id)
     const organisations = await store.actions.loadOrganisations()
+    state.organisations = organisations
     this.render({...state, organisations})
   }
+
 </script>
 
 <template>
@@ -214,7 +215,7 @@
       <div class="fr-col-8 fr-mt-n4w">
         <h2 class="fr-mt-7w">Votre profil</h2>
         <form class="fr-grid-row" @submit="saveForm">
-<div class="fr-p-2v">
+        <div class="fr-p-2v">
            <h4>Création du compte</h4>
            <div class="fr-grid-row fr-mt-n3w fr-mb-5w">
           <div class="fr-col-6 fr-p-2v">
@@ -542,7 +543,7 @@
             <li>
               <button type="submit" class="fr-btn fr-btn--primary">Enregistrer</button>
             </li>
-            <div if:="${state.isSuccessful}" class="fr-alert fr-alert--success">
+            <div :if="state.isSuccessful" class="fr-alert fr-alert--success">
               <h3 class="fr-alert__title">Succès de l'envoi</h3>
               <p>Les données ont bien été enregistrées.</p>
             </div>
