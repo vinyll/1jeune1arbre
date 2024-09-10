@@ -177,6 +177,8 @@ const actions = {
 
   // TODO: passer en graphql?
   async saveYardProvider(body) {
+    console.log(body)
+    delete body.userInfo
     // Création des chantiers avec sauvegarde des ids pour relation M2O
     const farmyardIds = []
 
@@ -228,31 +230,29 @@ const actions = {
         throw new Error("Network response was not ok " + response.statusText)
       }
 
-      return alert("Téléchargement réalisé avec succès")
+      return true
     } catch (error) {
       console.error("There was a problem posting data:", error)
     }
-  }
-  /* TODO: implémenter quand la relation pourvoyeur <-> organisation est faite.
+  },
   async loadOrganisations() {
     const response = await api.query(gql`
-    TODO: remplacer
       {
-        yard_providers {
+        yard_organisation {
           id
-          title
+          date_created
+          name
+          website
           logo {
             id
           }
-          website
-          phone
         }
       }
     `)
-    TODO: remplacer
-    this.state.partners = response.data.yard_providers
-    return this.state.partners
-  }*/
+
+    this.state.yard_organisations = response.data.yard_organisation
+    return this.state.yard_organisations
+  }
 }
 
 export default new LegoStore(state, actions)

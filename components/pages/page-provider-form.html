@@ -9,11 +9,10 @@
     farmyards: [
       {
         id: initialFarmyardId
-      }
-      // organisations: store.loadOrganisations()
-    ]
+      } ],
+      organisations: [],
+        isSuccessful: false
   }
-
   const methods = {
     addFarmyard(event) {
       const farmyardId = generateBasicId()
@@ -87,6 +86,18 @@
               case "walkable":
                 updatedFarmyards[id].walkable = formValues[key]
                 break
+              case "contact_position":
+                updatedFarmyards[id].contact_position = formValues[key]
+                break
+              case "contact_name":
+                updatedFarmyards[id].contact_name = formValues[key]
+                break
+               case "phone":
+                updatedFarmyards[id].phone = formValues[key]
+                break
+              case "email":
+                updatedFarmyards[id].email = formValues[key]
+                break
               default:
                 console.warn(`Unhandled farmyard field type: ${type}`)
             }
@@ -105,32 +116,43 @@
 
       // post
       const {
+        // infos pourvoyeur
+        provider_organisation: organisation,
         provider_departments: departments_list,
-        provider_description: description,
+        provider_position: position,
+        provider_role:role,
+        provider_phone:phone,
+        user_password:password,
         provider_email: email,
-        provider_firstname: firstname,
-        provider_lastname: lastname,
-        provider_title: title,
-        provider_website: website,
-        provider_phone: phone,
-        provider_position: position
+        provider_firstname: first_name,
+        provider_lastname: last_name,
       } = formValues
 
-      const body = {
-        title,
-        website,
-        departments_list,
-        farmyards: completeFarmyards,
-        description
-        /*
-          user: {
-            firstname,
-            email,
-            lastname,
-          }*/
+      const userInfo = {
+        first_name,
+        last_name,
+        email,
+        password,
       }
 
-      const newYardProvider = await store.actions.saveYardProvider(body)
+      const body = {
+        // infos pourvoyeur
+        farmyards: completeFarmyards,
+        // - infos
+        organisation:Number(organisation),
+        departments_list,
+        // - contact (er le pourvoyeur)
+        role,
+        position,
+        phone,
+        userInfo, // pour créer le user
+      }
+
+      const wasYardProviderUploaded = await store.actions.saveYardProvider(body)
+      if (wasYardProviderUploaded) {
+        state.isSuccessful = true
+        this.render()
+    }
     },
     initMap(farmyardId) {
       const mapId = "map_" + farmyardId
@@ -166,11 +188,18 @@
       } else {
         console.error(`Map container with id "${mapId}" not found.`)
       }
+    },
+    /* TODO: implémenter
+    verifyPasswordConfirmation(password,passwordConfirmation) {
+        return
     }
+    */
   }
 
-  function connected() {
+  async function connected() {
     const map = this.initMap(state.farmyards[0].id)
+    const organisations = await store.actions.loadOrganisations()
+    this.render({...state, organisations})
   }
 </script>
 
@@ -185,28 +214,9 @@
       <div class="fr-col-8 fr-mt-n4w">
         <h2 class="fr-mt-7w">Votre profil</h2>
         <form class="fr-grid-row" @submit="saveForm">
-          <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="provider_firstname">Votre prénom</label>
-            <input
-              class="fr-input"
-              type="text"
-              id="provider_firstname"
-              name="provider_firstname"
-              placeholder="ex: Jean"
-              required
-            />
-          </div>
-          <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="provider_lastname">Votre nom</label>
-            <input
-              class="fr-input"
-              type="text"
-              id="provider_lastname"
-              name="provider_lastname"
-              placeholder="ex: Dupont"
-              required
-            />
-          </div>
+<div class="fr-p-2v">
+           <h4>Création du compte</h4>
+           <div class="fr-grid-row fr-mt-n3w fr-mb-5w">
           <div class="fr-col-6 fr-p-2v">
             <label class="fr-label" for="provider_email">Votre email</label>
             <input
@@ -219,7 +229,33 @@
             />
           </div>
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="provider_email">Votre numéro de téléphone</label>
+            <label class="fr-label" for="user_password">Votre mot de passe</label>
+            <input
+              class="fr-input"
+              type="text"
+              id="user_password"
+              name="user_password"
+              placeholder="TODO: afficher contraintes mdp?"
+              required
+            />
+          </div>
+          <!--TODO: implémenter confirmation mdp
+          <div class="fr-col-6 fr-p-2v">
+            <label class="fr-label" for="provider_firstname">Confirmez le mot de passe</label>
+            <input
+              class="fr-input"
+              type="text"
+              id="provider_firstname"
+              name="provider_firstname"
+              placeholder="Entrez le même mot de passe"
+              required
+            />
+          </div>-->
+        </div>
+        <h4>Informations compémentaires</h4>
+        <div class="fr-grid-row fr-mt-n3w fr-mb-5w">
+          <div class="fr-col-6 fr-p-2v">
+            <label class="fr-label" for="provider_phone">Votre numéro de téléphone</label>
             <input
               class="fr-input"
               type="tel"
@@ -229,7 +265,7 @@
               required
             />
           </div>
-          <!--  TODO: implémenter quand la relation pourvoyeur <-> organisation est faite.
+
            <div class="fr-col-6 fr-p-2v">
                   <label class="fr-label" for="provider_organisation">Organisation</label>
                   <select
@@ -237,23 +273,12 @@
                     id="provider_organisation"
                     name="provider_organisation"
                     required
-                    :for="organisation in state.organisations"
                   >
-                    <option value="${ organisation.value}">${ organisation.name }</option>
+                    <option :for="organisation in state.organisations" value="${ organisation.id }">${ organisation.name }</option>
                   </select>
                 </div>
-          -->
-          <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="provider_title">Votre organisme</label>
-            <input
-              class="fr-input"
-              type="text"
-              id="provider_title"
-              name="provider_title"
-              placeholder="ex: Association Chantiers"
-              required
-            />
-          </div>
+
+
           <!--
           <div class="fr-col-6 fr-p-2v">
             <label class="fr-label" for="provider_website">Site web</label>
@@ -278,7 +303,7 @@
               required
             />
           </div>
-
+ -->
            <div class="fr-col-6 fr-p-2v">
 
             <label class="fr-label" for="provider_departments">Liste des départements</label>
@@ -291,8 +316,29 @@
               placeholder="ex: 06, 13"
             />
           </div>
-          -->
 
+          <div class="fr-col-6 fr-p-2v">
+            <label class="fr-label" for="provider_firstname">Votre prénom</label>
+            <input
+              class="fr-input"
+              type="text"
+              id="provider_firstname"
+              name="provider_firstname"
+              placeholder="ex: Jean"
+              required
+            />
+          </div>
+          <div class="fr-col-6 fr-p-2v">
+            <label class="fr-label" for="provider_lastname">Votre nom</label>
+            <input
+              class="fr-input"
+              type="text"
+              id="provider_lastname"
+              name="provider_lastname"
+              placeholder="ex: Dupont"
+              required
+            />
+          </div>
           <div class="fr-col-6 fr-p-2v">
             <label class="fr-label" for="provider_position">Votre position</label>
             <input
@@ -300,11 +346,20 @@
               type="text"
               id="provider_position"
               name="provider_position"
-              placeholder="ex: Propriétaire"
+              placeholder="ex: directeur, animateur, gérant, secrétaire…"
               required
             />
           </div>
-
+          <div class="fr-col-6 fr-p-2v">
+            <label class="fr-label" for="provider_role">Votre rôle</label>
+            <select
+              class="fr-input"
+              id="provider_role"
+              name="provider_role"
+              required
+            > <option value="proprietaire">Propriétaire</option><option value="exploitant">Exploitant</option></select>
+          </div>
+          </div>
           <h2 class="fr-mt-7w">Vos chantiers pédagogiques</h2>
           <section :for="farmyard in state.farmyards" class="fr-col-12 fr-p-2v">
             <div class="fr-grid-row fr-grid-row--top">
@@ -425,11 +480,56 @@
                   </select>
                 </div>
               </div>
-              <h4>Localisation</h4>
+              <h4>Informations sur la personne à contacter</h4>
               <div class="fr-grid-row fr-mt-n3w fr-mb-5w">
                 <div class="fr-col-6 fr-p-2v">
+                  <label class="fr-label" for="farmyard_contact_name_${farmyard.id}">Prénom/nom du référent</label>
+                  <input
+                    class="fr-input"
+                    type="text"
+                    id="farmyard_contact_name_${farmyard.id}"
+                    name="farmyard_contact_name_${farmyard.id}"
+                    placeholder="ex: Jean Dupont"
+                  />
+                </div>
+                <div class="fr-col-6 fr-p-2v">
+                  <label class="fr-label" for="farmyard_contact_position_${farmyard.id}">Fonction du contact</label>
+                  <input
+                    class="fr-input"
+                    type="text"
+                    id="farmyard_contact_position_${farmyard.id}"
+                    name="farmyard_contact_position_${farmyard.id}"
+                    placeholder="ex: Propriétaire"
+                  />
+                </div>
+                <div class="fr-col-6 fr-p-2v">
+                  <label class="fr-label" for="farmyard_phone_${farmyard.id}">Numéro de téléphone</label>
+                  <input
+                    class="fr-input"
+                    type="tel"
+                    id="farmyard_phone_${farmyard.id}"
+                    name="farmyard_phone_${farmyard.id}"
+                    placeholder="ex: 0612345678"
+                  >
+                  </input>
+                </div>
+                <div class="fr-col-6 fr-p-2v">
+                  <label class="fr-label" for="farmyard_email_${farmyard.id}">Email</label>
+                  <input
+                    class="fr-input"
+                    id="farmyard_email_${farmyard.id}"
+                    name="farmyard_email_${farmyard.id}"
+                    type="email"
+                    placeholder="exemple@domaine.com"
+                  >
+                  </input>
+                </div>
+              </div>
+              <h4>Localisation</h4>
+              <div class="fr-grid-row fr-mt-n3w fr-mb-5w">
+                <div class="fr-col-12 fr-p-2v">
                   <label class="fr-label" for="map_{{ farmyard.id }}">Clickez sur la localisation du chantier</label>
-                  <div :id="'map_' + farmyard.id" style="height: 300px; width: 100%"></div>
+                  <div :id="'map_' + farmyard.id" style="height: 600px; width: 100%"></div>
                 </div>
               </div>
             </div>
@@ -442,6 +542,10 @@
             <li>
               <button type="submit" class="fr-btn fr-btn--primary">Enregistrer</button>
             </li>
+            <div if:="${state.isSuccessful}" class="fr-alert fr-alert--success">
+              <h3 class="fr-alert__title">Succès de l'envoi</h3>
+              <p>Les données ont bien été enregistrées.</p>
+            </div>
           </ul>
         </form>
       </div>
