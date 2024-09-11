@@ -228,8 +228,9 @@ const actions = {
         console.log(response)
         throw new Error("Network response was not ok " + response.statusText)
       }
+      const { data } = await response.json()
 
-      return true
+      return { wasYardProviderUploaded: true, id: data.id }
     } catch (error) {
       console.error("There was a problem posting data:", error)
     }
@@ -251,6 +252,28 @@ const actions = {
 
     this.state.yard_organisations = response.data.yard_organisation
     return this.state.yard_organisations
+  },
+  async saveProviderUser(user, id) {
+    const url = "https://admin.1jeune1arbre.fr/users"
+    const headers = {
+      "Content-Type": "application/json"
+    }
+    try {
+      const response = await fetch(url, {
+        headers,
+        method: "POST",
+        body: JSON.stringify({ ...user, yard_providers: [id] })
+      })
+
+      if (!response.ok) {
+        console.log(response)
+        throw new Error("Network response was not ok " + response.statusText)
+      }
+      return true
+      // l'endpoint ne renvoit aucune donnée de création
+    } catch (error) {
+      console.error(error)
+    }
   }
 }
 

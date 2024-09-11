@@ -132,6 +132,8 @@
         last_name,
         email,
         password,
+        role:"ac01b48e-8c16-4c1e-aa63-9a11e98543cd",
+        status:"inactive"
       }
 
       const body = {
@@ -144,13 +146,15 @@
         role,
         position,
         phone,
-        userInfo, // pour créer le user
       }
 
-      const wasYardProviderUploaded = await store.actions.saveYardProvider(body)
+      const { wasYardProviderUploaded,id } = await store.actions.saveYardProvider(body)
       if (wasYardProviderUploaded) {
-        state.isSuccessful = true
-        this.render({...state,isSuccessful:true})
+        const wasUserCreated = await store.actions.saveProviderUser(userInfo,id)
+        if (wasUserCreated) {
+           state.isSuccessful = true
+           this.render({...state,isSuccessful:true})
+        }
       }
     },
     initMap(farmyardId) {
