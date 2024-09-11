@@ -106,7 +106,6 @@
         provider_organisation: organisation,
         provider_departments: departments_list,
         provider_position: position,
-        provider_role: role,
         provider_phone: phone,
         user_password: password,
         provider_email: email,
@@ -130,7 +129,6 @@
         organisation: Number(organisation),
         departments_list,
         // - contact (er le pourvoyeur)
-        role,
         position,
         phone
       }
@@ -204,6 +202,7 @@
       </p>
       <div class="fr-col-8 fr-mt-n4w">
         <h2 class="fr-mt-7w">Votre profil</h2>
+        <p>Ces informations <strong>ne seront pas</strong> rendues publiques sur la plateforme 1Jeune1Arbre</p>
         <form class="fr-grid-row" @submit="saveForm">
           <div class="fr-col-6 fr-p-2v">
             <label class="fr-label" for="provider_firstname">Votre prénom</label>
@@ -216,16 +215,9 @@
               required />
           </div>
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="provider_position">Votre position</label>
+            <label class="fr-label" for="provider_position">Votre fonction</label>
             <input class="fr-input" type="text" id="provider_position" name="provider_position"
               placeholder="ex: directeur, animateur, gérant, secrétaire…" required />
-          </div>
-          <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="provider_role">Êtes-vous propriétaire ou exploitant ?</label>
-            <select class="fr-input" id="provider_role" name="provider_role" required>
-              <option value="proprietaire">Propriétaire</option>
-              <option value="exploitant">Exploitant</option>
-            </select>
           </div>
           <div class="fr-col-6 fr-p-2v">
             <label class="fr-label" for="provider_email">Votre adresse email</label>
@@ -295,6 +287,8 @@
           </div>
 
           <h2 class="fr-mt-7w">Vos chantiers pédagogiques</h2>
+          <p>Ces informations seront rendues publiques sur la plateforme 1Jeune1Arbre</p>
+
           <section :for="farmyard in state.farmyards" class="fr-col-12 fr-p-2v">
             <div class="fr-grid-row fr-grid-row--top">
               <h3>Chantier ${ (state.farmyards.indexOf(farmyard) + 1).toString() }</h3>
@@ -354,9 +348,18 @@
                 <div class="fr-col-6 fr-p-2v">
                   <label class="fr-label" for="farmyard_max_attendees_${farmyard.id}">Nombre maximum de
                     participants</label>
-                  <span class="fr-hint-text">1 classe équivaut à 25 élèves</span>
+                  <span class="fr-hint-text">1 classe équivaut ±30 élèves</span>
                   <input class="fr-input" type="number" id="farmyard_max_attendees_${farmyard.id}"
                     name="farmyard_max_attendees_${farmyard.id}" placeholder="ex: 30" />
+                </div>
+
+                <div class="fr-col-12 fr-p-2v">
+                  <label class="fr-label" for="description">Description</label>
+                  <textarea rows="8" class="fr-input" id="description" name="description">
+Contexte forestier : 
+Nombre d'arbres plantés avec le groupe scolaire :
+Variétés plantées : 
+                  </textarea>
                 </div>
               </div>
             </div>
