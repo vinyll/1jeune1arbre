@@ -37,12 +37,15 @@
 
       // Organisation pour le body
       const farmyardData = Object.keys(formValues)
-      .filter((key) => key.startsWith("farmyard-"))
-      .reduce((obj, key) => {
-        const [group, prop ] = key.split("-")
-        obj[group][prop] = formValues[key]
-        return obj
-      }, { farmyard: {}, provider: {}, user: {} })
+        .filter((key) => key.startsWith("farmyard-"))
+        .reduce(
+          (obj, key) => {
+            const [group, prop] = key.split("-")
+            obj[group][prop] = formValues[key]
+            return obj
+          },
+          { farmyard: {}, provider: {}, user: {} }
+        )
 
       const completeFarmyards = []
       state.farmyards.forEach((yard) => {
@@ -318,35 +321,24 @@
               <h4>Détails du chantier</h4>
               <div class="fr-grid-row fr-mt-n3w fr-mb-5w">
                 <div class="fr-col-6 fr-p-2v">
-<<<<<<< HEAD
-                  <label class="fr-label" for="farmyard_title_${farmyard.id}">Nom du chantier</label>
+                  <label class="fr-label" for="farmyard-title-${farmyard.id}">Nom du chantier</label>
                   <input
                     class="fr-input"
                     type="text"
-                    id="farmyard_title_${farmyard.id}"
-                    name="farmyard_title_${farmyard.id}"
+                    id="farmyard-title-${farmyard.id}"
+                    name="farmyard-title-${farmyard.id}"
                     placeholder="ex: Chantier de reboisement"
                     required
                   />
                 </div>
                 <div class="fr-col-6 fr-p-2v">
-                  <label class="fr-label" for="farmyard_category_${farmyard.id}">Environnement</label>
+                  <label class="fr-label" for="farmyard-category-${farmyard.id}">Environnement</label>
                   <select
                     class="fr-input"
-                    id="farmyard_category_${farmyard.id}"
-                    name="farmyard_category_${farmyard.id}"
+                    id="farmyard-category-${farmyard.id}"
+                    name="farmyard-category-${farmyard.id}"
                     required
                   >
-=======
-                  <label class="fr-label" for="farmyard-title-${farmyard.id}">Nom du chantier</label>
-                  <input class="fr-input" type="text" id="farmyard-title-${farmyard.id}"
-                    name="farmyard-title-${farmyard.id}" placeholder="ex: Chantier de reboisement" required />
-                </div>
-                <div class="fr-col-6 fr-p-2v">
-                  <label class="fr-label" for="farmyard-category-${farmyard.id}">Environnement</label>
-                  <select class="fr-input" id="farmyard-category-${farmyard.id}" name="farmyard-category-${farmyard.id}"
-                    required>
->>>>>>> 8f152b9 (Wip refactoring form pourvoyeurs)
                     <option value="forestier">Forestier</option>
                     <option value="agricole">Haie agricole</option>
                     <option value="communal">Arbres en ville</option>
@@ -355,87 +347,66 @@
                 </div>
 
                 <div class="fr-col-6 fr-p-2v">
-<<<<<<< HEAD
-                  <label class="fr-label" for="farmyard_start_date_${farmyard.id}">Disponible du…</label>
-                  <input
-                    class="fr-input"
-                    type="date"
-                    id="farmyard_start_date_${farmyard.id}"
-                    name="farmyard_start_date_${farmyard.id}"
-                  />
-                </div>
-                <div class="fr-col-6 fr-p-2v">
-                  <label class="fr-label" for="farmyard_end_date_${farmyard.id}">…au</label>
-                  <input
-                    class="fr-input"
-                    type="date"
-                    id="farmyard_end_date_${farmyard.id}"
-                    name="farmyard_end_date_${farmyard.id}"
-                  />
-                </div>
-
-                <div class="fr-col-6 fr-p-2v">
-                  <label class="fr-label" for="farmyard_bus_parking_${farmyard.id}">Accessible en bus</label>
-                  <select
-                    class="fr-input"
-                    id="farmyard_bus_parking_${farmyard.id}"
-                    name="farmyard_bus_parking_${farmyard.id}"
-                  >
-=======
                   <label class="fr-label" for="farmyard-start_date-${farmyard.id}">Disponible du…</label>
-                  <input class="fr-input" type="date" id="farmyard-start_date-${farmyard.id}"
-                    name="farmyard-start_date-${farmyard.id}" />
+                  <input
+                    class="fr-input"
+                    type="date"
+                    id="farmyard-start_date-${farmyard.id}"
+                    name="farmyard-start_date-${farmyard.id}"
+                  />
                 </div>
                 <div class="fr-col-6 fr-p-2v">
                   <label class="fr-label" for="farmyard-end_date-${farmyard.id}">…au</label>
-                  <input class="fr-input" type="date" id="farmyard-end_date-${farmyard.id}"
-                    name="farmyard-end_date-${farmyard.id}" />
+                  <input
+                    class="fr-input"
+                    type="date"
+                    id="farmyard-end_date-${farmyard.id}"
+                    name="farmyard-end_date-${farmyard.id}"
+                  />
                 </div>
 
                 <div class="fr-col-6 fr-p-2v">
                   <label class="fr-label" for="farmyard-bus_parking-${farmyard.id}">Accessible en bus</label>
-                  <select class="fr-input" id="farmyard-bus_parking-${farmyard.id}"
-                    name="farmyard-bus_parking-${farmyard.id}">
->>>>>>> 8f152b9 (Wip refactoring form pourvoyeurs)
-                    <option value="1">Oui</option>
-                    <option value="">Non</option>
-                  </select>
-                </div>
-
-                <div class="fr-col-6 fr-p-2v">
-<<<<<<< HEAD
-                  <label class="fr-label" for="farmyard_walkable_${farmyard.id}">Accessible à pied</label>
                   <select
                     class="fr-input"
-                    id="farmyard_walkable_${farmyard.id}"
-                    name="farmyard_walkable_${farmyard.id}"
+                    id="farmyard-bus_parking-${farmyard.id}"
+                    name="farmyard-bus_parking-${farmyard.id}"
                   >
-=======
-                  <label class="fr-label" for="farmyard-walkable-${farmyard.id}">Accessible à pied</label>
-                  <select class="fr-input" id="farmyard-walkable-${farmyard.id}"
-                    name="farmyard-walkable-${farmyard.id}">
->>>>>>> 8f152b9 (Wip refactoring form pourvoyeurs)
                     <option value="1">Oui</option>
                     <option value="">Non</option>
                   </select>
                 </div>
 
                 <div class="fr-col-6 fr-p-2v">
-                  <label class="fr-label" for="farmyard-max_attendees-${farmyard.id}">Nombre maximum de
-                    participants</label>
+                  <label class="fr-label" for="farmyard-walkable-${farmyard.id}">Accessible à pied</label>
+                  <select
+                    class="fr-input"
+                    id="farmyard-walkable-${farmyard.id}"
+                    name="farmyard-walkable-${farmyard.id}"
+                  >
+                    <option value="1">Oui</option>
+                    <option value="">Non</option>
+                  </select>
+                </div>
+
+                <div class="fr-col-6 fr-p-2v">
+                  <label class="fr-label" for="farmyard-max_attendees-${farmyard.id}"
+                    >Nombre maximum de participants</label
+                  >
                   <span class="fr-hint-text">1 classe équivaut ±30 élèves</span>
-                  <input class="fr-input" type="number" id="farmyard-max_attendees-${farmyard.id}"
-                    name="farmyard-max_attendees-${farmyard.id}" placeholder="ex: 30" />
+                  <input
+                    class="fr-input"
+                    type="number"
+                    id="farmyard-max_attendees-${farmyard.id}"
+                    name="farmyard-max_attendees-${farmyard.id}"
+                    placeholder="ex: 30"
+                    required
+                  />
                 </div>
 
                 <div class="fr-col-12 fr-p-2v">
-                  <label class="fr-label" for="farmyard_description_${farmyard.id}">Description</label>
-                  <textarea
-                    rows="8"
-                    class="fr-input"
-                    id="farmyard_description_${farmyard.id}"
-                    name="farmyard_description_${farmyard.id}"
-                  >
+                  <label class="fr-label" for="description">Description</label>
+                  <textarea rows="8" class="fr-input" id="description" name="description">
 Contexte forestier :
 Variétés plantées :
                   </textarea>
@@ -451,23 +422,43 @@ Variétés plantées :
             <div class="fr-grid-row fr-mt-n3w fr-mb-5w">
               <div class="fr-col-6 fr-p-2v">
                 <label class="fr-label" for="farmyard-contact_name-${farmyard.id}">Prénom/nom du référent</label>
-                <input class="fr-input" type="text" id="farmyard-contact_name-${farmyard.id}"
-                  name="farmyard-contact_name-${farmyard.id}" placeholder="ex: Jean Dupont" />
+                <input
+                  class="fr-input"
+                  type="text"
+                  id="farmyard-contact_name-${farmyard.id}"
+                  name="farmyard-contact_name-${farmyard.id}"
+                  placeholder="ex: Jean Dupont"
+                />
               </div>
               <div class="fr-col-6 fr-p-2v">
                 <label class="fr-label" for="farmyard-contact_position-${farmyard.id}">Fonction du contact</label>
-                <input class="fr-input" type="text" id="farmyard-contact_position-${farmyard.id}"
-                  name="farmyard-contact_position-${farmyard.id}" placeholder="ex: Propriétaire" />
+                <input
+                  class="fr-input"
+                  type="text"
+                  id="farmyard-contact_position-${farmyard.id}"
+                  name="farmyard-contact_position-${farmyard.id}"
+                  placeholder="ex: Propriétaire"
+                />
               </div>
               <div class="fr-col-6 fr-p-2v">
                 <label class="fr-label" for="farmyard-phone-${farmyard.id}">Numéro de téléphone</label>
-                <input class="fr-input" type="tel" id="farmyard-phone-${farmyard.id}"
-                  name="farmyard-phone-${farmyard.id}" placeholder="ex: 0612345678" />
+                <input
+                  class="fr-input"
+                  type="tel"
+                  id="farmyard-phone-${farmyard.id}"
+                  name="farmyard-phone-${farmyard.id}"
+                  placeholder="ex: 0612345678"
+                />
               </div>
               <div class="fr-col-6 fr-p-2v">
                 <label class="fr-label" for="farmyard-email-${farmyard.id}">Email</label>
-                <input class="fr-input" id="farmyard-email-${farmyard.id}" name="farmyard-email-${farmyard.id}"
-                  type="email" placeholder="m.gracia@onf-isere.fr" />
+                <input
+                  class="fr-input"
+                  id="farmyard-email-${farmyard.id}"
+                  name="farmyard-email-${farmyard.id}"
+                  type="email"
+                  placeholder="m.gracia@onf-isere.fr"
+                />
               </div>
             </div>
             <h4>Localisation</h4>
