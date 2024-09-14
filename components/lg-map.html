@@ -16,29 +16,32 @@
     const treeIcon = L.icon({ iconUrl: "/assets/images/tree-icon.png", iconSize: [20, 30], iconAnchor: [10, 30] })
     const circleOptions = { color: "#009900", fillOpacity: 0.5, radius: 2500 }
     pois.forEach((poi) => {
-      const provider = poi.provider || { user: {} }
-      const fullName = poi.contact_name || `${provider.user.first_name} ${provider.user.last_name}`
-      const role = poi.contact_position || provider.position
-      const phone = poi.phone || provider.phone
-      const email = poi.email || provider.user.email
-      // [poi.latitude, poi.longitude] est l'ancienne écriture -> à effacer si la carte/location est avérée sur Directus
-      const coordinates = poi.location?.coordinates?.reverse() || [poi.fakeLat, poi.fakeLong]
+      const provider = poi.provider || {}
+      const user = provider.user || {}
+      const fullName = poi.contact_name || `${user.first_name || ""} ${user.last_name || ""}`.trim()
+      const role = poi.contact_position || provider.position || ""
+      const phone = poi.phone || provider.phone || ""
+      const email = poi.email || user.email || ""
+
+      // Gestion des valeurs nulles pour les coordonnées
+      let coordinates
+      if (poi.location && poi.location.coordinates && poi.location.coordinates.length === 2) {
+        coordinates = poi.location.coordinates.reverse()
+      } else if (poi.fakeLat && poi.fakeLong) {
+        coordinates = [poi.fakeLat, poi.fakeLong]
+      } else {
+        console.warn(`Invalid coordinates for POI: ${poi.id}`)
+        return // Passer au prochain POI
+      }
+
       const unavailable = poi.availability !== "disponible"
       let unavailabilityTitle = ""
       let unavailabilityBody = ""
-      if (poi.availability === "reserve") {
-        unavailabilityTitle = "Ce chantier est déjà réservé par une classe."
-        unavailabilityBody =
-          "Si vous souhaitez participer à une plantation pédagogique dans ce secteur, vous pouvez remplir le formulaire ci-dessous."
-      }
-      if (poi.availability === "realise") {
-        unavailabilityTitle = "Ce chantier est déjà réalisé par une classe."
-        unavailabilityBody =
-          "Si vous souhaitez participer à une plantation pédagogique dans ce secteur, vous pouvez remplir le formulaire ci-dessous."
-      }
-      L.circle(coordinates, circleOptions)
-        .bindPopup(
-          `
+
+      if (coordinates) {
+        L.circle(coordinates, circleOptions)
+          .bindPopup(
+            `
         ${
           poi.logo?.id
             ? '<img src="https://admin.1jeune1arbre.fr/assets/' + poi.logo.id + '?key=system-small-contain">'
@@ -71,8 +74,9 @@
           }
         </article>
       `
-        )
-        .addTo(map)
+          )
+          .addTo(map)
+      }
     })
   }
 </script>
