@@ -16,16 +16,13 @@
     const treeIcon = L.icon({ iconUrl: "/assets/images/tree-icon.png", iconSize: [20, 30], iconAnchor: [10, 30] })
     const circleOptions = { color: "#009900", fillOpacity: 0.5, radius: 2500 }
     pois.forEach((poi) => {
-      const provider = poi.provider || {}
-      const user = provider.user || {}
-      const fullName = (poi.contact_name || `${user.first_name || ""} ${user.last_name || ""}`).trim()
-      const role = poi.contact_position || provider.position || ""
-      const phone = poi.phone || provider.phone || ""
-      const email = poi.email || user.email || ""
-
-      // Gestion des valeurs nulles pour les coordonnées
+      const provider = poi.provider || { user: {} }
+      const fullName = poi.contact_name || `${provider.user.first_name} ${provider.user.last_name}`
+      const role = poi.contact_position || provider.position
+      const phone = poi.phone || provider.phone
+      const email = poi.email || provider.user.email
+      // [poi.latitude, poi.longitude] est l'ancienne écriture -> à effacer si la carte/location est avérée sur Directus
       const coordinates = [poi.fakeLat, poi.fakeLong]
-
       const unavailable = poi.availability !== "disponible"
       let unavailabilityTitle = ""
       let unavailabilityBody = ""
