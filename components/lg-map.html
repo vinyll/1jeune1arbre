@@ -18,7 +18,7 @@
     pois.forEach((poi) => {
       const provider = poi.provider || {}
       const user = provider.user || {}
-      const fullName = poi.contact_name || `${user.first_name || ""} ${user.last_name || ""}`.trim()
+      const fullName = (poi.contact_name || `${user.first_name || ""} ${user.last_name || ""}`).trim()
       const role = poi.contact_position || provider.position || ""
       const phone = poi.phone || provider.phone || ""
       const email = poi.email || user.email || ""
