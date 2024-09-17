@@ -118,7 +118,7 @@
         last_name,
         email,
         password,
-        role: "ac01b48e-8c16-4c1e-aa63-9a11e98543cd",
+        role: "814b2e47-9e90-4fe0-8a64-1d9db35b8619",
         status: "inactive"
       }
 
@@ -206,42 +206,68 @@
         <form class="fr-grid-row" @submit="saveForm">
           <div class="fr-col-6 fr-p-3v">
             <label class="fr-label" for="provider_organisation">Organisation</label>
-            <select
-              class="fr-input"
-              id="provider_organisation"
-              name="provider_organisation"
-              required
-            >
-              <option :for="organisation in state.organisations" value="${ organisation.id }">${ organisation.name }</option>
+            <select class="fr-input" id="provider_organisation" name="provider_organisation" required>
+              <option :for="organisation in state.organisations" value="${ organisation.id }">
+                ${ organisation.name }
+              </option>
             </select>
           </div>
           <div class="fr-col-6">
             <div>
               <label class="fr-label" for="provider_firstname">Autre organisation</label>
               <span class="fr-hint-text">Votre organisation n'est pas listée ? Mentionnez-la ici</span>
-              <input class="fr-input" type="text" id="provider_organisation_other" name="provider_organisation_other" placeholder="ex: Association des Bois Sauvages" />
+              <input
+                class="fr-input"
+                type="text"
+                id="provider_organisation_other"
+                name="provider_organisation_other"
+                placeholder="ex: Association des Bois Sauvages"
+              />
             </div>
-          
           </div>
           <div class="fr-col-6 fr-p-2v">
             <label class="fr-label" for="provider_firstname">Votre prénom</label>
-            <input class="fr-input" type="text" id="provider_firstname" name="provider_firstname" placeholder="ex: Jean"
-              required />
+            <input
+              class="fr-input"
+              type="text"
+              id="provider_firstname"
+              name="provider_firstname"
+              placeholder="ex: Jean"
+              required
+            />
           </div>
           <div class="fr-col-6 fr-p-2v">
             <label class="fr-label" for="provider_lastname">Votre nom</label>
-            <input class="fr-input" type="text" id="provider_lastname" name="provider_lastname" placeholder="ex: Dupont"
-              required />
+            <input
+              class="fr-input"
+              type="text"
+              id="provider_lastname"
+              name="provider_lastname"
+              placeholder="ex: Dupont"
+              required
+            />
           </div>
           <div class="fr-col-6 fr-p-2v">
             <label class="fr-label" for="provider_position">Votre fonction</label>
-            <input class="fr-input" type="text" id="provider_position" name="provider_position"
-              placeholder="ex: directeur, animateur, gérant, secrétaire…" required />
+            <input
+              class="fr-input"
+              type="text"
+              id="provider_position"
+              name="provider_position"
+              placeholder="ex: directeur, animateur, gérant, secrétaire…"
+              required
+            />
           </div>
           <div class="fr-col-6 fr-p-2v">
             <label class="fr-label" for="provider_email">Votre adresse email</label>
-            <input class="fr-input" type="email" id="provider_email" name="provider_email" placeholder="j.dupont@onf.fr"
-              required />
+            <input
+              class="fr-input"
+              type="email"
+              id="provider_email"
+              name="provider_email"
+              placeholder="j.dupont@onf.fr"
+              required
+            />
           </div>
 
           <!-- <div class="fr-col-6 fr-p-2v">
@@ -269,8 +295,14 @@
           </div>-->
           <div class="fr-col-6 fr-p-2v">
             <label class="fr-label" for="provider_phone">Votre numéro de téléphone</label>
-            <input class="fr-input" type="tel" id="provider_phone" name="provider_phone" placeholder="ex: 0612345678"
-              required />
+            <input
+              class="fr-input"
+              type="tel"
+              id="provider_phone"
+              name="provider_phone"
+              placeholder="ex: 0612345678"
+              required
+            />
           </div>
 
           <!--
@@ -299,10 +331,17 @@
           </div>
  -->
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="provider_departments">Les départements dans lesquels vous pouvez
-              intervenir</label>
-            <input class="fr-input" type="text" id="provider_departments" name="provider_departments" required
-              placeholder="ex: 06, 13" />
+            <label class="fr-label" for="provider_departments"
+              >Les départements dans lesquels vous pouvez intervenir</label
+            >
+            <input
+              class="fr-input"
+              type="text"
+              id="provider_departments"
+              name="provider_departments"
+              required
+              placeholder="ex: 06, 13"
+            />
           </div>
 
           <h2 class="fr-mt-7w">Vos chantiers pédagogiques</h2>
@@ -311,8 +350,14 @@
           <section :for="farmyard in state.farmyards" class="fr-col-12 fr-p-2v">
             <div class="fr-grid-row fr-grid-row--top">
               <h3>Chantier ${ (state.farmyards.indexOf(farmyard) + 1).toString() }</h3>
-              <button class="fr-btn fr-btn--tertiary-no-outline" style="color: red" type="button"
-                @click="removeFarmyard" id="${farmyard.id}" :if="state.farmyards.length !== 1">
+              <button
+                class="fr-btn fr-btn--tertiary-no-outline"
+                style="color: red"
+                type="button"
+                @click="removeFarmyard"
+                id="${farmyard.id}"
+                :if="state.farmyards.length !== 1"
+              >
                 Supprimer ce chantier
               </button>
             </div>
@@ -321,13 +366,23 @@
               <div class="fr-grid-row fr-mt-n3w fr-mb-5w">
                 <div class="fr-col-6 fr-p-2v">
                   <label class="fr-label" for="farmyard_title_${farmyard.id}">Nom du chantier</label>
-                  <input class="fr-input" type="text" id="farmyard_title_${farmyard.id}"
-                    name="farmyard_title_${farmyard.id}" placeholder="ex: Chantier de reboisement" required />
+                  <input
+                    class="fr-input"
+                    type="text"
+                    id="farmyard_title_${farmyard.id}"
+                    name="farmyard_title_${farmyard.id}"
+                    placeholder="ex: Chantier de reboisement"
+                    required
+                  />
                 </div>
                 <div class="fr-col-6 fr-p-2v">
                   <label class="fr-label" for="farmyard_category_${farmyard.id}">Environnement</label>
-                  <select class="fr-input" id="farmyard_category_${farmyard.id}" name="farmyard_category_${farmyard.id}"
-                    required>
+                  <select
+                    class="fr-input"
+                    id="farmyard_category_${farmyard.id}"
+                    name="farmyard_category_${farmyard.id}"
+                    required
+                  >
                     <option value="forestier">Forestier</option>
                     <option value="agricole">Haie agricole</option>
                     <option value="communal">Arbres en ville</option>
@@ -337,19 +392,30 @@
 
                 <div class="fr-col-6 fr-p-2v">
                   <label class="fr-label" for="farmyard_start_date_${farmyard.id}">Disponible du…</label>
-                  <input class="fr-input" type="date" id="farmyard_start_date_${farmyard.id}"
-                    name="farmyard_start_date_${farmyard.id}" />
+                  <input
+                    class="fr-input"
+                    type="date"
+                    id="farmyard_start_date_${farmyard.id}"
+                    name="farmyard_start_date_${farmyard.id}"
+                  />
                 </div>
                 <div class="fr-col-6 fr-p-2v">
                   <label class="fr-label" for="farmyard_end_date_${farmyard.id}">…au</label>
-                  <input class="fr-input" type="date" id="farmyard_end_date_${farmyard.id}"
-                    name="farmyard_end_date_${farmyard.id}" />
+                  <input
+                    class="fr-input"
+                    type="date"
+                    id="farmyard_end_date_${farmyard.id}"
+                    name="farmyard_end_date_${farmyard.id}"
+                  />
                 </div>
 
                 <div class="fr-col-6 fr-p-2v">
                   <label class="fr-label" for="farmyard_bus_parking_${farmyard.id}">Accessible en bus</label>
-                  <select class="fr-input" id="farmyard_bus_parking_${farmyard.id}"
-                    name="farmyard_bus_parking_${farmyard.id}">
+                  <select
+                    class="fr-input"
+                    id="farmyard_bus_parking_${farmyard.id}"
+                    name="farmyard_bus_parking_${farmyard.id}"
+                  >
                     <option value="1">Oui</option>
                     <option value="">Non</option>
                   </select>
@@ -357,68 +423,112 @@
 
                 <div class="fr-col-6 fr-p-2v">
                   <label class="fr-label" for="farmyard_walkable_${farmyard.id}">Accessible à pied</label>
-                  <select class="fr-input" id="farmyard_walkable_${farmyard.id}"
-                    name="farmyard_walkable_${farmyard.id}">
+                  <select
+                    class="fr-input"
+                    id="farmyard_walkable_${farmyard.id}"
+                    name="farmyard_walkable_${farmyard.id}"
+                  >
                     <option value="1">Oui</option>
                     <option value="">Non</option>
                   </select>
                 </div>
 
                 <div class="fr-col-6 fr-p-2v">
-                  <label class="fr-label" for="farmyard_max_attendees_${farmyard.id}">Nombre maximum de
-                    participants</label>
+                  <label class="fr-label" for="farmyard_max_attendees_${farmyard.id}"
+                    >Nombre maximum de participants</label
+                  >
                   <span class="fr-hint-text">1 classe équivaut ±30 élèves</span>
-                  <input class="fr-input" type="number" id="farmyard-max_attendees-${farmyard.id}"
-                    name="farmyard-max_attendees-${farmyard.id}" placeholder="ex: 30" required />
+                  <input
+                    class="fr-input"
+                    type="number"
+                    id="farmyard-max_attendees-${farmyard.id}"
+                    name="farmyard-max_attendees-${farmyard.id}"
+                    placeholder="ex: 30"
+                    required
+                  />
                 </div>
 
                 <div class="fr-col-12 fr-p-2v">
-                  <label class="fr-label" for="description">Description</label>
-                  <textarea rows="8" class="fr-input" id="description" name="description">
-Contexte forestier : 
-Variétés plantées : 
+                  <label class="fr-label" for="farmyard_description_${farmyard.id}">Description</label>
+                  <textarea
+                    rows="8"
+                    class="fr-input"
+                    id="farmyard_description_${farmyard.id}"
+                    name="farmyard_description_${farmyard.id}"
+                  >
+Contexte forestier :
+Variétés plantées :
                   </textarea>
                 </div>
               </div>
             </div>
 
             <h4>Contact pour ce chantier</h4>
-            <p>Renseignez ces champs si une autre personne que vous est à contacter.<br/>
-            Ils <strong>ne seront pas</strong> rendus publics sur la plateforme</p>
+            <p>
+              Renseignez ces champs si une autre personne que vous est à contacter.<br />
+              Ils <strong>ne seront pas</strong> rendus publics sur la plateforme
+            </p>
             <div class="fr-grid-row fr-mt-n3w fr-mb-5w">
               <div class="fr-col-6 fr-p-2v">
                 <label class="fr-label" for="farmyard_contact_name_${farmyard.id}">Prénom/nom du référent</label>
-                <input class="fr-input" type="text" id="farmyard_contact_name_${farmyard.id}"
-                  name="farmyard_contact_name_${farmyard.id}" placeholder="ex: Jean Dupont" />
+                <input
+                  class="fr-input"
+                  type="text"
+                  id="farmyard_contact_name_${farmyard.id}"
+                  name="farmyard_contact_name_${farmyard.id}"
+                  placeholder="ex: Jean Dupont"
+                />
               </div>
               <div class="fr-col-6 fr-p-2v">
                 <label class="fr-label" for="farmyard_contact_position_${farmyard.id}">Fonction du contact</label>
-                <input class="fr-input" type="text" id="farmyard_contact_position_${farmyard.id}"
-                  name="farmyard_contact_position_${farmyard.id}" placeholder="ex: Propriétaire" />
+                <input
+                  class="fr-input"
+                  type="text"
+                  id="farmyard_contact_position_${farmyard.id}"
+                  name="farmyard_contact_position_${farmyard.id}"
+                  placeholder="ex: Propriétaire"
+                />
               </div>
               <div class="fr-col-6 fr-p-2v">
                 <label class="fr-label" for="farmyard_phone_${farmyard.id}">Numéro de téléphone</label>
-                <input class="fr-input" type="tel" id="farmyard_phone_${farmyard.id}"
-                  name="farmyard_phone_${farmyard.id}" placeholder="ex: 0612345678" />
+                <input
+                  class="fr-input"
+                  type="tel"
+                  id="farmyard_phone_${farmyard.id}"
+                  name="farmyard_phone_${farmyard.id}"
+                  placeholder="ex: 0612345678"
+                />
               </div>
               <div class="fr-col-6 fr-p-2v">
                 <label class="fr-label" for="farmyard_email_${farmyard.id}">Email</label>
-                <input class="fr-input" id="farmyard_email_${farmyard.id}" name="farmyard_email_${farmyard.id}"
-                  type="email" placeholder="m.gracia@onf-isere.fr" />
+                <input
+                  class="fr-input"
+                  id="farmyard_email_${farmyard.id}"
+                  name="farmyard_email_${farmyard.id}"
+                  type="email"
+                  placeholder="m.gracia@onf-isere.fr"
+                />
               </div>
             </div>
             <h4>Localisation</h4>
             <div class="fr-grid-row fr-mt-n3w fr-mb-5w">
               <div class="fr-col-12 fr-p-2v">
-                <label class="fr-label" for="map_{{ farmyard.id }}">Cliquez directement sur le lieu de votre
-                  chantier</label>
+                <label class="fr-label" for="map_{{ farmyard.id }}"
+                  >Cliquez directement sur le lieu de votre chantier</label
+                >
                 <div :id="'map_' + farmyard.id" style="height: 600px; width: 100%"></div>
               </div>
             </div>
-            <button type="button" class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-add-line" @click="addFarmyard">Ajouter un chantier</button>
+            <button
+              type="button"
+              class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-add-line"
+              @click="addFarmyard"
+            >
+              Ajouter un chantier
+            </button>
           </section>
 
-          <hr>
+          <hr />
 
           <ul class="fr-btns-group">
             <li>
