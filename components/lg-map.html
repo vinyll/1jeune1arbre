@@ -36,9 +36,11 @@
         unavailabilityBody =
           "Si vous souhaitez participer à une plantation pédagogique dans ce secteur, vous pouvez remplir le formulaire ci-dessous."
       }
-      L.circle(coordinates, circleOptions)
-        .bindPopup(
-          `
+
+      if (coordinates) {
+        L.circle(coordinates, circleOptions)
+          .bindPopup(
+            `
         ${
           poi.logo?.id
             ? '<img src="https://admin.1jeune1arbre.fr/assets/' + poi.logo.id + '?key=system-small-contain">'
@@ -71,8 +73,9 @@
           }
         </article>
       `
-        )
-        .addTo(map)
+          )
+          .addTo(map)
+      }
     })
   }
 </script>
