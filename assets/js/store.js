@@ -52,21 +52,7 @@ const actions = {
   },
 
   async loadPartners() {
-    const response = await api.query(gql`
-      {
-        yard_providers {
-          id
-          title
-          logo {
-            id
-          }
-          website
-          phone
-        }
-      }
-    `)
-    this.state.partners = response.data.yard_providers
-    return this.state.partners
+    return this.actions.loadOrganisations()
   },
 
   async loadYardProvider(id) {
