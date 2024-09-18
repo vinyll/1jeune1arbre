@@ -33,65 +33,44 @@
           acc[input.name] = input.value
           return acc
         }, {})
-      const updatedFarmyards = {}
 
       // Organisation pour le body
-      const farmyardData = Object.keys(formValues)
-        .filter((key) => key.startsWith("farmyard-"))
-        .reduce(
-          (obj, key) => {
-            const [group, prop] = key.split("-")
-            obj[group][prop] = formValues[key]
-            return obj
-          },
-          { farmyard: {}, provider: {}, user: {} }
-        )
-
-      const completeFarmyards = []
-      state.farmyards.forEach((yard) => {
-        const newInfo = updatedFarmyards[yard.id]
-        completeFarmyards.push({
-          ...newInfo,
-          ...yard
-        })
-      })
-
-      // post
-      const {
-        // infos pourvoyeur
-        provider_organisation: organisation,
-        provider_departments: departments_list,
-        provider_position: position,
-        provider_phone: phone,
-        user_password: password,
-        provider_email: email,
-        provider_firstname: first_name,
-        provider_lastname: last_name
-      } = formValues
-
-      const userInfo = {
+      const acceptedPrefixes = ["farmyard", "provider"]
+      const farmyardData = Object.keys(formValues).reduce(
+        (acc, key) => {
+          const [group, prop, id] = key.split("-")
+          if (group === "farmyard") {
+            if (!acc.farmyards.find((f) => f.id === id)) {
+              acc.farmyards.push({ id, [prop]: formValues[key] })
+            } else {
+              const farmyard = acc.farmyards.find((f) => f.id === id)
+              if (prop === "location") {
+                farmyard[prop] = { type: "Point", coordinates: JSON.parse(formValues[key]) }
+              } else {
+                farmyard[prop] = formValues[key]
+              }
+            }
+          } else if (group === "provider") {
+            acc[group][prop] = formValues[key]
+          }
+          return acc
+        },
+        { provider: {}, farmyards: [] }
+      )
+      const { first_name, last_name, email, phone } = farmyardData.provider
+      const user = {
         first_name,
         last_name,
         email,
-        password,
+        phone,
         role: "814b2e47-9e90-4fe0-8a64-1d9db35b8619",
-        status: "inactive"
+        status: "Unverified"
       }
 
-      const body = {
-        // infos pourvoyeur
-        farmyards: completeFarmyards,
-        // - infos
-        organisation: Number(organisation),
-        departments_list,
-        // - contact (er le pourvoyeur)
-        position,
-        phone
-      }
-
-      const { wasYardProviderUploaded, id } = await store.actions.saveYardProvider(body)
+      // post
+      const { wasYardProviderUploaded, id } = await store.actions.saveYardProvider(farmyardData)
       if (wasYardProviderUploaded) {
-        const wasUserCreated = await store.actions.saveProviderUser(userInfo, id)
+        const wasUserCreated = await store.actions.saveProviderUser(user, id)
         if (wasUserCreated) {
           state.isSuccessful = true
           this.render({ ...state, isSuccessful: true })
@@ -126,6 +105,9 @@
             // Creation marker
             marker = L.marker(latlng).addTo(map)
           }
+
+          const hiddenInput = document.getElementById(`farmyard-location-${farmyardId}`)
+          hiddenInput.value = JSON.stringify([lng, lat])
         })
 
         return map //TODO: pas besoin?
@@ -161,8 +143,8 @@
         <p>Ces informations <strong>ne seront pas</strong> rendues publiques sur la plateforme 1Jeune1Arbre</p>
         <form class="fr-grid-row" @submit="saveForm">
           <div class="fr-col-6 fr-p-3v">
-            <label class="fr-label" for="provider_organisation">Organisation</label>
-            <select class="fr-input" id="provider_organisation" name="provider_organisation" required>
+            <label class="fr-label" for="provider-organisation">Organisation</label>
+            <select class="fr-input" id="provider-organisation" name="provider-organisation" required>
               <option :for="organisation in state.organisations" value="${ organisation.id }">
                 ${ organisation.name }
               </option>
@@ -170,57 +152,57 @@
           </div>
           <div class="fr-col-6">
             <div>
-              <label class="fr-label" for="provider_firstname">Autre organisation</label>
+              <label class="fr-label" for="provider-title">Autre organisation</label>
               <span class="fr-hint-text">Votre organisation n'est pas listée ? Mentionnez-la ici</span>
               <input
                 class="fr-input"
                 type="text"
-                id="provider_organisation_other"
-                name="provider_organisation_other"
+                id="provider-title"
+                name="provider-title"
                 placeholder="ex: Association des Bois Sauvages"
               />
             </div>
           </div>
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="provider_firstname">Votre prénom</label>
+            <label class="fr-label" for="provider-first_name">Votre prénom</label>
             <input
               class="fr-input"
               type="text"
-              id="provider_firstname"
-              name="provider_firstname"
+              id="provider-first_name"
+              name="provider-first_name"
               placeholder="ex: Jean"
               required
             />
           </div>
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="provider_lastname">Votre nom</label>
+            <label class="fr-label" for="provider-last_name">Votre nom</label>
             <input
               class="fr-input"
               type="text"
-              id="provider_lastname"
-              name="provider_lastname"
+              id="provider-last_name"
+              name="provider-last_name"
               placeholder="ex: Dupont"
               required
             />
           </div>
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="provider_position">Votre fonction</label>
+            <label class="fr-label" for="provider-position">Votre fonction</label>
             <input
               class="fr-input"
               type="text"
-              id="provider_position"
-              name="provider_position"
+              id="provider-position"
+              name="provider-position"
               placeholder="ex: directeur, animateur, gérant, secrétaire…"
               required
             />
           </div>
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="provider_email">Votre adresse email</label>
+            <label class="fr-label" for="provider-email">Votre adresse email</label>
             <input
               class="fr-input"
               type="email"
-              id="provider_email"
-              name="provider_email"
+              id="provider-email"
+              name="provider-email"
               placeholder="j.dupont@onf.fr"
               required
             />
@@ -250,12 +232,12 @@
             />
           </div>-->
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="provider_phone">Votre numéro de téléphone</label>
+            <label class="fr-label" for="provider-phone">Votre numéro de téléphone</label>
             <input
               class="fr-input"
               type="tel"
-              id="provider_phone"
-              name="provider_phone"
+              id="provider-phone"
+              name="provider-phone"
               placeholder="ex: 0612345678"
               required
             />
@@ -287,14 +269,14 @@
           </div>
  -->
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="provider_departments"
+            <label class="fr-label" for="provider-departments_list"
               >Les départements dans lesquels vous pouvez intervenir</label
             >
             <input
               class="fr-input"
               type="text"
-              id="provider_departments"
-              name="provider_departments"
+              id="provider-departments_list"
+              name="provider-departments_list"
               required
               placeholder="ex: 06, 13"
             />
@@ -372,8 +354,8 @@
                     id="farmyard-bus_parking-${farmyard.id}"
                     name="farmyard-bus_parking-${farmyard.id}"
                   >
-                    <option value="1">Oui</option>
-                    <option value="">Non</option>
+                    <option value="true">Oui</option>
+                    <option value="false">Non</option>
                   </select>
                 </div>
 
@@ -384,8 +366,8 @@
                     id="farmyard-walkable-${farmyard.id}"
                     name="farmyard-walkable-${farmyard.id}"
                   >
-                    <option value="1">Oui</option>
-                    <option value="">Non</option>
+                    <option value="true">Oui</option>
+                    <option value="false">Non</option>
                   </select>
                 </div>
 
@@ -405,8 +387,13 @@
                 </div>
 
                 <div class="fr-col-12 fr-p-2v">
-                  <label class="fr-label" for="description">Description</label>
-                  <textarea rows="8" class="fr-input" id="description" name="description">
+                  <label class="fr-label" for="farmyard-description-${farmyard.id}">Description</label>
+                  <textarea
+                    rows="8"
+                    class="fr-input"
+                    id="farmyard-description-${farmyard.id}"
+                    name="farmyard-description-${farmyard.id}"
+                  >
 Contexte forestier :
 Variétés plantées :
                   </textarea>
@@ -468,6 +455,11 @@ Variétés plantées :
                   >Cliquez directement sur le lieu de votre chantier</label
                 >
                 <div :id="'map_' + farmyard.id" style="height: 600px; width: 100%"></div>
+                <input
+                  type="hidden"
+                  :id="'farmyard-location-' + farmyard.id"
+                  :name="'farmyard-location-' + farmyard.id"
+                />
               </div>
             </div>
             <button
