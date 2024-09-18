@@ -162,27 +162,16 @@
         <form class="fr-grid-row" @submit="saveForm">
           <div class="fr-col-6 fr-p-3v">
             <label class="fr-label" for="provider_organisation">Organisation</label>
-<<<<<<< HEAD
             <select class="fr-input" id="provider_organisation" name="provider_organisation" required>
               <option :for="organisation in state.organisations" value="${ organisation.id }">
                 ${ organisation.name }
               </option>
-=======
-            <select
-              class="fr-input"
-              id="provider_organisation"
-              name="provider_organisation"
-              required
-            >
-              <option :for="organisation in state.organisations" value="${ organisation.id }">${ organisation.name }</option>
->>>>>>> ab73136 (Un pourvoyeur peut mentionner son organisme de rattachement)
             </select>
           </div>
           <div class="fr-col-6">
             <div>
               <label class="fr-label" for="provider_firstname">Autre organisation</label>
               <span class="fr-hint-text">Votre organisation n'est pas listée ? Mentionnez-la ici</span>
-<<<<<<< HEAD
               <input
                 class="fr-input"
                 type="text"
@@ -191,11 +180,6 @@
                 placeholder="ex: Association des Bois Sauvages"
               />
             </div>
-=======
-              <input class="fr-input" type="text" id="provider_organisation_other" name="provider_organisation_other" placeholder="ex: Association des Bois Sauvages" />
-            </div>
-          
->>>>>>> ab73136 (Un pourvoyeur peut mentionner son organisme de rattachement)
           </div>
           <div class="fr-col-6 fr-p-2v">
             <label class="fr-label" for="provider_firstname">Votre prénom</label>
