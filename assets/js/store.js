@@ -174,7 +174,7 @@ const actions = {
 
       try {
         delete yard.id
-        console.log("yard:", JSON.stringify(yard))
+
         const response = await fetch(url, {
           headers,
           method: "POST",
