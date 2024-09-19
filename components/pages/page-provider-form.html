@@ -8,7 +8,8 @@
   const state = {
     farmyards: [{ id: initialFarmyardId }],
     organisations: [],
-    isSuccessful: false
+    isSuccessful: false,
+    selectedOrg: ""
   }
   const methods = {
     addFarmyard(event) {
@@ -176,6 +177,11 @@
       } else {
         console.error(`Map container with id "${mapId}" not found.`)
       }
+    },
+    updateSelectedOrg(event) {
+      const selectedValue = event.target.value
+      this.state.selectedOrg = selectedValue
+      this.render()
     }
     /* TODO: implémenter
     verifyPasswordConfirmation(password,passwordConfirmation) {
@@ -206,13 +212,20 @@
         <form class="fr-grid-row" @submit="saveForm">
           <div class="fr-col-6 fr-p-3v">
             <label class="fr-label" for="provider_organisation">Organisation</label>
-            <select class="fr-input" id="provider_organisation" name="provider_organisation" required>
+            <select
+              class="fr-input"
+              id="provider_organisation"
+              name="provider_organisation"
+              @change="updateSelectedOrg"
+              required
+            >
               <option :for="organisation in state.organisations" value="${ organisation.id }">
                 ${ organisation.name }
               </option>
+              <option value="">Autre</option>
             </select>
           </div>
-          <div class="fr-col-6">
+          <div class="fr-col-6" :if="state.selectedOrg === ''">
             <div>
               <label class="fr-label" for="provider_firstname">Autre organisation</label>
               <span class="fr-hint-text">Votre organisation n'est pas listée ? Mentionnez-la ici</span>
