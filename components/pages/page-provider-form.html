@@ -8,7 +8,8 @@
   const state = {
     farmyards: [{ id: initialFarmyardId }],
     organisations: [],
-    isSuccessful: false
+    isSuccessful: null,
+    isCoolingDown: false
   }
   const methods = {
     addFarmyard(event) {
@@ -27,6 +28,14 @@
     },
     async saveForm(event) {
       event.preventDefault()
+      if (state.isCoolingDown) return
+      setTimeout(() => {
+        state.isCoolingDown = false
+        this.render({ ...state, isCoolingDown: false })
+      }, 5000)
+      state.isCoolingDown = true
+      this.render({ ...state, isCoolingDown: true })
+
       const formValues = Array.from(event.target.elements)
         .filter((input) => input.name)
         .reduce((acc, input) => {
@@ -134,12 +143,20 @@
       }
 
       const { wasYardProviderUploaded, id } = await store.actions.saveYardProvider(body)
+      let wasUserCreated
       if (wasYardProviderUploaded) {
-        const wasUserCreated = await store.actions.saveProviderUser(userInfo, id)
+        wasUserCreated = await store.actions.saveProviderUser(userInfo, id)
         if (wasUserCreated) {
           state.isSuccessful = true
-          this.render({ ...state, isSuccessful: true })
+          state.isCoolingDown = false
+          this.render({ ...state, isSuccessful: true, isCoolingDown: false })
+        } else {
+          state.isSuccessful = false
+          this.render({ isSuccessful: false })
         }
+      } else {
+        state.isSuccessful = false
+        this.render({ isSuccessful: false })
       }
     },
     initMap(farmyardId) {
@@ -534,9 +551,13 @@ Variétés plantées :
             <li>
               <button type="submit" class="fr-btn">Enregistrer mon profil et mes chantiers</button>
             </li>
-            <div :if="state.isSuccessful" class="fr-alert fr-alert--success">
+            <div :if="state.isSuccessful === true" class="fr-alert fr-alert--success">
               <h3 class="fr-alert__title">Enregistrement terminé</h3>
               <p>Nous validons vos informations qui seront publiées très prochainement.</p>
+            </div>
+            <div :if="state.isSuccessful === false " class="fr-alert fr-alert--error">
+              <h3 class="fr-alert__title">Problème d'enregistrement</h3>
+              <p>Il y a eu un souci lors de l'enregistrement de vos données.</p>
             </div>
           </ul>
         </form>

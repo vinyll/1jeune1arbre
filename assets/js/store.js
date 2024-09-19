@@ -183,12 +183,14 @@ const actions = {
 
         if (!response.ok) {
           console.log(response)
-          throw new Error("Network response was not ok " + response.statusText)
+          console.error("Network response was not ok " + response.statusText)
+          return { wasYardProviderUploaded: false }
         }
 
         const data = await response.json()
         if (!data) {
-          throw new Error("Unable to create yard")
+          console.error("Unable to create yard")
+          return { wasYardProviderUploaded: false }
         }
 
         farmyardIds.push(data.data.id)
@@ -253,12 +255,14 @@ const actions = {
 
       if (!response.ok) {
         console.log(response)
-        throw new Error("Network response was not ok " + response.statusText)
+        console.error("Network response was not ok " + response.statusText)
+        return false
       }
       return true
       // l'endpoint ne renvoit aucune donnée de création
     } catch (error) {
       console.error(error)
+      return false
     }
   }
 }
