@@ -9,7 +9,7 @@
     farmyards: [{ id: initialFarmyardId }],
     organisations: [],
     isSuccessful: false,
-    selectedOrg: null
+    selectedOrg: null,
   }
   const methods = {
     addFarmyard(event) {
@@ -97,7 +97,7 @@
         const newInfo = updatedFarmyards[yard.id]
         completeFarmyards.push({
           ...newInfo,
-          ...yard
+          ...yard,
         })
       })
 
@@ -112,7 +112,7 @@
         provider_email: email,
         provider_firstname: first_name,
         provider_lastname: last_name,
-        provider_title: title
+        provider_title: title,
       } = formValues
 
       const userInfo = {
@@ -121,7 +121,7 @@
         email,
         password,
         role: "814b2e47-9e90-4fe0-8a64-1d9db35b8619",
-        status: "inactive"
+        status: "inactive",
       }
 
       const body = {
@@ -133,7 +133,7 @@
         // - contact (er le pourvoyeur)
         position,
         phone,
-        title
+        title,
       }
 
       const { wasYardProviderUploaded, id } = await store.actions.saveYardProvider(body)
@@ -154,7 +154,7 @@
 
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
           maxZoom: 19,
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         }).addTo(map)
 
         var marker = null
@@ -164,7 +164,7 @@
           const farmyard = state.farmyards.find((yard) => yard.id === farmyardId)
           farmyard.location = {
             type: "Point",
-            coordinates: [lng, lat]
+            coordinates: [lng, lat],
           }
 
           if (marker) {
@@ -184,7 +184,7 @@
       const selectedValue = event.target.value
       this.state.selectedOrg = selectedValue === "autre" ? null : selectedValue
       this.render()
-    }
+    },
     /* TODO: implémenter
     verifyPasswordConfirmation(password,passwordConfirmation) {
         return
