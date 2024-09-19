@@ -8,7 +8,8 @@
   const state = {
     farmyards: [{ id: initialFarmyardId }],
     organisations: [],
-    isSuccessful: false
+    isSuccessful: false,
+    selectedOrg: null,
   }
   const methods = {
     addFarmyard(event) {
@@ -96,7 +97,7 @@
         const newInfo = updatedFarmyards[yard.id]
         completeFarmyards.push({
           ...newInfo,
-          ...yard
+          ...yard,
         })
       })
 
@@ -110,7 +111,8 @@
         user_password: password,
         provider_email: email,
         provider_firstname: first_name,
-        provider_lastname: last_name
+        provider_lastname: last_name,
+        provider_title: title,
       } = formValues
 
       const userInfo = {
@@ -119,7 +121,7 @@
         email,
         password,
         role: "814b2e47-9e90-4fe0-8a64-1d9db35b8619",
-        status: "inactive"
+        status: "inactive",
       }
 
       const body = {
@@ -130,7 +132,8 @@
         departments_list,
         // - contact (er le pourvoyeur)
         position,
-        phone
+        phone,
+        title,
       }
 
       const { wasYardProviderUploaded, id } = await store.actions.saveYardProvider(body)
@@ -151,7 +154,7 @@
 
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
           maxZoom: 19,
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         }).addTo(map)
 
         var marker = null
@@ -161,7 +164,7 @@
           const farmyard = state.farmyards.find((yard) => yard.id === farmyardId)
           farmyard.location = {
             type: "Point",
-            coordinates: [lng, lat]
+            coordinates: [lng, lat],
           }
 
           if (marker) {
@@ -176,7 +179,12 @@
       } else {
         console.error(`Map container with id "${mapId}" not found.`)
       }
-    }
+    },
+    updateSelectedOrg(event) {
+      const selectedValue = event.target.value
+      this.state.selectedOrg = selectedValue === "autre" ? null : selectedValue
+      this.render()
+    },
     /* TODO: implémenter
     verifyPasswordConfirmation(password,passwordConfirmation) {
         return
@@ -206,21 +214,28 @@
         <form class="fr-grid-row" @submit="saveForm">
           <div class="fr-col-6 fr-p-3v">
             <label class="fr-label" for="provider_organisation">Organisation</label>
-            <select class="fr-input" id="provider_organisation" name="provider_organisation" required>
+            <select
+              class="fr-input"
+              id="provider_organisation"
+              name="provider_organisation"
+              @change="updateSelectedOrg"
+              required
+            >
               <option :for="organisation in state.organisations" value="${ organisation.id }">
                 ${ organisation.name }
               </option>
+              <option value="autre">Autre</option>
             </select>
           </div>
-          <div class="fr-col-6">
+          <div class="fr-col-6" :if="state.selectedOrg === null">
             <div>
-              <label class="fr-label" for="provider_firstname">Autre organisation</label>
-              <span class="fr-hint-text">Votre organisation n'est pas listée ? Mentionnez-la ici</span>
+              <label class="fr-label" for="provider_title">Autre organisation</label>
+              <span class="fr-hint-text">Votre organisation n'est pas listée? Mentionnez-la ici</span>
               <input
                 class="fr-input"
                 type="text"
-                id="provider_organisation_other"
-                name="provider_organisation_other"
+                id="provider_title"
+                name="provider_title"
                 placeholder="ex: Association des Bois Sauvages"
               />
             </div>
