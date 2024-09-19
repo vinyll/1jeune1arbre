@@ -9,7 +9,7 @@
     farmyards: [{ id: initialFarmyardId }],
     organisations: [],
     isSuccessful: false,
-    selectedOrg: ""
+    selectedOrg: null
   }
   const methods = {
     addFarmyard(event) {
@@ -111,7 +111,8 @@
         user_password: password,
         provider_email: email,
         provider_firstname: first_name,
-        provider_lastname: last_name
+        provider_lastname: last_name,
+        provider_title: title
       } = formValues
 
       const userInfo = {
@@ -131,7 +132,8 @@
         departments_list,
         // - contact (er le pourvoyeur)
         position,
-        phone
+        phone,
+        title
       }
 
       const { wasYardProviderUploaded, id } = await store.actions.saveYardProvider(body)
@@ -180,7 +182,7 @@
     },
     updateSelectedOrg(event) {
       const selectedValue = event.target.value
-      this.state.selectedOrg = selectedValue
+      this.state.selectedOrg = selectedValue === "autre" ? null : selectedValue
       this.render()
     }
     /* TODO: implémenter
@@ -222,18 +224,18 @@
               <option :for="organisation in state.organisations" value="${ organisation.id }">
                 ${ organisation.name }
               </option>
-              <option value="">Autre</option>
+              <option value="autre">Autre</option>
             </select>
           </div>
-          <div class="fr-col-6" :if="state.selectedOrg === ''">
+          <div class="fr-col-6" :if="state.selectedOrg === null">
             <div>
-              <label class="fr-label" for="provider_firstname">Autre organisation</label>
-              <span class="fr-hint-text">Votre organisation n'est pas listée ? Mentionnez-la ici</span>
+              <label class="fr-label" for="provider_title">Autre organisation</label>
+              <span class="fr-hint-text">Votre organisation n'est pas listée? Mentionnez-la ici</span>
               <input
                 class="fr-input"
                 type="text"
-                id="provider_organisation_other"
-                name="provider_organisation_other"
+                id="provider_title"
+                name="provider_title"
                 placeholder="ex: Association des Bois Sauvages"
               />
             </div>
