@@ -1,17 +1,32 @@
 <script>
+  //TODO: media query pour que la map apparaisse en desous sur mobile
   let map = null
-
+  const state = {
+    isFormOpen: false,
+  }
   const methods = {
     localize(maxZoom = 10) {
       map.locate({ setView: true, maxZoom })
-    }
+    },
+    handlePoiClick() {
+      console.log("poi clicked")
+      var map = document.getElementById("map")
+      map.style.width = "50%"
+
+      setTimeout(() => {
+        map.invalidateSize()
+        // TODO: map.setView([poi.fakeLat, poi.fakeLong], 10)
+      }, 500)
+      state.isFormOpen = true
+      this.render({ isFormOpen: true })
+    },
   }
   async function connected() {
     const pois = await store.actions.loadPois()
     map = L.map(this.document.querySelector("#map")).setView([46.8, 3.4], 6)
 
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(map)
     const treeIcon = L.icon({ iconUrl: "/assets/images/tree-icon.png", iconSize: [20, 30], iconAnchor: [10, 30] })
     const circleOptions = { color: "#009900", fillOpacity: 0.5, radius: 2500 }
@@ -38,7 +53,7 @@
       }
 
       if (coordinates) {
-        L.circle(coordinates, circleOptions)
+        const circle = L.circle(coordinates, circleOptions)
           .bindPopup(
             `
         ${
@@ -72,16 +87,25 @@
           `
           }
         </article>
-      `
+      `,
           )
           .addTo(map)
+        /*
+        circle.on("click", (e) => {
+          L.DomEvent.stopPropagation(e)
+          this.handlePoiClick(poi)
+        })
+          TODO: implement*/
       }
     })
   }
 </script>
 
 <template>
-  <div id="map"></div>
+  <div id="map-container" class="fr-grid-row">
+    <div id="map"></div>
+    <div :if="state.isFormOpen" id="form"></div>
+  </div>
 </template>
 
 <style>
@@ -90,7 +114,9 @@
     width: 100%;
     max-width: 100%;
     max-height: 100%;
+    transition: width 0.5s ease;
   }
+
   h2 {
     color: inherit !important;
   }

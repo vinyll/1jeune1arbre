@@ -4,12 +4,12 @@ import { Client, gql, cacheExchange, fetchExchange } from "https://cdn.jsdelivr.
 
 const api = new Client({
   url: "https://admin.1jeune1arbre.fr/graphql",
-  exchanges: [cacheExchange, fetchExchange]
+  exchanges: [cacheExchange, fetchExchange],
 })
 
 const state = {
   pois: [],
-  modal: { title: "", body: "", visible: false }
+  modal: { title: "", body: "", visible: false },
 }
 
 const actions = {
@@ -74,7 +74,7 @@ const actions = {
           }
         }
       `,
-      { id }
+      { id },
     )
 
     // Récupération du nom du département depuis la liste des codes : [{ name: "Alpes-Maritimes", code: "06"}, { name: "Bouches-du-Rhône", code: "13"}]
@@ -86,7 +86,7 @@ const actions = {
         .map(async (code) => {
           const response = await fetch(`https://geo.api.gouv.fr/departements?code=${code}`, {
             method: "GET",
-            headers: { "Content-Type": "application/json" }
+            headers: { "Content-Type": "application/json" },
           })
           try {
             const data = await response.json()
@@ -95,12 +95,12 @@ const actions = {
           } catch (e) {
             console.error(`Error fetching department ${code} for ${provider.title}: ${e}`)
           }
-        })
+        }),
     )
 
     this.state.partners = {
       ...provider,
-      departments: departments.filter((d) => d.name)
+      departments: departments.filter((d) => d.name),
     }
     return this.state.partners
   },
@@ -126,7 +126,7 @@ const actions = {
           )
         }
       `,
-      values
+      values,
     )
     return response.data.create_school_demand_item
   },
@@ -134,33 +134,27 @@ const actions = {
   async saveContactFarmyard(values) {
     const response = await api.query(
       gql`
-        mutation CreateFarmyardContact(
-          $farmyard: Int!
-          $first_name: String!
-          $last_name: String!
-          $email: String
-          $phone: String
-          $subject: String!
-          $body: String!
-        ) {
-          create_farmyard_contact_item(
-            data: {
-              farmyard: $farmyard
-              first_name: $first_name
-              last_name: $last_name
-              email: $email
-              phone: $phone
-              subject: $subject
-              body: $body
-            }
-          )
+        mutation CreateFarmyardContact($data: create_farmyard_contact_input!) {
+          create_farmyard_contact_item(data: $data)
         }
       `,
-      values
+      {
+        data: {
+          farmyard: {
+            id: values.farmyard,
+          },
+          first_name: values.first_name,
+          last_name: values.last_name,
+          email: values.email,
+          phone: values.phone,
+          subject: values.subject,
+          body: values.body,
+        },
+      },
     )
+
     return response.data.create_farmyard_contact_item
   },
-
   // TODO: passer en graphql?
   async saveYardProvider(body) {
     delete body.userInfo
@@ -170,7 +164,7 @@ const actions = {
     for (const yard of body.farmyards) {
       const url = "https://admin.1jeune1arbre.fr/items/farmyard"
       const headers = {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       }
 
       try {
@@ -178,7 +172,7 @@ const actions = {
         const response = await fetch(url, {
           headers,
           method: "POST",
-          body: JSON.stringify(yard)
+          body: JSON.stringify(yard),
         })
 
         if (!response.ok) {
@@ -200,14 +194,14 @@ const actions = {
     // création du pourvoyeur (avec relation chantiers)
     const url = "https://admin.1jeune1arbre.fr/items/yard_providers"
     const headers = {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     }
 
     try {
       const response = await fetch(url, {
         headers,
         method: "POST",
-        body: JSON.stringify({ ...body, farmyards: farmyardIds })
+        body: JSON.stringify({ ...body, farmyards: farmyardIds }),
       })
 
       if (!response.ok) {
@@ -242,13 +236,13 @@ const actions = {
   async saveProviderUser(user, id) {
     const url = "https://admin.1jeune1arbre.fr/users"
     const headers = {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     }
     try {
       const response = await fetch(url, {
         headers,
         method: "POST",
-        body: JSON.stringify({ ...user, yard_providers: [id] })
+        body: JSON.stringify({ ...user, yard_providers: [id] }),
       })
 
       if (!response.ok) {
@@ -260,7 +254,7 @@ const actions = {
     } catch (error) {
       console.error(error)
     }
-  }
+  },
 }
 
 export default new LegoStore(state, actions)
