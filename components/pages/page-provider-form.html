@@ -106,7 +106,7 @@
             marker = L.marker(latlng).addTo(map)
           }
 
-          const hiddenInput = document.getElementById(`farmyard-location-${farmyardId}`)
+          const hiddenInput = this.document.getElementById(`farmyard-location-${farmyardId}`)
           hiddenInput.value = JSON.stringify([lng, lat])
         })
 
