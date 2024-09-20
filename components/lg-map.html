@@ -23,7 +23,9 @@
       const email = poi.email || provider.user.email
       // [poi.latitude, poi.longitude] est l'ancienne écriture -> à effacer si la carte/location est avérée sur Directus
       const coordinates = [poi.fakeLat, poi.fakeLong]
-      const organisation = provider?.organisation?.name || poi.provider.title || "" // TODO: changer quand on changera la manière de spécifier une autre org.
+      const organisation = provider?.organisation?.name
+        ? `<a href="/pourvoyeur/${provider.organisation.id}" target="_self">${provider.organisation.name}</a>`
+        : poi.provider.title || ""
 
       let walkable = "Non spécifié"
       if (poi.walkable === true) {
