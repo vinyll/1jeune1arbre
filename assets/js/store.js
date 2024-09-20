@@ -4,12 +4,12 @@ import { Client, gql, cacheExchange, fetchExchange } from "https://cdn.jsdelivr.
 
 const api = new Client({
   url: "https://admin.1jeune1arbre.fr/graphql",
-  exchanges: [cacheExchange, fetchExchange]
+  exchanges: [cacheExchange, fetchExchange],
 })
 
 const state = {
   pois: [],
-  modal: { title: "", body: "", visible: false }
+  modal: { title: "", body: "", visible: false },
 }
 
 const actions = {
@@ -33,11 +33,17 @@ const actions = {
           contact_position
           phone
           email
+          category
+          walkable
+          bus_parking
           provider {
             id
             phone
             website
             position
+            organisation {
+              name
+            }
             user {
               email
               first_name
@@ -74,7 +80,7 @@ const actions = {
           }
         }
       `,
-      { id }
+      { id },
     )
 
     // Récupération du nom du département depuis la liste des codes : [{ name: "Alpes-Maritimes", code: "06"}, { name: "Bouches-du-Rhône", code: "13"}]
@@ -86,7 +92,7 @@ const actions = {
         .map(async (code) => {
           const response = await fetch(`https://geo.api.gouv.fr/departements?code=${code}`, {
             method: "GET",
-            headers: { "Content-Type": "application/json" }
+            headers: { "Content-Type": "application/json" },
           })
           try {
             const data = await response.json()
@@ -95,12 +101,12 @@ const actions = {
           } catch (e) {
             console.error(`Error fetching department ${code} for ${provider.title}: ${e}`)
           }
-        })
+        }),
     )
 
     this.state.partners = {
       ...provider,
-      departments: departments.filter((d) => d.name)
+      departments: departments.filter((d) => d.name),
     }
     return this.state.partners
   },
@@ -126,7 +132,7 @@ const actions = {
           )
         }
       `,
-      values
+      values,
     )
     return response.data.create_school_demand_item
   },
@@ -156,7 +162,7 @@ const actions = {
           )
         }
       `,
-      values
+      values,
     )
     return response.data.create_farmyard_contact_item
   },
@@ -170,7 +176,7 @@ const actions = {
     for (const yard of body.farmyards) {
       const url = "https://admin.1jeune1arbre.fr/items/farmyard"
       const headers = {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       }
 
       try {
@@ -178,7 +184,7 @@ const actions = {
         const response = await fetch(url, {
           headers,
           method: "POST",
-          body: JSON.stringify(yard)
+          body: JSON.stringify(yard),
         })
 
         if (!response.ok) {
@@ -200,14 +206,14 @@ const actions = {
     // création du pourvoyeur (avec relation chantiers)
     const url = "https://admin.1jeune1arbre.fr/items/yard_providers"
     const headers = {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     }
 
     try {
       const response = await fetch(url, {
         headers,
         method: "POST",
-        body: JSON.stringify({ ...body, farmyards: farmyardIds })
+        body: JSON.stringify({ ...body, farmyards: farmyardIds }),
       })
 
       if (!response.ok) {
@@ -242,13 +248,13 @@ const actions = {
   async saveProviderUser(user, id) {
     const url = "https://admin.1jeune1arbre.fr/users"
     const headers = {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     }
     try {
       const response = await fetch(url, {
         headers,
         method: "POST",
-        body: JSON.stringify({ ...user, yard_providers: [id] })
+        body: JSON.stringify({ ...user, yard_providers: [id] }),
       })
 
       if (!response.ok) {
@@ -260,7 +266,7 @@ const actions = {
     } catch (error) {
       console.error(error)
     }
-  }
+  },
 }
 
 export default new LegoStore(state, actions)
