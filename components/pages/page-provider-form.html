@@ -454,12 +454,8 @@ Variétés plantées :
                 <label class="fr-label" for="map_{{ farmyard.id }}"
                   >Cliquez directement sur le lieu de votre chantier</label
                 >
-                <div :id="'map_' + farmyard.id" style="height: 600px; width: 100%"></div>
-                <input
-                  type="hidden"
-                  :id="'farmyard-location-' + farmyard.id"
-                  :name="'farmyard-location-' + farmyard.id"
-                />
+                <div id="map_${farmyard.id}" style="height: 600px; width: 100%"></div>
+                <input type="hidden" id="farmyard-location-${farmyard.id}" name="farmyard-location-${farmyard.id}" />
               </div>
             </div>
             <button
