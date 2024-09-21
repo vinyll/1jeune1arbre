@@ -12,7 +12,7 @@
     const router = new Navigo("", { hash: false })
     router.on("", () => this.displayPage("index"))
     router.on("/pourvoyeur", () => this.displayPage("provider-form"))
-    router.on("/pourvoyeur/:id", ({ data: { id } }) => {
+    router.on("/organisation/:id", ({ data: { id } }) => {
       this.displayPage("provider", { id })
     })
     router.resolve()

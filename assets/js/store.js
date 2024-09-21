@@ -55,22 +55,17 @@ const actions = {
     return this.actions.loadOrganisations()
   },
 
-  async loadYardProvider(id) {
+  async loadOrganisation(id) {
     const response = await api.query(
       gql`
-        query GetYardProviderById($id: ID!) {
-          yard_providers_by_id(id: $id) {
+        query GetYardOrganisationById($id: ID!) {
+          yard_organisation_by_id(id: $id) {
             id
-            title
+            name
             logo {
               id
             }
             website
-            phone
-            user {
-              email
-            }
-            departments_list
           }
         }
       `,
@@ -78,29 +73,29 @@ const actions = {
     )
 
     // Récupération du nom du département depuis la liste des codes : [{ name: "Alpes-Maritimes", code: "06"}, { name: "Bouches-du-Rhône", code: "13"}]
-    const provider = response.data.yard_providers_by_id
-    const departments = await Promise.all(
-      (provider.departments_list || "")
-        .split(",")
-        .map((d) => d.trim())
-        .map(async (code) => {
-          const response = await fetch(`https://geo.api.gouv.fr/departements?code=${code}`, {
-            method: "GET",
-            headers: { "Content-Type": "application/json" }
-          })
-          try {
-            const data = await response.json()
-            const department = data[0]
-            return department ? { name: department.nom, code: department.code } : {}
-          } catch (e) {
-            console.error(`Error fetching department ${code} for ${provider.title}: ${e}`)
-          }
-        })
-    )
+    const provider = response.data.yard_organisation_by_id
+    // const departments = await Promise.all(
+    //   (provider.departments_list || "")
+    //     .split(",")
+    //     .map((d) => d.trim())
+    //     .map(async (code) => {
+    //       const response = await fetch(`https://geo.api.gouv.fr/departements?code=${code}`, {
+    //         method: "GET",
+    //         headers: { "Content-Type": "application/json" }
+    //       })
+    //       try {
+    //         const data = await response.json()
+    //         const department = data[0]
+    //         return department ? { name: department.nom, code: department.code } : {}
+    //       } catch (e) {
+    //         console.error(`Error fetching department ${code} for ${provider.title}: ${e}`)
+    //       }
+    //     })
+    // )
 
     this.state.partners = {
-      ...provider,
-      departments: departments.filter((d) => d.name)
+      ...provider
+      // departments: departments.filter((d) => d.name)
     }
     return this.state.partners
   },
