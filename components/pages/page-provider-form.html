@@ -45,18 +45,6 @@
         }, {})
 
       // Organisation pour le body
-<<<<<<< HEAD
-      const farmyardData = Object.keys(formValues)
-        .filter((key) => key.startsWith("farmyard-"))
-        .reduce(
-          (obj, key) => {
-            const [group, prop] = key.split("-")
-            obj[group][prop] = formValues[key]
-            return obj
-          },
-          { farmyard: {}, provider: {}, user: {} }
-        )
-=======
 
       // user & provider
       const userFields = ["first_name", "last_name", "email", "phone"]
@@ -79,7 +67,6 @@
       user.role = "814b2e47-9e90-4fe0-8a64-1d9db35b8619"
       user.status = "Unverified"
       provider.organisation = this.state.selectedOrg
->>>>>>> 7c2c1c8 (Pourvoyeur form refactoring (#7))
 
       // farmyards
       const farmyards = Object.keys(formValues)
@@ -210,20 +197,9 @@
               <input
                 class="fr-input"
                 type="text"
-<<<<<<< HEAD
-<<<<<<< HEAD
-                id="provider_organisation_other"
-                name="provider_organisation_other"
-                placeholder="ex : Association des Bois Sauvages"
-=======
-                id="provider_title"
-                name="provider_title"
-=======
                 id="provider-title"
                 name="provider-title"
->>>>>>> 7c2c1c8 (Pourvoyeur form refactoring (#7))
                 placeholder="ex: Association des Bois Sauvages"
->>>>>>> 2b19d77 (option autre organisation (#8))
               />
             </div>
           </div>
@@ -232,15 +208,9 @@
             <input
               class="fr-input"
               type="text"
-<<<<<<< HEAD
-              id="provider_firstname"
-              name="provider_firstname"
-              placeholder="ex : Jean"
-=======
               id="provider-first_name"
               name="provider-first_name"
               placeholder="ex: Jean"
->>>>>>> 7c2c1c8 (Pourvoyeur form refactoring (#7))
               required
             />
           </div>
@@ -249,15 +219,9 @@
             <input
               class="fr-input"
               type="text"
-<<<<<<< HEAD
-              id="provider_lastname"
-              name="provider_lastname"
-              placeholder="ex : Dupont"
-=======
               id="provider-last_name"
               name="provider-last_name"
               placeholder="ex: Dupont"
->>>>>>> 7c2c1c8 (Pourvoyeur form refactoring (#7))
               required
             />
           </div>
@@ -266,15 +230,9 @@
             <input
               class="fr-input"
               type="text"
-<<<<<<< HEAD
-              id="provider_position"
-              name="provider_position"
-              placeholder="ex : directeur, animateur, gérant, secrétaire…"
-=======
               id="provider-position"
               name="provider-position"
               placeholder="ex: directeur, animateur, gérant, secrétaire…"
->>>>>>> 7c2c1c8 (Pourvoyeur form refactoring (#7))
               required
             />
           </div>
@@ -318,15 +276,9 @@
             <input
               class="fr-input"
               type="tel"
-<<<<<<< HEAD
-              id="provider_phone"
-              name="provider_phone"
-              placeholder="ex : 0612345678"
-=======
               id="provider-phone"
               name="provider-phone"
               placeholder="ex: 0612345678"
->>>>>>> 7c2c1c8 (Pourvoyeur form refactoring (#7))
               required
             />
           </div>
@@ -366,7 +318,7 @@
               id="provider-departments_list"
               name="provider-departments_list"
               required
-              placeholder="ex : 06, 13"
+              placeholder="ex: 06, 13"
             />
           </div>
 
@@ -395,15 +347,9 @@
                   <input
                     class="fr-input"
                     type="text"
-<<<<<<< HEAD
-                    id="farmyard_title_${farmyard.id}"
-                    name="farmyard_title_${farmyard.id}"
-                    placeholder="ex : Chantier de reboisement"
-=======
                     id="farmyard-title-${farmyard.id}"
                     name="farmyard-title-${farmyard.id}"
                     placeholder="ex: Chantier de reboisement"
->>>>>>> 7c2c1c8 (Pourvoyeur form refactoring (#7))
                     required
                   />
                 </div>
@@ -466,22 +412,16 @@
                 </div>
 
                 <div class="fr-col-6 fr-p-2v">
-<<<<<<< HEAD
-                  <label class="fr-label" for="farmyard_max_attendees_${farmyard.id}">
-                    Nombre maximum de participants
-                  </label>
-=======
                   <label class="fr-label" for="farmyard-max_attendees-${farmyard.id}"
                     >Nombre maximum de participants</label
                   >
->>>>>>> 7c2c1c8 (Pourvoyeur form refactoring (#7))
                   <span class="fr-hint-text">1 classe équivaut ±30 élèves</span>
                   <input
                     class="fr-input"
                     type="number"
                     id="farmyard-max_attendees-${farmyard.id}"
                     name="farmyard-max_attendees-${farmyard.id}"
-                    placeholder="ex : 30"
+                    placeholder="ex: 30"
                     required
                   />
                 </div>
@@ -512,15 +452,9 @@ Variétés plantées :
                 <input
                   class="fr-input"
                   type="text"
-<<<<<<< HEAD
-                  id="farmyard_contact_name_${farmyard.id}"
-                  name="farmyard_contact_name_${farmyard.id}"
-                  placeholder="ex : Jean Dupont"
-=======
                   id="farmyard-contact_name-${farmyard.id}"
                   name="farmyard-contact_name-${farmyard.id}"
                   placeholder="ex: Jean Dupont"
->>>>>>> 7c2c1c8 (Pourvoyeur form refactoring (#7))
                 />
               </div>
               <div class="fr-col-6 fr-p-2v">
@@ -528,15 +462,9 @@ Variétés plantées :
                 <input
                   class="fr-input"
                   type="text"
-<<<<<<< HEAD
-                  id="farmyard_contact_position_${farmyard.id}"
-                  name="farmyard_contact_position_${farmyard.id}"
-                  placeholder="ex : Propriétaire"
-=======
                   id="farmyard-contact_position-${farmyard.id}"
                   name="farmyard-contact_position-${farmyard.id}"
                   placeholder="ex: Propriétaire"
->>>>>>> 7c2c1c8 (Pourvoyeur form refactoring (#7))
                 />
               </div>
               <div class="fr-col-6 fr-p-2v">
@@ -544,15 +472,9 @@ Variétés plantées :
                 <input
                   class="fr-input"
                   type="tel"
-<<<<<<< HEAD
-                  id="farmyard_phone_${farmyard.id}"
-                  name="farmyard_phone_${farmyard.id}"
-                  placeholder="ex : 0612345678"
-=======
                   id="farmyard-phone-${farmyard.id}"
                   name="farmyard-phone-${farmyard.id}"
                   placeholder="ex: 0612345678"
->>>>>>> 7c2c1c8 (Pourvoyeur form refactoring (#7))
                 />
               </div>
               <div class="fr-col-6 fr-p-2v">
