@@ -4,14 +4,14 @@
   const methods = {
     localize(maxZoom = 10) {
       map.locate({ setView: true, maxZoom })
-    }
+    },
   }
   async function connected() {
     const pois = await store.actions.loadPois()
     map = L.map(this.document.querySelector("#map")).setView([46.8, 3.4], 6)
 
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(map)
     const treeIcon = L.icon({ iconUrl: "/assets/images/tree-icon.png", iconSize: [20, 30], iconAnchor: [10, 30] })
     const circleOptions = { color: "#009900", fillOpacity: 0.5, radius: 2500 }
@@ -23,6 +23,24 @@
       const email = poi.email || provider.user.email
       // [poi.latitude, poi.longitude] est l'ancienne écriture -> à effacer si la carte/location est avérée sur Directus
       const coordinates = [poi.fakeLat, poi.fakeLong]
+      const organisation = provider?.organisation?.name
+        ? `<a href="/pourvoyeur/${provider.organisation.id}" target="_self">${provider.organisation.name}</a>`
+        : poi.provider.title || ""
+
+      let walkable = "Non spécifié"
+      if (poi.walkable === true) {
+        walkable = "Oui"
+      } else if (poi.walkable === false) {
+        walkable = "Non"
+      }
+
+      let bus_parking = "Non spécifié"
+      if (poi.bus_parking === true) {
+        bus_parking = "Oui"
+      } else if (poi.bus_parking === false) {
+        bus_parking = "Non"
+      }
+
       const unavailable = poi.availability !== "disponible"
       let unavailabilityTitle = ""
       let unavailabilityBody = ""
@@ -49,7 +67,53 @@
         <article class="${poi.availability}">
           <h2><a href="/pourvoyeur/${poi.provider?.id}">${poi.title}</a></h2>
           <p>${poi.description}</p>
-          <address>${poi.department} (${poi.region})</address>
+
+          <div class="fr-grid-row fr-grid-row--gutters">
+            <div class="fr-col-12 fr-col-md-6">
+              <p class="info-item">
+                <span class="fr-text--bold">Organisation</span>
+                <span>${organisation || "Non spécifié"}</span>
+              </p>
+            </div>
+            <div class="fr-col-12 fr-col-md-6">
+              <p class="info-item">
+                <span class="fr-text--bold">Catégorie</span>
+                <span>${poi.category || "Non spécifié"}</span>
+              </p>
+            </div>
+          </div>
+
+          <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
+            <div class="fr-col-12 fr-col-md-6">
+              <p class="info-item">
+                <span class="fr-text--bold">Date de début</span>
+                <span>${poi.start_date || "Non spécifié"}</span>
+              </p>
+            </div>
+            <div class="fr-col-12 fr-col-md-6">
+              <p class="info-item">
+                <span class="fr-text--bold">Date de fin</span>
+                <span>${poi.end_date || "Non spécifié"}</span>
+              </p>
+            </div>
+          </div>
+
+          <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
+            <div class="fr-col-12 fr-col-md-6">
+              <p class="info-item">
+                <span class="fr-text--bold">Accessible à pied</span>
+                <span>${walkable}</span>
+              </p>
+            </div>
+            <div class="fr-col-12 fr-col-md-6">
+              <p class="info-item">
+                <span class="fr-text--bold">Accessible en bus</span>
+                <span>${bus_parking}</span>
+              </p>
+            </div>
+          </div>
+
+          <address class="fr-mt-2w">${poi.department} (${poi.region})</address>
 
           ${
             unavailable
@@ -72,7 +136,7 @@
           `
           }
         </article>
-      `
+      `,
           )
           .addTo(map)
       }
@@ -98,5 +162,10 @@
   /* on affiche les contacts que pour les chantiers disponibles */
   article:not(.disponible) .contact {
     display: none;
+  }
+
+  .info-item {
+    display: flex;
+    flex-direction: column;
   }
 </style>
