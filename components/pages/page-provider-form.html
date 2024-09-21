@@ -8,7 +8,9 @@
   const state = {
     farmyards: [{ id: initialFarmyardId }],
     organisations: [],
-    isSuccessful: false
+    isSuccessful: null,
+    isCoolingDown: false,
+    selectedOrg: null,
   }
   const methods = {
     addFarmyard(event) {
@@ -27,72 +29,79 @@
     },
     async saveForm(event) {
       event.preventDefault()
+      if (state.isCoolingDown) return
+      setTimeout(() => {
+        state.isCoolingDown = false
+        this.render({ ...state, isCoolingDown: false })
+      }, 5000)
+      state.isCoolingDown = true
+      this.render({ ...state, isCoolingDown: true })
+
       const formValues = Array.from(event.target.elements)
         .filter((input) => input.name)
         .reduce((acc, input) => {
           acc[input.name] = input.value
           return acc
         }, {})
-      const updatedFarmyards = {}
 
       // Organisation pour le body
-      const farmyardData = Object.keys(formValues)
-      .filter((key) => key.startsWith("farmyard-"))
-      .reduce((obj, key) => {
-        const [group, prop ] = key.split("-")
-        obj[group][prop] = formValues[key]
-        return obj
-      }, { farmyard: {}, provider: {}, user: {} })
 
-      const completeFarmyards = []
-      state.farmyards.forEach((yard) => {
-        const newInfo = updatedFarmyards[yard.id]
-        completeFarmyards.push({
-          ...newInfo,
-          ...yard
-        })
-      })
+      // user & provider
+      const userFields = ["first_name", "last_name", "email", "phone"]
+      const { user, provider } = Object.keys(formValues)
+        .filter((key) => key.split("-")[0] === "provider")
+        .reduce(
+          (acc, key) => {
+            // chaque prop est ajoutée a provider
+            const prop = key.split("-")[1]
+            acc.provider[prop] = formValues[key]
+
+            // dans le cas ou elle appartient aussi au user
+            if (userFields.includes(prop)) {
+              acc.user[prop] = formValues[key]
+            }
+            return acc
+          },
+          { user: {}, provider: {} },
+        )
+      user.role = "814b2e47-9e90-4fe0-8a64-1d9db35b8619"
+      user.status = "Unverified"
+      provider.organisation = this.state.selectedOrg
+
+      // farmyards
+      const farmyards = Object.keys(formValues)
+        .filter((key) => key.split("-")[0] === "farmyard")
+        .reduce((acc, key) => {
+          const [_, prop, id] = key.split("-")
+
+          if (!acc.find((f) => f.id === id)) {
+            const farmyard = { id }
+            acc.push(farmyard)
+          }
+          const farmyard = acc.find((f) => f.id === id)
+          if (prop === "location") {
+            farmyard[prop] = { type: "Point", coordinates: JSON.parse(formValues[key]) }
+          } else {
+            farmyard[prop] = formValues[key]
+          }
+          return acc
+        }, [])
 
       // post
-      const {
-        // infos pourvoyeur
-        provider_organisation: organisation,
-        provider_departments: departments_list,
-        provider_position: position,
-        provider_phone: phone,
-        user_password: password,
-        provider_email: email,
-        provider_firstname: first_name,
-        provider_lastname: last_name
-      } = formValues
-
-      const userInfo = {
-        first_name,
-        last_name,
-        email,
-        password,
-        role: "ac01b48e-8c16-4c1e-aa63-9a11e98543cd",
-        status: "inactive"
-      }
-
-      const body = {
-        // infos pourvoyeur
-        farmyards: completeFarmyards,
-        // - infos
-        organisation: Number(organisation),
-        departments_list,
-        // - contact (er le pourvoyeur)
-        position,
-        phone
-      }
-
-      const { wasYardProviderUploaded, id } = await store.actions.saveYardProvider(body)
+      const { wasYardProviderUploaded, id } = await store.actions.saveYardProvider({ farmyards, provider })
       if (wasYardProviderUploaded) {
-        const wasUserCreated = await store.actions.saveProviderUser(userInfo, id)
+        const wasUserCreated = await store.actions.saveProviderUser(user, id)
         if (wasUserCreated) {
           state.isSuccessful = true
-          this.render({ ...state, isSuccessful: true })
+          state.isCoolingDown = false
+          this.render({ ...state, isSuccessful: true, isCoolingDown: false })
+        } else {
+          state.isSuccessful = false
+          this.render({ isSuccessful: false })
         }
+      } else {
+        state.isSuccessful = false
+        this.render({ isSuccessful: false })
       }
     },
     initMap(farmyardId) {
@@ -104,7 +113,7 @@
 
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
           maxZoom: 19,
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         }).addTo(map)
 
         var marker = null
@@ -114,7 +123,7 @@
           const farmyard = state.farmyards.find((yard) => yard.id === farmyardId)
           farmyard.location = {
             type: "Point",
-            coordinates: [lng, lat]
+            coordinates: [lng, lat],
           }
 
           if (marker) {
@@ -123,13 +132,22 @@
             // Creation marker
             marker = L.marker(latlng).addTo(map)
           }
+
+          const hiddenInput = document.getElementById(`farmyard-location-${farmyardId}`)
+          hiddenInput.value = JSON.stringify([lng, lat])
         })
 
         return map //TODO: pas besoin?
       } else {
         console.error(`Map container with id "${mapId}" not found.`)
       }
-    }
+    },
+    updateSelectedOrg(event) {
+      const selectedValue = event.target.value
+      const newOrg = selectedValue === "autre" ? null : selectedValue
+      state.selectedOrg = newOrg
+      this.render({ selectedOrg: newOrg })
+    },
     /* TODO: implémenter
     verifyPasswordConfirmation(password,passwordConfirmation) {
         return
@@ -158,43 +176,76 @@
         <p>Ces informations <strong>ne seront pas</strong> rendues publiques sur la plateforme 1Jeune1Arbre</p>
         <form class="fr-grid-row" @submit="saveForm">
           <div class="fr-col-6 fr-p-3v">
-            <label class="fr-label" for="provider_organisation">Organisation</label>
+            <label class="fr-label" for="provider-organisation">Organisation</label>
             <select
               class="fr-input"
-              id="provider_organisation"
-              name="provider_organisation"
+              id="provider-organisation"
+              name="provider-organisation"
+              @change="updateSelectedOrg"
               required
             >
-              <option :for="organisation in state.organisations" value="${ organisation.id }">${ organisation.name }</option>
+              <option :for="organisation in state.organisations" value="${ organisation.id }">
+                ${ organisation.name }
+              </option>
+              <option value="autre">Autre</option>
             </select>
           </div>
-          <div class="fr-col-6">
+          <div class="fr-col-6" :if="state.selectedOrg === null">
             <div>
-              <label class="fr-label" for="provider_firstname">Autre organisation</label>
+              <label class="fr-label" for="provider-title">Autre organisation</label>
               <span class="fr-hint-text">Votre organisation n'est pas listée ? Mentionnez-la ici</span>
-              <input class="fr-input" type="text" id="provider_organisation_other" name="provider_organisation_other" placeholder="ex: Association des Bois Sauvages" />
+              <input
+                class="fr-input"
+                type="text"
+                id="provider-title"
+                name="provider-title"
+                placeholder="ex: Association des Bois Sauvages"
+              />
             </div>
-          
           </div>
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="provider_firstname">Votre prénom</label>
-            <input class="fr-input" type="text" id="provider_firstname" name="provider_firstname" placeholder="ex: Jean"
-              required />
+            <label class="fr-label" for="provider-first_name">Votre prénom</label>
+            <input
+              class="fr-input"
+              type="text"
+              id="provider-first_name"
+              name="provider-first_name"
+              placeholder="ex: Jean"
+              required
+            />
           </div>
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="provider_lastname">Votre nom</label>
-            <input class="fr-input" type="text" id="provider_lastname" name="provider_lastname" placeholder="ex: Dupont"
-              required />
+            <label class="fr-label" for="provider-last_name">Votre nom</label>
+            <input
+              class="fr-input"
+              type="text"
+              id="provider-last_name"
+              name="provider-last_name"
+              placeholder="ex: Dupont"
+              required
+            />
           </div>
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="provider_position">Votre fonction</label>
-            <input class="fr-input" type="text" id="provider_position" name="provider_position"
-              placeholder="ex: directeur, animateur, gérant, secrétaire…" required />
+            <label class="fr-label" for="provider-position">Votre fonction</label>
+            <input
+              class="fr-input"
+              type="text"
+              id="provider-position"
+              name="provider-position"
+              placeholder="ex: directeur, animateur, gérant, secrétaire…"
+              required
+            />
           </div>
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="provider_email">Votre adresse email</label>
-            <input class="fr-input" type="email" id="provider_email" name="provider_email" placeholder="j.dupont@onf.fr"
-              required />
+            <label class="fr-label" for="provider-email">Votre adresse email</label>
+            <input
+              class="fr-input"
+              type="email"
+              id="provider-email"
+              name="provider-email"
+              placeholder="j.dupont@onf.fr"
+              required
+            />
           </div>
 
           <!-- <div class="fr-col-6 fr-p-2v">
@@ -221,9 +272,15 @@
             />
           </div>-->
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="provider_phone">Votre numéro de téléphone</label>
-            <input class="fr-input" type="tel" id="provider_phone" name="provider_phone" placeholder="ex: 0612345678"
-              required />
+            <label class="fr-label" for="provider-phone">Votre numéro de téléphone</label>
+            <input
+              class="fr-input"
+              type="tel"
+              id="provider-phone"
+              name="provider-phone"
+              placeholder="ex: 0612345678"
+              required
+            />
           </div>
 
           <!--
@@ -252,10 +309,17 @@
           </div>
  -->
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="provider_departments">Les départements dans lesquels vous pouvez
-              intervenir</label>
-            <input class="fr-input" type="text" id="provider_departments" name="provider_departments" required
-              placeholder="ex: 06, 13" />
+            <label class="fr-label" for="provider-departments_list"
+              >Les départements dans lesquels vous pouvez intervenir</label
+            >
+            <input
+              class="fr-input"
+              type="text"
+              id="provider-departments_list"
+              name="provider-departments_list"
+              required
+              placeholder="ex: 06, 13"
+            />
           </div>
 
           <h2 class="fr-mt-7w">Vos chantiers pédagogiques</h2>
@@ -264,8 +328,14 @@
           <section :for="farmyard in state.farmyards" class="fr-col-12 fr-p-2v">
             <div class="fr-grid-row fr-grid-row--top">
               <h3>Chantier ${ (state.farmyards.indexOf(farmyard) + 1).toString() }</h3>
-              <button class="fr-btn fr-btn--tertiary-no-outline" style="color: red" type="button"
-                @click="removeFarmyard" id="${farmyard.id}" :if="state.farmyards.length !== 1">
+              <button
+                class="fr-btn fr-btn--tertiary-no-outline"
+                style="color: red"
+                type="button"
+                @click="removeFarmyard"
+                id="${farmyard.id}"
+                :if="state.farmyards.length !== 1"
+              >
                 Supprimer ce chantier
               </button>
             </div>
@@ -274,13 +344,23 @@
               <div class="fr-grid-row fr-mt-n3w fr-mb-5w">
                 <div class="fr-col-6 fr-p-2v">
                   <label class="fr-label" for="farmyard-title-${farmyard.id}">Nom du chantier</label>
-                  <input class="fr-input" type="text" id="farmyard-title-${farmyard.id}"
-                    name="farmyard-title-${farmyard.id}" placeholder="ex: Chantier de reboisement" required />
+                  <input
+                    class="fr-input"
+                    type="text"
+                    id="farmyard-title-${farmyard.id}"
+                    name="farmyard-title-${farmyard.id}"
+                    placeholder="ex: Chantier de reboisement"
+                    required
+                  />
                 </div>
                 <div class="fr-col-6 fr-p-2v">
                   <label class="fr-label" for="farmyard-category-${farmyard.id}">Environnement</label>
-                  <select class="fr-input" id="farmyard-category-${farmyard.id}" name="farmyard-category-${farmyard.id}"
-                    required>
+                  <select
+                    class="fr-input"
+                    id="farmyard-category-${farmyard.id}"
+                    name="farmyard-category-${farmyard.id}"
+                    required
+                  >
                     <option value="forestier">Forestier</option>
                     <option value="agricole">Haie agricole</option>
                     <option value="communal">Arbres en ville</option>
@@ -290,96 +370,156 @@
 
                 <div class="fr-col-6 fr-p-2v">
                   <label class="fr-label" for="farmyard-start_date-${farmyard.id}">Disponible du…</label>
-                  <input class="fr-input" type="date" id="farmyard-start_date-${farmyard.id}"
-                    name="farmyard-start_date-${farmyard.id}" />
+                  <input
+                    class="fr-input"
+                    type="date"
+                    id="farmyard-start_date-${farmyard.id}"
+                    name="farmyard-start_date-${farmyard.id}"
+                  />
                 </div>
                 <div class="fr-col-6 fr-p-2v">
                   <label class="fr-label" for="farmyard-end_date-${farmyard.id}">…au</label>
-                  <input class="fr-input" type="date" id="farmyard-end_date-${farmyard.id}"
-                    name="farmyard-end_date-${farmyard.id}" />
+                  <input
+                    class="fr-input"
+                    type="date"
+                    id="farmyard-end_date-${farmyard.id}"
+                    name="farmyard-end_date-${farmyard.id}"
+                  />
                 </div>
 
                 <div class="fr-col-6 fr-p-2v">
                   <label class="fr-label" for="farmyard-bus_parking-${farmyard.id}">Accessible en bus</label>
-                  <select class="fr-input" id="farmyard-bus_parking-${farmyard.id}"
-                    name="farmyard-bus_parking-${farmyard.id}">
-                    <option value="1">Oui</option>
-                    <option value="">Non</option>
+                  <select
+                    class="fr-input"
+                    id="farmyard-bus_parking-${farmyard.id}"
+                    name="farmyard-bus_parking-${farmyard.id}"
+                  >
+                    <option value="true">Oui</option>
+                    <option value="false">Non</option>
                   </select>
                 </div>
 
                 <div class="fr-col-6 fr-p-2v">
                   <label class="fr-label" for="farmyard-walkable-${farmyard.id}">Accessible à pied</label>
-                  <select class="fr-input" id="farmyard-walkable-${farmyard.id}"
-                    name="farmyard-walkable-${farmyard.id}">
-                    <option value="1">Oui</option>
-                    <option value="">Non</option>
+                  <select
+                    class="fr-input"
+                    id="farmyard-walkable-${farmyard.id}"
+                    name="farmyard-walkable-${farmyard.id}"
+                  >
+                    <option value="true">Oui</option>
+                    <option value="false">Non</option>
                   </select>
                 </div>
 
                 <div class="fr-col-6 fr-p-2v">
-                  <label class="fr-label" for="farmyard-max_attendees-${farmyard.id}">Nombre maximum de
-                    participants</label>
+                  <label class="fr-label" for="farmyard-max_attendees-${farmyard.id}"
+                    >Nombre maximum de participants</label
+                  >
                   <span class="fr-hint-text">1 classe équivaut ±30 élèves</span>
-                  <input class="fr-input" type="number" id="farmyard-max_attendees-${farmyard.id}"
-                    name="farmyard-max_attendees-${farmyard.id}" placeholder="ex: 30" required />
+                  <input
+                    class="fr-input"
+                    type="number"
+                    id="farmyard-max_attendees-${farmyard.id}"
+                    name="farmyard-max_attendees-${farmyard.id}"
+                    placeholder="ex: 30"
+                    required
+                  />
                 </div>
 
                 <div class="fr-col-12 fr-p-2v">
-                  <label class="fr-label" for="description">Description</label>
-                  <textarea rows="8" class="fr-input" id="description" name="description">
-Contexte forestier : 
-Variétés plantées : 
+                  <label class="fr-label" for="farmyard-description-${farmyard.id}">Description</label>
+                  <textarea
+                    rows="8"
+                    class="fr-input"
+                    id="farmyard-description-${farmyard.id}"
+                    name="farmyard-description-${farmyard.id}"
+                  >
+Contexte forestier :
+Variétés plantées :
                   </textarea>
                 </div>
               </div>
             </div>
 
             <h4>Contact pour ce chantier</h4>
-            <p>Renseignez ces champs si une autre personne que vous est à contacter.<br/>
-            Ils <strong>ne seront pas</strong> rendus publics sur la plateforme</p>
+            <p>
+              Renseignez ces champs si une autre personne que vous est à contacter.<br />
+              Ils <strong>ne seront pas</strong> rendus publics sur la plateforme
+            </p>
             <div class="fr-grid-row fr-mt-n3w fr-mb-5w">
               <div class="fr-col-6 fr-p-2v">
                 <label class="fr-label" for="farmyard-contact_name-${farmyard.id}">Prénom/nom du référent</label>
-                <input class="fr-input" type="text" id="farmyard-contact_name-${farmyard.id}"
-                  name="farmyard-contact_name-${farmyard.id}" placeholder="ex: Jean Dupont" />
+                <input
+                  class="fr-input"
+                  type="text"
+                  id="farmyard-contact_name-${farmyard.id}"
+                  name="farmyard-contact_name-${farmyard.id}"
+                  placeholder="ex: Jean Dupont"
+                />
               </div>
               <div class="fr-col-6 fr-p-2v">
                 <label class="fr-label" for="farmyard-contact_position-${farmyard.id}">Fonction du contact</label>
-                <input class="fr-input" type="text" id="farmyard-contact_position-${farmyard.id}"
-                  name="farmyard-contact_position-${farmyard.id}" placeholder="ex: Propriétaire" />
+                <input
+                  class="fr-input"
+                  type="text"
+                  id="farmyard-contact_position-${farmyard.id}"
+                  name="farmyard-contact_position-${farmyard.id}"
+                  placeholder="ex: Propriétaire"
+                />
               </div>
               <div class="fr-col-6 fr-p-2v">
                 <label class="fr-label" for="farmyard-phone-${farmyard.id}">Numéro de téléphone</label>
-                <input class="fr-input" type="tel" id="farmyard-phone-${farmyard.id}"
-                  name="farmyard-phone-${farmyard.id}" placeholder="ex: 0612345678" />
+                <input
+                  class="fr-input"
+                  type="tel"
+                  id="farmyard-phone-${farmyard.id}"
+                  name="farmyard-phone-${farmyard.id}"
+                  placeholder="ex: 0612345678"
+                />
               </div>
               <div class="fr-col-6 fr-p-2v">
                 <label class="fr-label" for="farmyard-email-${farmyard.id}">Email</label>
-                <input class="fr-input" id="farmyard-email-${farmyard.id}" name="farmyard-email-${farmyard.id}"
-                  type="email" placeholder="m.gracia@onf-isere.fr" />
+                <input
+                  class="fr-input"
+                  id="farmyard-email-${farmyard.id}"
+                  name="farmyard-email-${farmyard.id}"
+                  type="email"
+                  placeholder="m.gracia@onf-isere.fr"
+                />
               </div>
             </div>
             <h4>Localisation</h4>
             <div class="fr-grid-row fr-mt-n3w fr-mb-5w">
               <div class="fr-col-12 fr-p-2v">
-                <label class="fr-label" for="map_{{ farmyard.id }}">Cliquez directement sur le lieu de votre
-                  chantier</label>
-                <div :id="'map_' + farmyard.id" style="height: 600px; width: 100%"></div>
+                <label class="fr-label" for="map_{{ farmyard.id }}"
+                  >Cliquez directement sur le lieu de votre chantier</label
+                >
+                <div id="map_${farmyard.id}" style="height: 600px; width: 100%"></div>
+                <input type="hidden" id="farmyard-location-${farmyard.id}" name="farmyard-location-${farmyard.id}" />
               </div>
             </div>
-            <button type="button" class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-add-line" @click="addFarmyard">Ajouter un chantier</button>
+            <button
+              type="button"
+              class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-add-line"
+              @click="addFarmyard"
+            >
+              Ajouter un chantier
+            </button>
           </section>
 
-          <hr>
+          <hr />
 
           <ul class="fr-btns-group">
             <li>
               <button type="submit" class="fr-btn">Enregistrer mon profil et mes chantiers</button>
             </li>
-            <div :if="state.isSuccessful" class="fr-alert fr-alert--success">
+            <div :if="state.isSuccessful === true" class="fr-alert fr-alert--success">
               <h3 class="fr-alert__title">Enregistrement terminé</h3>
               <p>Nous validons vos informations qui seront publiées très prochainement.</p>
+            </div>
+            <div :if="state.isSuccessful === false " class="fr-alert fr-alert--error">
+              <h3 class="fr-alert__title">Problème d'enregistrement</h3>
+              <p>Il y a eu un souci lors de l'enregistrement de vos données.</p>
             </div>
           </ul>
         </form>

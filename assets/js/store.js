@@ -4,12 +4,12 @@ import { Client, gql, cacheExchange, fetchExchange } from "https://cdn.jsdelivr.
 
 const api = new Client({
   url: "https://admin.1jeune1arbre.fr/graphql",
-  exchanges: [cacheExchange, fetchExchange]
+  exchanges: [cacheExchange, fetchExchange],
 })
 
 const state = {
   pois: [],
-  modal: { title: "", body: "", visible: false }
+  modal: { title: "", body: "", visible: false },
 }
 
 const actions = {
@@ -33,11 +33,18 @@ const actions = {
           contact_position
           phone
           email
+          category
+          walkable
+          bus_parking
           provider {
             id
             phone
             website
             position
+            organisation {
+              id
+              name
+            }
             user {
               email
               first_name
@@ -69,7 +76,7 @@ const actions = {
           }
         }
       `,
-      { id }
+      { id },
     )
 
     // Récupération du nom du département depuis la liste des codes : [{ name: "Alpes-Maritimes", code: "06"}, { name: "Bouches-du-Rhône", code: "13"}]
@@ -94,7 +101,7 @@ const actions = {
     // )
 
     this.state.partners = {
-      ...organisation
+      ...organisation,
       // departments: departments.filter((d) => d.name)
     }
     return this.state.partners
@@ -121,7 +128,7 @@ const actions = {
           )
         }
       `,
-      values
+      values,
     )
     return response.data.create_school_demand_item
   },
@@ -129,87 +136,86 @@ const actions = {
   async saveContactFarmyard(values) {
     const response = await api.query(
       gql`
-        mutation CreateFarmyardContact(
-          $farmyard: Int!
-          $first_name: String!
-          $last_name: String!
-          $email: String
-          $phone: String
-          $subject: String!
-          $body: String!
-        ) {
-          create_farmyard_contact_item(
-            data: {
-              farmyard: $farmyard
-              first_name: $first_name
-              last_name: $last_name
-              email: $email
-              phone: $phone
-              subject: $subject
-              body: $body
-            }
-          )
+        mutation CreateFarmyardContact($data: create_farmyard_contact_input!) {
+          create_farmyard_contact_item(data: $data)
         }
       `,
-      values
+      {
+        data: {
+          farmyard: {
+            id: values.farmyard,
+          },
+          first_name: values.first_name,
+          last_name: values.last_name,
+          email: values.email,
+          phone: values.phone,
+          subject: values.subject,
+          body: values.body,
+        },
+      },
     )
+
     return response.data.create_farmyard_contact_item
   },
-
   // TODO: passer en graphql?
   async saveYardProvider(body) {
-    delete body.userInfo
     // Création des chantiers avec sauvegarde des ids pour relation M2O
     const farmyardIds = []
 
     for (const yard of body.farmyards) {
       const url = "https://admin.1jeune1arbre.fr/items/farmyard"
       const headers = {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       }
 
       try {
         delete yard.id
+
         const response = await fetch(url, {
           headers,
           method: "POST",
-          body: JSON.stringify(yard)
+          body: JSON.stringify(yard),
         })
 
         if (!response.ok) {
-          console.log(response)
-          throw new Error("Network response was not ok " + response.statusText)
+          console.error(`Network response was not ok: ${response.statusText}`)
+          return { wasYardProviderUploaded: false }
         }
 
         const data = await response.json()
         if (!data) {
-          throw new Error("Unable to create yard")
+          console.error("Unable to create yard", await response.text())
+          return { wasYardProviderUploaded: false }
         }
 
         farmyardIds.push(data.data.id)
       } catch (error) {
-        console.error("Error creating yard:", error)
+        console.error("Unable to create yard", error)
       }
     }
 
     // création du pourvoyeur (avec relation chantiers)
     const url = "https://admin.1jeune1arbre.fr/items/yard_providers"
     const headers = {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     }
 
     try {
       const response = await fetch(url, {
         headers,
         method: "POST",
-        body: JSON.stringify({ ...body, farmyards: farmyardIds })
+        body: JSON.stringify({ ...body.provider, farmyards: farmyardIds }),
       })
 
       if (!response.ok) {
-        console.log(response)
-        throw new Error("Network response was not ok " + response.statusText)
+        console.error(`Network response was not ok: ${response.statusText}`)
+        throw new Error(`Network response was not ok: ${response.statusText}`)
       }
       const { data } = await response.json()
+      if (!data) {
+        console.error("Unable to create provider", await response.text())
+        return { wasYardProviderUploaded: false }
+      }
 
       return { wasYardProviderUploaded: true, id: data.id }
     } catch (error) {
@@ -237,25 +243,26 @@ const actions = {
   async saveProviderUser(user, id) {
     const url = "https://admin.1jeune1arbre.fr/users"
     const headers = {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     }
     try {
       const response = await fetch(url, {
         headers,
         method: "POST",
-        body: JSON.stringify({ ...user, yard_providers: [id] })
+        body: JSON.stringify({ ...user, yard_providers: [id] }),
       })
 
       if (!response.ok) {
-        console.log(response)
-        throw new Error("Network response was not ok " + response.statusText)
+        console.error(`Network response was not ok: ${response.statusText}`)
+        return false
       }
       return true
       // l'endpoint ne renvoit aucune donnée de création
     } catch (error) {
       console.error(error)
+      return false
     }
-  }
+  },
 }
 
 export default new LegoStore(state, actions)
