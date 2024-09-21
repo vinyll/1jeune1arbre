@@ -12,8 +12,8 @@
     const router = new Navigo("", { hash: false })
     router.on("", () => this.displayPage("index"))
     router.on("/pourvoyeur", () => this.displayPage("provider-form"))
-    router.on("/pourvoyeur/:id", ({ data: { id } }) => {
-      this.displayPage("provider", { id })
+    router.on("/organisation/:id", ({ data: { id } }) => {
+      this.displayPage("organisation", { id })
     })
     router.resolve()
   }
@@ -24,7 +24,7 @@
   <main>
     <page-index :if="state.page === 'index'"></page-index>
     <page-provider-form :if="state.page === 'provider-form'"></page-provider-form>
-    <page-provider :if="state.page === 'provider'" :id="state.id"></page-provider>
+    <page-organisation :if="state.page === 'organisation'" :id="state.id"></page-organisation>
     <page-404 :if="state.page === '404'"></page-404>
   </main>
   <lg-footer></lg-footer>
