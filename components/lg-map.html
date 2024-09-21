@@ -1,9 +1,24 @@
 <script>
+  //TODO: media query pour que la map apparaisse en desous sur mobile
   let map = null
-
+  const state = {
+    isFormOpen: false,
+  }
   const methods = {
     localize(maxZoom = 10) {
       map.locate({ setView: true, maxZoom })
+    },
+    handlePoiClick() {
+      console.log("poi clicked")
+      var map = document.getElementById("map")
+      map.style.width = "50%"
+
+      setTimeout(() => {
+        map.invalidateSize()
+        // TODO: map.setView([poi.fakeLat, poi.fakeLong], 10)
+      }, 500)
+      state.isFormOpen = true
+      this.render({ isFormOpen: true })
     },
   }
   async function connected() {
@@ -56,7 +71,7 @@
       }
 
       if (coordinates) {
-        L.circle(coordinates, circleOptions)
+        const circle = L.circle(coordinates, circleOptions)
           .bindPopup(
             `
         ${
@@ -139,13 +154,22 @@
       `,
           )
           .addTo(map)
+        /*
+        circle.on("click", (e) => {
+          L.DomEvent.stopPropagation(e)
+          this.handlePoiClick(poi)
+        })
+          TODO: implement*/
       }
     })
   }
 </script>
 
 <template>
-  <div id="map"></div>
+  <div id="map-container" class="fr-grid-row">
+    <div id="map"></div>
+    <div :if="state.isFormOpen" id="form"></div>
+  </div>
 </template>
 
 <style>
@@ -154,7 +178,9 @@
     width: 100%;
     max-width: 100%;
     max-height: 100%;
+    transition: width 0.5s ease;
   }
+
   h2 {
     color: inherit !important;
   }

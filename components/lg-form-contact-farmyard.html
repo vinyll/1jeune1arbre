@@ -14,7 +14,7 @@
       const created = await store.actions.saveContactFarmyard(values)
       console.info(created)
       if (created) this.render({ sent: true })
-    }
+    },
   }
 </script>
 
@@ -37,14 +37,20 @@
       <label class="fr-label" for="contact_farmyard_phone">Téléphone</label
       ><input class="fr-input" type="text" id="contact_farmyard_phone" name="phone" />
     </div>
-    <div class="fr-col-12 fr-p-2v">
+
+    <!--<div class="fr-col-12 fr-p-2v">
       <label class="fr-label" for="contact_farmyard_school">Etablissement scolaire</label
       ><input class="fr-input" type="text" id="contact_farmyard_school" name="school" required />
     </div>
     <div class="fr-col-12 fr-p-2v">
       <label class="fr-label" for="contact_farmyard_classlevel">Classe concernée</label
       ><input class="fr-input" type="text" id="contact_farmyard_classlevel" name="classlevel" required />
+    </div>-->
+    <div class="fr-col-12 fr-p-2v">
+      <label class="fr-label" for="contact_farmyard_subject">Sujet</label
+      ><input class="fr-input" type="text" id="contact_farmyard_subject" name="subject" required />
     </div>
+
     <div class="fr-col-12 fr-p-2v">
       <label class="fr-label" for="contact_farmyard_body">Message</label>
       <textarea
