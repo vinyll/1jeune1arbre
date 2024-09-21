@@ -189,18 +189,19 @@ const actions = {
         })
 
         if (!response.ok) {
-          console.log(response)
-          throw new Error("Network response was not ok " + response.statusText)
+          console.error(`Network response was not ok: ${response.statusText}`)
+          return { wasYardProviderUploaded: false }
         }
 
         const data = await response.json()
         if (!data) {
-          throw new Error("Unable to create yard")
+          console.error("Unable to create yard", await response.text())
+          return { wasYardProviderUploaded: false }
         }
 
         farmyardIds.push(data.data.id)
       } catch (error) {
-        console.error("Error creating yard:", error)
+        console.error("Unable to create yard", error)
       }
     }
 
@@ -218,10 +219,14 @@ const actions = {
       })
 
       if (!response.ok) {
-        console.log(response)
-        throw new Error("Network response was not ok " + response.statusText)
+        console.error(`Network response was not ok: ${response.statusText}`)
+        throw new Error(`Network response was not ok: ${response.statusText}`)
       }
       const { data } = await response.json()
+      if (!data) {
+        console.error("Unable to create provider", await response.text())
+        return { wasYardProviderUploaded: false }
+      }
 
       return { wasYardProviderUploaded: true, id: data.id }
     } catch (error) {
@@ -259,13 +264,14 @@ const actions = {
       })
 
       if (!response.ok) {
-        console.log(response)
-        throw new Error("Network response was not ok " + response.statusText)
+        console.error(`Network response was not ok: ${response.statusText}`)
+        return false
       }
       return true
       // l'endpoint ne renvoit aucune donnée de création
     } catch (error) {
       console.error(error)
+      return false
     }
   },
 }
