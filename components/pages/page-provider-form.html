@@ -144,10 +144,9 @@
     },
     updateSelectedOrg(event) {
       const selectedValue = event.target.value
-      console.log("UPDATE SELECTED ORG:", selectedValue)
-      this.state.selectedOrg = selectedValue === "autre" ? null : selectedValue
-      this.render()
-      console.log("STATE", this.state)
+      const newOrg = selectedValue === "autre" ? null : selectedValue
+      state.selectedOrg = newOrg
+      this.render({ selectedOrg: newOrg })
     },
     /* TODO: implémenter
     verifyPasswordConfirmation(password,passwordConfirmation) {
