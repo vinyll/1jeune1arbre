@@ -33,11 +33,18 @@ const actions = {
           contact_position
           phone
           email
+          category
+          walkable
+          bus_parking
           provider {
             id
             phone
             website
             position
+            organisation {
+              id
+              name
+            }
             user {
               email
               first_name
