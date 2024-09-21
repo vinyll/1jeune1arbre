@@ -163,7 +163,6 @@ const actions = {
 
   // TODO: passer en graphql?
   async saveYardProvider(body) {
-    delete body.userInfo
     // Création des chantiers avec sauvegarde des ids pour relation M2O
     const farmyardIds = []
 
@@ -175,6 +174,7 @@ const actions = {
 
       try {
         delete yard.id
+
         const response = await fetch(url, {
           headers,
           method: "POST",
@@ -209,7 +209,7 @@ const actions = {
       const response = await fetch(url, {
         headers,
         method: "POST",
-        body: JSON.stringify({ ...body, farmyards: farmyardIds })
+        body: JSON.stringify({ ...body.provider, farmyards: farmyardIds })
       })
 
       if (!response.ok) {
