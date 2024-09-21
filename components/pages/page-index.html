@@ -1,4 +1,5 @@
 <script>
+  const state = { sent: false }
   const methods = {
     localize() {
       this.document.querySelector("lg-map").localize(10)
@@ -13,8 +14,8 @@
           return accumulateur
         }, {})
       const created = await store.actions.saveSchoolDemand(values)
-      console.debug(created)
-    }
+      if (created) this.render({ sent: true })
+    },
   }
 </script>
 
@@ -117,13 +118,17 @@
             ><input class="fr-input" type="text" id="school_name_input" name="school_name" required />
           </div>
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="departement_input">Dans quel département souhaitez-vous planter ?</label
-            ><input class="fr-input" type="text" id="departement_input" name="departement" required />
+            <label class="fr-label" for="department_input">Dans quel département souhaitez-vous planter ?</label
+            ><input class="fr-input" type="text" id="department_input" name="department" required />
           </div>
           <div class="fr-col-12 fr-py-2v">
             <button type="submit" class="fr-btn fr-btn--primary">Envoyer ma demande</button>
           </div>
         </form>
+        <div :if="state.sent" class="fr-alert fr-alert--success">
+          <h3 class="fr-alert__title">Votre demande est envoyée</h3>
+          <p>Vous serez très prochainement recontacté par l'organisateur du chantier.</p>
+        </div>
       </div>
     </section>
 
