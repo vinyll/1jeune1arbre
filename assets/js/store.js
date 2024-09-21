@@ -73,7 +73,7 @@ const actions = {
     )
 
     // Récupération du nom du département depuis la liste des codes : [{ name: "Alpes-Maritimes", code: "06"}, { name: "Bouches-du-Rhône", code: "13"}]
-    const provider = response.data.yard_organisation_by_id
+    const organisation = response.data.yard_organisation_by_id
     // const departments = await Promise.all(
     //   (provider.departments_list || "")
     //     .split(",")
@@ -94,7 +94,7 @@ const actions = {
     // )
 
     this.state.partners = {
-      ...provider
+      ...organisation
       // departments: departments.filter((d) => d.name)
     }
     return this.state.partners
