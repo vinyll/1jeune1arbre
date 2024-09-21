@@ -141,33 +141,27 @@ const actions = {
   async saveContactFarmyard(values) {
     const response = await api.query(
       gql`
-        mutation CreateFarmyardContact(
-          $farmyard: Int!
-          $first_name: String!
-          $last_name: String!
-          $email: String
-          $phone: String
-          $subject: String!
-          $body: String!
-        ) {
-          create_farmyard_contact_item(
-            data: {
-              farmyard: $farmyard
-              first_name: $first_name
-              last_name: $last_name
-              email: $email
-              phone: $phone
-              subject: $subject
-              body: $body
-            }
-          )
+        mutation CreateFarmyardContact($data: create_farmyard_contact_input!) {
+          create_farmyard_contact_item(data: $data)
         }
       `,
-      values,
+      {
+        data: {
+          farmyard: {
+            id: values.farmyard,
+          },
+          first_name: values.first_name,
+          last_name: values.last_name,
+          email: values.email,
+          phone: values.phone,
+          subject: values.subject,
+          body: values.body,
+        },
+      },
     )
+
     return response.data.create_farmyard_contact_item
   },
-
   // TODO: passer en graphql?
   async saveYardProvider(body) {
     // Création des chantiers avec sauvegarde des ids pour relation M2O
