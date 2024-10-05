@@ -14,7 +14,6 @@
         console.error("Map container not found")
         return
       }
-      console.log("setview:", [lat, lng])
       const map = L.map(mapContainer).setView([lat, lng], zoom)
 
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -36,8 +35,16 @@
     },
   }
   async function connected() {
+    function formatDates(date) {
+      const [year, month, day] = date.split("-")
+      return `${day}/${month}/${year}`
+    }
+
     state.id = Number(this.state.id)
-    const poi = await store.actions.loadPoi(state.id)
+    let poi = await store.actions.loadPoi(state.id)
+    const { start_date, end_date } = poi
+    poi = { ...poi, start_date: formatDates(start_date), end_date: formatDates(end_date) }
+
     state.poi = poi
     this.render({ poi: state.poi })
 
@@ -53,7 +60,8 @@
 
 <template>
   <div class="fr-container fr-my-4w">
-    <div class="fr-grid-row">
+    <a href='/' class="fr-link fr-link--secondary">Revenir à la carte des chantiers</a>
+    <div class="fr-grid-row fr-mt-2v">
       <div class="fr-col-12 fr-col-md-6">
         <div id="map" style="height: 600px; width: 100%"></div>
       </div>
@@ -61,6 +69,11 @@
         <h3>Informations sur le chantier</h3>
         <h4 class="fr-h4">${state.poi.title || "Titre non spécifié"}</h4>
         <p>${state.poi.description || "Description non spécifiée"}</p>
+        <p>
+          Chantier disponible du
+          <strong>${state.poi.start_date || "Non spécifié"}</strong> au <strong>${state.poi.end_date || "Non spécifié"}</strong
+        </p>
+
         <div class="fr-grid-row fr-grid-row--gutters" style="padding-top: 20px">
           <div class="fr-col-12 fr-col-md-4">
             <p><strong>Organisation</strong></p>
@@ -76,14 +89,7 @@
             <p class="fr-text--bold">Catégorie</p>
             <p>${state.poi.category || "Non spécifié"}</p>
           </div>
-          <div class="fr-col-12 fr-col-md-4">
-            <p class="fr-text--bold">Date de début</p>
-            <p>${state.poi.start_date || "Non spécifié"}</p>
-          </div>
-          <div class="fr-col-12 fr-col-md-4">
-            <p class="fr-text--bold">Date de fin</p>
-            <p>${state.poi.end_date || "Non spécifié"}</p>
-          </div>
+
           <div class="fr-col-12 fr-col-md-4">
             <p class="fr-text--bold">Accessible à pied</p>
             <p>${state.poi.walkable ? "Oui" : "Non"}</p>
