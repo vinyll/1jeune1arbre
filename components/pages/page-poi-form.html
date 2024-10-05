@@ -60,7 +60,7 @@
 
 <template>
   <div class="fr-container fr-my-4w">
-    <a href='/' class="fr-link fr-link--secondary">Revenir à la carte des chantiers</a>
+    <a href="/" class="fr-link fr-link--secondary">Revenir à la carte des chantiers</a>
     <div class="fr-grid-row fr-mt-2v">
       <div class="fr-col-12 fr-col-md-6">
         <div id="map" style="height: 600px; width: 100%"></div>
@@ -71,7 +71,8 @@
         <p>${state.poi.description || "Description non spécifiée"}</p>
         <p>
           Chantier disponible du
-          <strong>${state.poi.start_date || "Non spécifié"}</strong> au <strong>${state.poi.end_date || "Non spécifié"}</strong
+          <strong>${state.poi.start_date || "Non spécifié"}</strong> au
+          <strong>${state.poi.end_date || "Non spécifié"}</strong>
         </p>
 
         <div class="fr-grid-row fr-grid-row--gutters" style="padding-top: 20px">
