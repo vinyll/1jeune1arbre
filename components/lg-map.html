@@ -130,7 +130,7 @@
 -->
 
 
-          <address class="fr-mt-2w">${poi.department} (${poi.region})</address>
+          <address class="fr-mt-2w">${poi.department || "Non spécifié "} (${poi.region || "Non spécifié"})</address>
 
           ${
             unavailable
@@ -148,7 +148,9 @@
           `
               : `
               <div class="fr-mt-2w">
-            <a href="/poi/${poi.id}?zoom=${map.getZoom()}" class="fr-btn fr-btn--primary">Détails</a>
+            <a href="/poi/${
+              poi.id
+            }?zoom=${map.getZoom()}" class="fr-btn fr-btn--primary">Consulter ou réserver ce chantier</a>
           </div>
           `
           }
