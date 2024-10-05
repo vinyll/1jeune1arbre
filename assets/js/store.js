@@ -281,6 +281,7 @@ const actions = {
       const formattedData = data.results.map((record) => ({
         id: record.identifiant_de_l_etablissement,
         name: record.nom_etablissement,
+        city: record.nom_commune,
       }))
       console.log("return should work", formattedData)
       return formattedData

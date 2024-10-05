@@ -1,43 +1,61 @@
 <script>
   const state = {
     suggestions: [],
-    test: [{ name: "test" }, { name: "test" }],
+    schoolInput: "",
   }
 
   const methods = {
-    selectSchool(school) {
+    selectSchool(event) {
       /*
       document.getElementById("schoolInput").value = school.name
-      this.state.suggestions = []
-      console.log("Selected school ID:", school.id)
-
-      */
-      console.log("hello")
+      this.state.suggestions = []      */
+      console.log(event)
+      console.log("Selected school name:", event.target.attributes)
     },
-    async getSchools(event) {
-      const query = event.target.value
-      if (query.length < 2) {
-        state.suggestions = []
-        this.render({ suggestions: state.suggestions })
-        return
-      }
-      const schools = await store.actions.fetchSchools(query)
+    async getSchools() {
+      console.log("getting schools")
+      const schools = await store.actions.fetchSchools(state.schoolInput)
       console.log("schools:", schools)
       state.suggestions = schools
       this.render({ suggestions: schools })
       console.log("state:", state.suggestions)
     },
+    updateSchool(event) {
+      const schoolInput = event.target.value
+      console.log(event)
+      if (schoolInput.length < 2) {
+        state.suggestions = []
+        this.render({ suggestions: state.suggestions })
+        return
+      }
+      console.log("school updated")
+      state.schoolInput = schoolInput
+      this.render({ ...state, schoolInput })
+    },
   }
 </script>
 
 <template>
-  <div>
-    <h1>School Autocomplete</h1>
-
-    <input type="text" id="schoolInput" placeholder="Type a school name..." @input="getSchools" />
-
-    <ul id="suggestions" :if="state.test.length > 0">
-      <li :for="school in state.test">${ school.name }</li>
-    </ul>
+  <div class="fr-grid-row fr-mb-3">
+    <div class="fr-col-12 fr-col-md-8">
+      <div class="fr-grid-row">
+        <input
+          @input="updateSchool"
+          type="text"
+          id="schoolInput"
+          placeholder="Recherchez un établissement ici..."
+          class="fr-input fr-mr-2 fr-col-6"
+        />
+        <button @click="getSchools" class="fr-btn fr-btn--primary fr-col-3">Rechercher</button>
+      </div>
+    </div>
+    <div class="fr-col-12">
+      <select id="suggestions" :if="state.suggestions.length > 0" class="fr-select fr-col-6">
+        <option value="" disabled selected hidden>...et sélectionnez votre établissement ici.</option>
+        <option :for="school in state.suggestions" @click="selectSchool" value="${school.name}">
+          ${ school.name }, ${ school.city}
+        </option>
+      </select>
+    </div>
   </div>
 </template>
