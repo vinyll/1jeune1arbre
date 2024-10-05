@@ -1,33 +1,31 @@
 <script>
   const state = {
     suggestions: [],
+    test: [{ name: "test" }, { name: "test" }],
   }
 
   const methods = {
-    async fetchSchools(event) {
+    selectSchool(school) {
+      /*
+      document.getElementById("schoolInput").value = school.name
+      this.state.suggestions = []
+      console.log("Selected school ID:", school.id)
+
+      */
+      console.log("hello")
+    },
+    async getSchools(event) {
       const query = event.target.value
       if (query.length < 2) {
-        this.state.suggestions = [] // Clear suggestions if input is too short
+        state.suggestions = []
+        this.render({ suggestions: state.suggestions })
         return
       }
-      const url = `https://data.education.gouv.fr/explore/dataset/fr-en-annuaire-education/api/?disjunctive.type_etablissement&disjunctive.code_postal&disjunctive.nom_commune&disjunctive.code_departement&disjunctive.appartenance_education_prioritaire&disjunctive.libelle_academie&disjunctive.libelle_region&disjunctive.ministere_tutelle&search=${query}`
-      const headers = { "Content-Type": "application/json" }
-      try {
-        const response = await fetch(url, { headers, method: "GET" })
-        const data = await response.json()
-        this.state.suggestions = data.records.map((record) => ({
-          id: record.id,
-          name: record.fields.nom_etablissement, // Adjust based on actual field name
-        }))
-      } catch (error) {
-        console.error("Error fetching schools:", error)
-      }
-    },
-
-    selectSchool(school) {
-      document.getElementById("schoolInput").value = school.name // Set input value
-      this.state.suggestions = [] // Clear suggestions
-      console.log("Selected school ID:", school.id) // Store the ID as needed
+      const schools = await store.actions.fetchSchools(query)
+      console.log("schools:", schools)
+      state.suggestions = schools
+      this.render({ suggestions: schools })
+      console.log("state:", state.suggestions)
     },
   }
 </script>
@@ -35,9 +33,11 @@
 <template>
   <div>
     <h1>School Autocomplete</h1>
-    <input type="text" id="schoolInput" placeholder="Type a school name..." @input="fetchSchools" />
-    <ul id="suggestions" :if="state.suggestions.length">
-      <li :for="school in state.suggestions" @click="selectSchool(school)">{{ school.name }}</li>
+
+    <input type="text" id="schoolInput" placeholder="Type a school name..." @input="getSchools" />
+
+    <ul id="suggestions" :if="state.test.length > 0">
+      <li :for="school in state.test">${ school.name }</li>
     </ul>
   </div>
 </template>

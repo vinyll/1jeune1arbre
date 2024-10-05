@@ -263,6 +263,31 @@ const actions = {
       return false
     }
   },
+  async fetchSchools(query) {
+    if (query.length < 2) {
+      this.state.suggestions = []
+      return
+    }
+    const url = `https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-annuaire-education/records?where=nom_etablissement%20like%20%22${
+      query + "%22"
+    }&limit=5`
+    const headers = {
+      /*"Content-Type": "application/json" */
+    }
+    try {
+      const response = await fetch(url, { headers, method: "GET" })
+      const data = await response.json()
+
+      const formattedData = data.results.map((record) => ({
+        id: record.identifiant_de_l_etablissement,
+        name: record.nom_etablissement,
+      }))
+      console.log("return should work", formattedData)
+      return formattedData
+    } catch (error) {
+      console.error("Error fetching schools:", error)
+    }
+  },
 }
 
 export default new LegoStore(state, actions)
