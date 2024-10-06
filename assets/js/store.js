@@ -57,6 +57,53 @@ const actions = {
     this.state.pois = response.data.farmyard
     return this.state.pois
   },
+  async loadPoi(id) {
+    const response = await api.query(
+      gql`
+        query GetFarmyardById($id: ID!) {
+          farmyard_by_id(id: $id) {
+            id
+            title
+            fakeLat
+            fakeLong
+            description
+            max_attendees
+            department
+            region
+            availability
+            start_date
+            end_date
+            contact_name
+            contact_position
+            phone
+            email
+            category
+            walkable
+            bus_parking
+            provider {
+              id
+              phone
+              website
+              position
+              organisation {
+                id
+                name
+              }
+              user {
+                email
+                first_name
+                last_name
+              }
+            }
+          }
+        }
+      `,
+      { id },
+    )
+
+    const poi = response.data.farmyard_by_id
+    return poi
+  },
 
   async loadPartners() {
     return this.actions.loadOrganisations()
