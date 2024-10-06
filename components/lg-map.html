@@ -21,6 +21,11 @@
     },
   }
   async function connected() {
+    //TODO: exporter vers un fichier utils
+    function formatDates(date) {
+      const [year, month, day] = date.split("-")
+      return `${day}/${month}/${year}`
+    }
     const pois = await store.actions.loadPois()
     map = L.map(this.document.querySelector("#map")).setView([46.8, 3.4], 6)
 
@@ -97,37 +102,17 @@
             </div>
           </div>-->
 
-          <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
-            <div class="fr-col-12 fr-col-md-6">
-              <p class="info-item">
-                <span class="fr-text--bold">Date de début</span>
-                <span>${poi.start_date || "Non spécifié"}</span>
+          ${
+            !unavailable
+              ? `
+              <p>
+                Chantier disponible du
+                <strong>${formatDates(poi.start_date) || "Non spécifié"}</strong> au
+                <strong>${formatDates(poi.end_date) || "Non spécifié"}</strong>
               </p>
-            </div>
-            <div class="fr-col-12 fr-col-md-6">
-              <p class="info-item">
-                <span class="fr-text--bold">Date de fin</span>
-                <span>${poi.end_date || "Non spécifié"}</span>
-              </p>
-            </div>
-          </div>
-<!--
-          <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
-            <div class="fr-col-12 fr-col-md-6">
-              <p class="info-item">
-                <span class="fr-text--bold">Accessible à pied</span>
-                <span>${walkable}</span>
-              </p>
-            </div>
-            <div class="fr-col-12 fr-col-md-6">
-              <p class="info-item">
-                <span class="fr-text--bold">Accessible en bus</span>
-                <span>${bus_parking}</span>
-              </p>
-            </div>
-          </div>
--->
-
+            `
+              : ``
+          }
 
           <address class="fr-mt-2w">${poi.department || "Non spécifié "} (${poi.region || "Non spécifié"})</address>
 
