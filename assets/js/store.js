@@ -263,14 +263,13 @@ const actions = {
       return false
     }
   },
-  async fetchSchools(query) {
+  async fetchSchools(query, postCode) {
     if (query.length < 2) {
       this.state.suggestions = []
       return
     }
-    const url = `https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-annuaire-education/records?where=nom_etablissement%20like%20%22${
-      query + "%22"
-    }&limit=5`
+    const url = `https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-annuaire-education/records?where=nom_etablissement%20like%20%22${query}%22%20AND%20code_postal%20%3D%20%22${postCode}%22&limit=5`
+
     const headers = {
       /*"Content-Type": "application/json" */
     }
@@ -283,7 +282,6 @@ const actions = {
         name: record.nom_etablissement,
         city: record.nom_commune,
       }))
-      console.log("return should work", formattedData)
       return formattedData
     } catch (error) {
       console.error("Error fetching schools:", error)

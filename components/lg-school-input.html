@@ -2,35 +2,31 @@
   const state = {
     suggestions: [],
     schoolInput: "",
+    postCode: "",
   }
 
   const methods = {
-    selectSchool(event) {
-      /*
-      document.getElementById("schoolInput").value = school.name
-      this.state.suggestions = []      */
-      console.log(event)
-      console.log("Selected school name:", event.target.attributes)
-    },
+
     async getSchools() {
-      console.log("getting schools")
-      const schools = await store.actions.fetchSchools(state.schoolInput)
-      console.log("schools:", schools)
+      if (!state.postCode) return
+      const schools = await store.actions.fetchSchools(state.schoolInput, state.postCode)
       state.suggestions = schools
       this.render({ suggestions: schools })
-      console.log("state:", state.suggestions)
     },
     updateSchool(event) {
       const schoolInput = event.target.value
-      console.log(event)
       if (schoolInput.length < 2) {
         state.suggestions = []
         this.render({ suggestions: state.suggestions })
         return
       }
-      console.log("school updated")
       state.schoolInput = schoolInput
       this.render({ ...state, schoolInput })
+    },
+    updatePostcode(event) {
+      const postCode = event.target.value
+      state.postCode = postCode
+      this.render({ ...state, postCode })
     },
   }
 </script>
@@ -38,7 +34,13 @@
 <template>
   <div class="fr-grid-row fr-mb-3">
     <div class="fr-col-12 fr-col-md-8">
-      <div class="fr-grid-row">
+        <input
+          @input="updatePostcode"
+          type="text"
+          id="postcodeInput"
+          placeholder="Entrez votre code postal..."
+          class="fr-input fr-mr-2 fr-col-6"
+        />
         <input
           @input="updateSchool"
           type="text"
