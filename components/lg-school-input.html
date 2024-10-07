@@ -45,6 +45,10 @@
         // Update the hidden input values
         document.getElementById("school_name").value = state.school.name;
         document.getElementById("school_id").value = state.school.id;
+        console.log("info")
+        console.log(document.getElementById("school_name"))
+        console.log(document.getElementById("school_id"))
+
       }
     }
   }
@@ -77,8 +81,8 @@
           ${ school.name }, ${ school.city }
         </option>
       </select>
-      <input type="hidden" id="school_name" value="${state.school.name}" />
-      <input type="hidden" id="school_id" value="${state.school.id}" />
+      <input type="hidden" id="school_name" name="school_name" value="${state.school.name}" />
+      <input type="hidden" id="school_id" name="school_id" value="${state.school.id}" />
     </div>
   </div>
 </template>
