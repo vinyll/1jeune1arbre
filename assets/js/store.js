@@ -265,6 +265,7 @@ const actions = {
   },
   async fetchSchools(query, postCode) {
     if (query.length < 2) {
+      console.log("returned empty array for schools")
       this.state.suggestions = []
       return
     }

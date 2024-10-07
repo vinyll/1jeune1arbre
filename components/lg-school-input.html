@@ -3,15 +3,20 @@
     suggestions: [],
     schoolInput: "",
     postCode: "",
+    school:{name:"",id:""}
   }
 
   const methods = {
 
-    async getSchools() {
+    async getSchools(event) {
+      event.preventDefault();
       if (!state.postCode) return
       const schools = await store.actions.fetchSchools(state.schoolInput, state.postCode)
       state.suggestions = schools
-      this.render({ suggestions: schools })
+      console.log(state,"schools",schools)
+      this.render({...state, suggestions: schools })
+      console.log("after")
+
     },
     updateSchool(event) {
       const schoolInput = event.target.value
@@ -28,36 +33,52 @@
       state.postCode = postCode
       this.render({ ...state, postCode })
     },
+   populateSchoolInfo(event) {
+      const selectedSchoolName = event.target.value; //TODO: do it with id
+      const selectedSchool = state.suggestions.find(school => school.name === selectedSchoolName);
+
+      if (selectedSchool) {
+
+        state.school = selectedSchool
+        this.render({...state,school:selectedSchool})
+
+        // Update the hidden input values
+        document.getElementById("school_name").value = state.school.name;
+        document.getElementById("school_id").value = state.school.id;
+      }
+    }
   }
 </script>
 
 <template>
-  <div class="fr-grid-row fr-mb-3">
-    <div class="fr-col-12 fr-col-md-8">
+    <label>Recherche de l'établissment</label>
+  <div class="fr-grid-row fr-mab-3">
         <input
           @input="updatePostcode"
           type="text"
           id="postcodeInput"
           placeholder="Entrez votre code postal..."
-          class="fr-input fr-mr-2 fr-col-6"
+          class="fr-input fr-mb-2v "
         />
         <input
           @input="updateSchool"
           type="text"
           id="schoolInput"
-          placeholder="Recherchez un établissement ici..."
-          class="fr-input fr-mr-2 fr-col-6"
+          placeholder="...Puis recherchez votre établissement ici"
+          class="fr-input fr-mb-2v"
         />
-        <button @click="getSchools" class="fr-btn fr-btn--primary fr-col-3">Rechercher</button>
+        <button @click="getSchools" class="fr-btn fr-btn--secondary fr-mb-2v">Rechercher</button>
       </div>
     </div>
     <div class="fr-col-12">
-      <select id="suggestions" :if="state.suggestions.length > 0" class="fr-select fr-col-6">
-        <option value="" disabled selected hidden>...et sélectionnez votre établissement ici.</option>
-        <option :for="school in state.suggestions" @click="selectSchool" value="${school.name}">
-          ${ school.name }, ${ school.city}
+      <select @change="populateSchoolInfo" id="suggestions" :if="state.suggestions.length > 0" class="fr-select ">
+        <option value="" selected hidden>...Enfin, selectionnez le ici.</option>
+        <option :for="school in state.suggestions" value="${school.name}">
+          ${ school.name }, ${ school.city }
         </option>
       </select>
+      <input type="hidden" id="school_name" value="${state.school.name}" />
+      <input type="hidden" id="school_id" value="${state.school.id}" />
     </div>
   </div>
 </template>
