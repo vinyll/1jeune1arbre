@@ -13,9 +13,7 @@
       if (!state.postCode) return
       const schools = await store.actions.fetchSchools(state.schoolInput, state.postCode)
       state.suggestions = schools
-      console.log(state,"schools",schools)
       this.render({...state, suggestions: schools })
-      console.log("after")
 
     },
     updateSchool(event) {

@@ -200,6 +200,9 @@ const actions = {
           phone: values.phone,
           subject: values.subject,
           body: values.body,
+          school_name: values.school_name,
+          school_id: values.school_id,
+          city: values.city,
         },
       },
     )

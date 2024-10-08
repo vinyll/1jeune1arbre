@@ -6,7 +6,6 @@
     },
 
     async sendMail(event) {
-      console.log(event)
       event.preventDefault()
       const values = Array.from(event.target.elements)
         .filter((input) => input.name)
@@ -14,7 +13,6 @@
           accumulateur[input.name] = input.value
           return accumulateur
         }, {})
-      console.log("Form:", values)
       const created = await store.actions.saveSchoolDemand(values)
       if (created) this.render({ sent: true })
     },
