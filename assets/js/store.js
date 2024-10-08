@@ -116,6 +116,7 @@ const actions = {
           $city: String!
           $school_name: String!
           $department: String!
+          $school_id: String!
         ) {
           create_school_demand_item(
             data: {
@@ -124,6 +125,7 @@ const actions = {
               city: $city
               school_name: $school_name
               department: $department
+              school_id: $school_id
             }
           )
         }
@@ -265,7 +267,6 @@ const actions = {
   },
   async fetchSchools(query, postCode) {
     if (query.length < 2) {
-      console.log("returned empty array for schools")
       this.state.suggestions = []
       return
     }

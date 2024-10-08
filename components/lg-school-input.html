@@ -38,17 +38,8 @@
       const selectedSchool = state.suggestions.find(school => school.name === selectedSchoolName);
 
       if (selectedSchool) {
-
         state.school = selectedSchool
         this.render({...state,school:selectedSchool})
-
-        // Update the hidden input values
-        document.getElementById("school_name").value = state.school.name;
-        document.getElementById("school_id").value = state.school.id;
-        console.log("info")
-        console.log(document.getElementById("school_name"))
-        console.log(document.getElementById("school_id"))
-
       }
     }
   }
@@ -83,6 +74,7 @@
       </select>
       <input type="hidden" id="school_name" name="school_name" value="${state.school.name}" />
       <input type="hidden" id="school_id" name="school_id" value="${state.school.id}" />
+      <input type="hidden" id="city" name="city" value="${state.school.city}"/>
     </div>
   </div>
 </template>
