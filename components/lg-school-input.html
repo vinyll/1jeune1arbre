@@ -10,7 +10,7 @@
 
     async getSchools(event) {
       event.preventDefault();
-      if (!state.postCode) return
+      if (!state.postCode || !state.schoolInput) return
       const schools = await store.actions.fetchSchools(state.schoolInput, state.postCode)
       state.suggestions = schools
       this.render({...state, suggestions: schools })
@@ -32,8 +32,8 @@
       this.render({ ...state, postCode })
     },
    populateSchoolInfo(event) {
-      const selectedSchoolName = event.target.value; //TODO: do it with id
-      const selectedSchool = state.suggestions.find(school => school.name === selectedSchoolName);
+      const selectedSchoolId = event.target.value;
+      const selectedSchool = state.suggestions.find(school => school.id === selectedSchoolId);
 
       if (selectedSchool) {
         state.school = selectedSchool
@@ -66,7 +66,7 @@
     <div class="fr-col-12">
       <select @change="populateSchoolInfo" id="suggestions" :if="state.suggestions.length > 0" class="fr-select ">
         <option value="" selected hidden>...Enfin, selectionnez le ici.</option>
-        <option :for="school in state.suggestions" value="${school.name}">
+        <option :for="school in state.suggestions" value="${school.id}">
           ${ school.name }, ${ school.city }
         </option>
       </select>
