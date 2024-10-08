@@ -5,7 +5,7 @@
   const methods = {
     displayPage(name, params) {
       this.render({ page: name, ...params })
-    }
+    },
   }
 
   function connected() {
@@ -14,6 +14,9 @@
     router.on("/pourvoyeur", () => this.displayPage("provider-form"))
     router.on("/organisation/:id", ({ data: { id } }) => {
       this.displayPage("organisation", { id })
+    })
+    router.on("/poi/:id", ({ data: { id } }) => {
+      this.displayPage("poi-form", { id })
     })
     router.resolve()
   }
@@ -26,6 +29,7 @@
     <page-provider-form :if="state.page === 'provider-form'"></page-provider-form>
     <page-organisation :if="state.page === 'organisation'" :id="state.id"></page-organisation>
     <page-404 :if="state.page === '404'"></page-404>
+    <page-poi-form :if="state.page === 'poi-form'" :id="state.id"></page-poi-form>
   </main>
   <lg-footer></lg-footer>
 </template>

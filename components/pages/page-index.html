@@ -1,5 +1,5 @@
 <script>
-  const state = { sent: false }
+  const state = { sent: false, isPoiFormOpen: false }
   const methods = {
     localize() {
       this.document.querySelector("lg-map").localize(10)
@@ -18,11 +18,18 @@
       const created = await store.actions.saveSchoolDemand(values)
       if (created) this.render({ sent: true })
     },
+    togglePoiFormModal() {
+      const newValue = !state.isPoiFormOpen
+      state.isPoiFormOpen = newValue
+      this.render({ isPoiFormOpen: newValue })
+    },
   }
 </script>
 
 <template>
   <div class="hero__startup fr-container-fluid fr-py-6w">
+    <!-- <lg-test @toggle="togglePoiFormat"></lg-test>-->
+    <!--<lg-poi-form-modal :if="state.isPoiFormOpen === true" @toggle="togglePoiFormModal"></lg-poi-form-modal>-->
     <div class="fr-container">
       <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
         <figure class="fr-content-media fr-m-0 fr-col-5" role="group" aria-label="">
