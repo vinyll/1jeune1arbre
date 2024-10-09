@@ -1,0 +1,78 @@
+<script>
+  const state = {
+    suggestions: [],
+    schoolInput: "",
+    postCode: "",
+    school:{name:"",id:""}
+  }
+
+  const methods = {
+
+    async getSchools(event) {
+      event.preventDefault();
+      if (!state.postCode || !state.schoolInput) return
+      const schools = await store.actions.fetchSchools(state.schoolInput, state.postCode)
+      state.suggestions = schools
+      this.render({...state, suggestions: schools })
+
+    },
+    updateSchool(event) {
+      const schoolInput = event.target.value
+      if (schoolInput.length < 2) {
+        state.suggestions = []
+        this.render({ suggestions: state.suggestions })
+        return
+      }
+      state.schoolInput = schoolInput
+      this.render({ ...state, schoolInput })
+    },
+    updatePostcode(event) {
+      const postCode = event.target.value
+      state.postCode = postCode
+      this.render({ ...state, postCode })
+    },
+   populateSchoolInfo(event) {
+      const selectedSchoolId = event.target.value;
+      const selectedSchool = state.suggestions.find(school => school.id === selectedSchoolId);
+
+      if (selectedSchool) {
+        state.school = selectedSchool
+        this.render({...state,school:selectedSchool})
+      }
+    }
+  }
+</script>
+
+<template>
+    <label>Recherche de l'établissment</label>
+  <div class="fr-grid-row fr-mab-3">
+        <input
+          @input="updatePostcode"
+          type="text"
+          id="postcodeInput"
+          placeholder="Entrez votre code postal..."
+          class="fr-input fr-mb-2v "
+        />
+        <input
+          @input="updateSchool"
+          type="text"
+          id="schoolInput"
+          placeholder="...Puis recherchez votre établissement ici"
+          class="fr-input fr-mb-2v"
+        />
+        <button @click="getSchools" class="fr-btn fr-btn--secondary fr-mb-2v">Rechercher</button>
+      </div>
+    </div>
+    <div class="fr-col-12">
+      <select @change="populateSchoolInfo" id="suggestions" :if="state.suggestions.length > 0" class="fr-select ">
+        <option value="" selected hidden>...Enfin, selectionnez le ici.</option>
+        <option :for="school in state.suggestions" value="${school.id}">
+          ${ school.name }, ${ school.city }
+        </option>
+      </select>
+      <input type="hidden" id="school_name" name="school_name" value="${state.school.name}" />
+      <input type="hidden" id="school_id" name="school_id" value="${state.school.id}" />
+      <input type="hidden" id="city" name="city" value="${state.school.city}"/>
+    </div>
+  </div>
+</template>

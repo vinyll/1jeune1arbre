@@ -163,6 +163,7 @@ const actions = {
           $city: String!
           $school_name: String!
           $department: String!
+          $school_id: String!
         ) {
           create_school_demand_item(
             data: {
@@ -171,6 +172,7 @@ const actions = {
               city: $city
               school_name: $school_name
               department: $department
+              school_id: $school_id
             }
           )
         }
@@ -198,6 +200,9 @@ const actions = {
           phone: values.phone,
           subject: values.subject,
           body: values.body,
+          school_name: values.school_name,
+          school_id: values.school_id,
+          city: values.city,
         },
       },
     )
@@ -308,6 +313,30 @@ const actions = {
     } catch (error) {
       console.error(error)
       return false
+    }
+  },
+  async fetchSchools(query, postCode) {
+    if (query.length < 2) {
+      this.state.suggestions = []
+      return
+    }
+    const url = `https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-annuaire-education/records?where=nom_etablissement%20like%20%22${query}%22%20AND%20code_postal%20%3D%20%22${postCode}%22&limit=5`
+
+    const headers = {
+      /*"Content-Type": "application/json" */
+    }
+    try {
+      const response = await fetch(url, { headers, method: "GET" })
+      const data = await response.json()
+
+      const formattedData = data.results.map((record) => ({
+        id: record.identifiant_de_l_etablissement,
+        name: record.nom_etablissement,
+        city: record.nom_commune,
+      }))
+      return formattedData
+    } catch (error) {
+      console.error("Error fetching schools:", error)
     }
   },
 }
