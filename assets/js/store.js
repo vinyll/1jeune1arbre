@@ -163,6 +163,7 @@ const actions = {
           $city: String!
           $school_name: String!
           $department: String!
+          $phone: String!
         ) {
           create_school_demand_item(
             data: {
@@ -171,6 +172,7 @@ const actions = {
               city: $city
               school_name: $school_name
               department: $department
+              phone: $phone
             }
           )
         }
