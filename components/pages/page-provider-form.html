@@ -425,7 +425,19 @@
                     required
                   />
                 </div>
-
+                <div class="fr-col-6 fr-p-2v">
+                  <label class="fr-label" for="farmyard-type-${farmyard.id}">Type(s) de visite</label>
+                  <select
+                    class="fr-input"
+                    id="farmyard-type-${farmyard.id}"
+                    name="farmyard-type-${farmyard.id}"
+                    required
+                  >
+                    <option value="plantation">Plantation</option>
+                    <option value="visit">Visite</option>
+                    <option value="both">Les deux</option>
+                  </select>
+                </div>
                 <div class="fr-col-12 fr-p-2v">
                   <label class="fr-label" for="farmyard-description-${farmyard.id}">Description</label>
                   <textarea
