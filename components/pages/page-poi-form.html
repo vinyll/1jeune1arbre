@@ -1,0 +1,123 @@
+<script>
+  const state = {
+    id: null,
+    provider: {},
+    lat: null,
+    lng: null,
+    poi: null,
+  }
+
+  const methods = {
+    initializeMap({ lat, lng, zoom }) {
+      const mapContainer = document.querySelector("#map")
+      if (!mapContainer) {
+        console.error("Map container not found")
+        return
+      }
+      const map = L.map(mapContainer).setView([lat, lng], zoom)
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(map)
+
+      const circleOptions = {
+        color: "#009900",
+        fillColor: "#009900",
+        fillOpacity: 0.5,
+        radius: 2500,
+      }
+
+      L.circle([lat, lng], circleOptions)
+        .addTo(map)
+        .bindPopup(state.poi.title ?? "Aucun Titre")
+        .openPopup()
+    },
+  }
+  async function connected() {
+    function formatDates(date) {
+      const [year, month, day] = date.split("-")
+      return `${day}/${month}/${year}`
+    }
+
+    state.id = Number(this.state.id)
+    let poi = await store.actions.loadPoi(state.id)
+    const { start_date, end_date } = poi
+    poi = { ...poi, start_date: formatDates(start_date), end_date: formatDates(end_date) }
+
+    state.poi = poi
+    this.render({ poi: state.poi })
+
+    state.lat = poi.fakeLat
+    state.lng = poi.fakeLong
+
+    const urlParams = new URLSearchParams(window.location.search)
+    const zoom = urlParams.get("zoom") || 15
+    this.render({ lat: state.lat, lng: state.lng })
+    methods.initializeMap({ lat: state.lat, lng: state.lng, zoom })
+  }
+</script>
+
+<template>
+  <div class="fr-container fr-my-4w">
+    <a href="/" class="fr-link fr-link--secondary">Revenir à la carte des chantiers</a>
+    <div class="fr-grid-row fr-mt-2v">
+      <div class="fr-col-12 fr-col-md-6">
+        <div id="map" style="height: 600px; width: 100%"></div>
+      </div>
+      <div :if="state.poi" class="fr-col-12 fr-col-md-6 fr-p-3v">
+        <h3>Informations sur le chantier</h3>
+        <h4 class="fr-h4">${state.poi.title || "Titre non spécifié"}</h4>
+        <p>${state.poi.description || "Description non spécifiée"}</p>
+        <p>
+          Chantier disponible du
+          <strong>${state.poi.start_date || "Non spécifié"}</strong> au
+          <strong>${state.poi.end_date || "Non spécifié"}</strong>
+        </p>
+
+        <div class="fr-grid-row fr-grid-row--gutters" style="padding-top: 20px">
+          <div class="fr-col-12 fr-col-md-4">
+            <p><strong>Organisation</strong></p>
+            <p :if="!state.poi.provider.organisation">Non spécifié</p>
+            <a
+              class="fr-link"
+              :if="state.poi.provider.organisation"
+              href="/organisation/${state.poi.provider?.organisation?.id}"
+              ><p>${state.poi.provider?.organisation?.name}</p></a
+            >
+          </div>
+          <div class="fr-col-12 fr-col-md-4">
+            <p class="fr-text--bold">Catégorie</p>
+            <p>${state.poi.category || "Non spécifié"}</p>
+          </div>
+
+          <div class="fr-col-12 fr-col-md-4">
+            <p class="fr-text--bold">Accessible à pied</p>
+            <p>${state.poi.walkable ? "Oui" : "Non"}</p>
+          </div>
+          <div class="fr-col-12 fr-col-md-4">
+            <p class="fr-text--bold">Accessible en bus</p>
+            <p>${state.poi.bus_parking ? "Oui" : "Non"}</p>
+          </div>
+          <div class="fr-col-12 fr-col-md-4">
+            <p class="fr-text--bold">Département</p>
+            <p>${state.poi.department || "Non spécifié"}</p>
+          </div>
+          <div class="fr-col-12 fr-col-md-4">
+            <p class="fr-text--bold">Ville</p>
+            <p>${state.poi.city || "Non spécifié"}</p>
+          </div>
+          <div class="fr-col-12 fr-col-md-4">
+            <p class="fr-text--bold">Région</p>
+            <p>${state.poi.region || "Non spécifié"}</p>
+          </div>
+        </div>
+      </div>
+      <div class="fr-col-12 fr-col-md-6 fr-p-2v fr-mt-4v">
+        <h2 class="fr-h2">Contacter le responsable du chantier</h2>
+        <p>Vous avez des questions préalable ? Vous souhaitez participer à ce chantier ?</p>
+        <lg-form-contact-farmyard farmyard-id="${state.id}"></lg-form-contact-farmyard>
+      </div>
+    </div>
+  </div>
+</template>
