@@ -36,6 +36,7 @@ const actions = {
           category
           walkable
           bus_parking
+          type
           provider {
             id
             phone
@@ -80,6 +81,7 @@ const actions = {
             category
             walkable
             bus_parking
+            type
             provider {
               id
               phone

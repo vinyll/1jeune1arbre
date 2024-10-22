@@ -33,6 +33,18 @@
         .bindPopup(state.poi.title ?? "Aucun Titre")
         .openPopup()
     },
+    getActivityString(type) {
+      switch (type) {
+        case 'both':
+          return 'Plantation et Visite';
+        case 'plantation':
+          return 'Plantation';
+        case 'visit':
+          return 'Visite';
+        default:
+          return 'Non spécifié';
+      }
+    }
   }
   async function connected() {
     function formatDates(date) {
@@ -86,6 +98,13 @@
               ><p>${state.poi.provider?.organisation?.name}</p></a
             >
           </div>
+
+          <div class="fr-col-12 fr-col-md-4">
+            <p class="fr-text--bold">Types d'activitées</p>
+            <p>${methods.getActivityString(state.poi.type)}</p>
+          </div>
+
+
           <div class="fr-col-12 fr-col-md-4">
             <p class="fr-text--bold">Catégorie</p>
             <p>${state.poi.category || "Non spécifié"}</p>
