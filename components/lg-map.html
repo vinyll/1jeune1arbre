@@ -1,5 +1,5 @@
 <script>
-  //TODO: media query pour que la map apparaisse en desous sur mobile
+  import { getActivityString } from "/components/utils/farmyard.js"
   let map = null
   const state = {
     isFormOpen: false,
@@ -19,18 +19,6 @@
       state.isFormOpen = true
       this.render({ isFormOpen: true })
     },
-    getActivityString(type) { //TODO: exporter vers fichier utils car utilisé dans page-poi-form aussi.
-        switch (type) {
-        case 'both':
-          return 'Plantation et Visite';
-        case 'plantation':
-          return 'Plantation';
-        case 'visit':
-          return 'Visite';
-        default:
-          return 'Non spécifié';
-      }
-    }
   }
   async function connected() {
     //TODO: exporter vers un fichier utils
@@ -100,7 +88,7 @@
           <div class="fr-grid-row fr-grid-row--gutters fr-m-1v">
               <p class="info-item">
                 <span class="fr-text--bold">Activitées possibles sur place</span>
-                <span>${methods.getActivityString(poi.type)}</span>
+                <span>${getActivityString(poi.type)}</span>
               </p>
 
           </div>

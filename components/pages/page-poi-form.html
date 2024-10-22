@@ -1,4 +1,5 @@
 <script>
+import { getActivityString } from "/components/utils/farmyard.js"
   const state = {
     id: null,
     provider: {},
@@ -32,18 +33,6 @@
         .addTo(map)
         .bindPopup(state.poi.title ?? "Aucun Titre")
         .openPopup()
-    },
-    getActivityString(type) {
-      switch (type) {
-        case 'both':
-          return 'Plantation et Visite';
-        case 'plantation':
-          return 'Plantation';
-        case 'visit':
-          return 'Visite';
-        default:
-          return 'Non spécifié';
-      }
     }
   }
   async function connected() {
@@ -101,7 +90,7 @@
 
           <div class="fr-col-12 fr-col-md-4">
             <p class="fr-text--bold">Types d'activitées</p>
-            <p>${methods.getActivityString(state.poi.type)}</p>
+            <p>${getActivityString(state.poi.type)}</p>
           </div>
 
 
