@@ -1,11 +1,9 @@
 export function getActivityString(type) {
   switch (type) {
-    case "both":
-      return "Plantation et Visite"
     case "plantation":
-      return "Plantation"
+      return "Plantation et visite du site"
     case "visit":
-      return "Visite"
+      return "Visite du site"
     default:
       return "Non spécifié"
   }
