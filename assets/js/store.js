@@ -18,6 +18,7 @@ const actions = {
       {
         farmyard {
           id
+          status
           title
           fakeLat
           fakeLong
@@ -41,6 +42,7 @@ const actions = {
             phone
             website
             position
+            status
             organisation {
               id
               name
