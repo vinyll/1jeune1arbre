@@ -16,7 +16,7 @@ const actions = {
   async loadPois() {
     const response = await api.query(gql`
       {
-        farmyard {
+        farmyard(filter: { status: { _eq: "published" } }) {
           id
           status
           title
@@ -37,7 +37,7 @@ const actions = {
           category
           walkable
           bus_parking
-          provider {
+          provider(filter: { status: { _eq: "published" } }) {
             id
             phone
             website
