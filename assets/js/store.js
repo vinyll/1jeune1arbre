@@ -37,6 +37,7 @@ const actions = {
           category
           walkable
           bus_parking
+          type
           provider(filter: { status: { _eq: "published" } }) {
             id
             phone
@@ -82,6 +83,7 @@ const actions = {
             category
             walkable
             bus_parking
+            type
             provider {
               id
               phone

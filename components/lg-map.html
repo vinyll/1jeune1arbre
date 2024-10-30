@@ -1,5 +1,5 @@
 <script>
-  //TODO: media query pour que la map apparaisse en desous sur mobile
+  import { getActivityString } from "/components/utils/farmyard.js"
   let map = null
   const state = {
     isFormOpen: false,
@@ -86,22 +86,13 @@
         }
         <article class="${poi.availability}">
           <h2><!--<a href="/organisation/${poi.provider?.organisation?.id}">-->${poi.title}<!--</a>--></h2>
-          <!--<p>${poi.description}</p>
+          <div class="fr-grid-row fr-grid-row--gutters fr-m-1v">
+              <p class="info-item">
+                <span class="fr-text--bold">Activités possibles sur place</span>
+                <span>${getActivityString(poi.type)}</span>
+              </p>
 
-          <div class="fr-grid-row fr-grid-row--gutters">
-            <div class="fr-col-12 fr-col-md-6">
-              <p class="info-item">
-                <span class="fr-text--bold">Organisation</span>
-                <span>${organisation || "Non spécifié"}</span>
-              </p>
-            </div>
-            <div class="fr-col-12 fr-col-md-6">
-              <p class="info-item">
-                <span class="fr-text--bold">Catégorie</span>
-                <span>${poi.category || "Non spécifié"}</span>
-              </p>
-            </div>
-          </div>-->
+          </div>
 
           ${
             !unavailable
