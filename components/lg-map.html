@@ -1,5 +1,5 @@
 <script>
-  //TODO: media query pour que la map apparaisse en desous sur mobile
+  import { getActivityString } from "/components/utils/farmyard.js"
   let map = null
   const state = {
     isFormOpen: false,
@@ -35,6 +35,7 @@
     const treeIcon = L.icon({ iconUrl: "/assets/images/tree-icon.png", iconSize: [20, 30], iconAnchor: [10, 30] })
     const circleOptions = { color: "#009900", fillOpacity: 0.5, radius: 2500 }
     pois.forEach((poi) => {
+      if (!poi.provider) return
       const provider = poi.provider || { user: {} }
       const fullName = poi.contact_name || `${provider.user?.first_name} ${provider.user?.last_name}`
       const role = poi.contact_position || provider.position
@@ -85,22 +86,13 @@
         }
         <article class="${poi.availability}">
           <h2><!--<a href="/organisation/${poi.provider?.organisation?.id}">-->${poi.title}<!--</a>--></h2>
-          <!--<p>${poi.description}</p>
+          <div class="fr-grid-row fr-grid-row--gutters fr-m-1v">
+              <p class="info-item">
+                <span class="fr-text--bold">Activités possibles sur place</span>
+                <span>${getActivityString(poi.type)}</span>
+              </p>
 
-          <div class="fr-grid-row fr-grid-row--gutters">
-            <div class="fr-col-12 fr-col-md-6">
-              <p class="info-item">
-                <span class="fr-text--bold">Organisation</span>
-                <span>${organisation || "Non spécifié"}</span>
-              </p>
-            </div>
-            <div class="fr-col-12 fr-col-md-6">
-              <p class="info-item">
-                <span class="fr-text--bold">Catégorie</span>
-                <span>${poi.category || "Non spécifié"}</span>
-              </p>
-            </div>
-          </div>-->
+          </div>
 
           ${
             !unavailable

@@ -1,4 +1,5 @@
 <script>
+import { getActivityString } from "/components/utils/farmyard.js"
   const state = {
     id: null,
     provider: {},
@@ -32,7 +33,7 @@
         .addTo(map)
         .bindPopup(state.poi.title ?? "Aucun Titre")
         .openPopup()
-    },
+    }
   }
   async function connected() {
     function formatDates(date) {
@@ -86,6 +87,13 @@
               ><p>${state.poi.provider?.organisation?.name}</p></a
             >
           </div>
+
+          <div class="fr-col-12 fr-col-md-4">
+            <p class="fr-text--bold">Types d'activités</p>
+            <p>${getActivityString(state.poi.type)}</p>
+          </div>
+
+
           <div class="fr-col-12 fr-col-md-4">
             <p class="fr-text--bold">Catégorie</p>
             <p>${state.poi.category || "Non spécifié"}</p>
