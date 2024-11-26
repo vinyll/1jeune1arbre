@@ -28,24 +28,6 @@
   <div class="hero__startup fr-container-fluid fr-py-6w">
     <!-- <lg-test @toggle="togglePoiFormat"></lg-test>-->
     <!--<lg-poi-form-modal :if="state.isPoiFormOpen === true" @toggle="togglePoiFormModal"></lg-poi-form-modal>-->
-    <div class="fr-container">
-      <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
-        <figure class="fr-content-media fr-m-0 fr-col-5" role="group" aria-label="">
-          <div class="fr-col-12 fr-col-lg-6">
-            <img
-              class="fr-responsive-img image-style-node-visuel"
-              src="https://agriculture.gouv.fr/sites/default/files/styles/node_visuel/public/vignette%20CP%201%20jeune%201%20arbre.jpg"
-              width="400"
-              alt="Logo 1 jeune 1 arbre"
-              loading="lazy"
-              typeof="foaf:Image"
-              data-fr-js-ratio="true"
-            />
-          </div>
-          <figcaption class="fr-content-media__caption" id="legend-file-147926"></figcaption>
-        </figure>
-      </div>
-    </div>
   </div>
 
   <div class="fr-container">
@@ -58,24 +40,23 @@
         </p> -->
         <h2 class="fr-mb-8v">Faites participer vos élèves à un chantier de plantation !</h2>
         <p>Accompagnés par des professionnels locaux, vos élèves pourront participer et/ou visiter des plantations pour mieux comprendre les enjeux environnementaux liés à l’arbre et au renouvellement forestier.</p>
-        <p>Avec la plateforme « 1 Jeune 1 Arbre » accédez à un panel d'offres de chantiers pédagogiques proposés par nos partenaires et prenez contact avec eux afin d’organiser votre sortie scolaire.</p>
-        <p>Les activités de plantation sont ouverts de l'automne au printemps, en fonction des essences et des territoires.</p>
-        <p>Vous trouverez ci-dessous une carte géolocalisant les activités en lien avec l’arbre en forêt, en campagne (haies, vergers…), ou en zone urbaine.</p>
+        <p>Avec la plateforme « 1 Jeune 1 Arbre », trouvez une carte qui répertorie des activités pédagogiques sur le thème de l’arbre. Contactez nos partenaires pour organiser votre sortie scolaire en forêt, en campagne (haies, vergers…) ou en ville.</p>
+        <p>Les activités de plantation sont ouvertes de l'automne au printemps, en fonction des essences et des territoires.</p>
         <p>Dans le cadre des opérations de plantation proposées, les plants sont fournis mais le déplacement des élèves sur le site de plantation n’est pas financé.</p>
       </div>
     </section>
 
     <section class="fr-grid-row fr-grid-row--gutters fr-py-8w" id="carte-chantiers">
       <div class="fr-col-12">
-        <h2>Trouver un chantier à proximité de mon établissement</h2>
+        <h2>Trouver une activité</h2>
         <div class="fr-grid-container">
           <div class="fr-grid-row fr-py-2w">
             <div class="fr-col-2">
-              <button class="fr-btn fr-btn--primary" @click="localize">Voir autour de moi</button>
+              <button class="fr-btn fr-btn--primary" @click="localize">Me géolocaliser</button>
             </div>
             <div class="fr-col-7"></div>
             <div class="fr-col-3">
-              <a class="fr-btn fr-btn--secondary" href="/pourvoyeur">Je souhaite proposer un chantier</a>
+              <a class="fr-btn fr-btn--secondary" href="/pourvoyeur">Proposer une activité</a>
             </div>
             <!-- <div class="fr-col-6">
               <div class="fr-search-bar fr-my-2w" id="header-search" role="search"> <label class="fr-label"
@@ -93,9 +74,9 @@
       </div>
 
       <div class="fr-col-12 fr-container">
+        <h2>Vous ne trouvez pas de chantier à proximité de votre établissement ?</h2>
         <p>
-          Vous ne trouvez pas de chantier à proximité de votre établissement scolaire ? Vous pouvez remplir le
-          formulaire ci-dessous pour signaler votre souhait de participer à un chantier de plantation pédagogique.
+          Remplissez le formulaire ci-dessous et nous reviendrons vers vous avez des propositions d'activités pédagogiques.
         </p>
 
         <form class="fr-grid-row" @submit="sendMail">
@@ -120,7 +101,7 @@
             ><input class="fr-input" type="text" id="school_name_input" name="school_name" required />
           </div>
           <div class="fr-col-6 fr-p-2v">
-            <label class="fr-label" for="department_input">Dans quel département souhaitez-vous planter ?</label
+            <label class="fr-label" for="department_input">Département de l'établissement</label
             ><input class="fr-input" type="text" id="department_input" name="department" required />
           </div>
           <div class="fr-col-12 fr-p-2v">
