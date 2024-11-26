@@ -19,6 +19,7 @@
     router.on("/poi/:id", ({ data: { id } }) => {
       this.displayPage("poi-form", { id })
     })
+    router.on("/televerser-chantiers", () => this.displayPage("upload"))
     router.resolve()
   }
 </script>
@@ -32,6 +33,7 @@
     <page-organisation :if="state.page === 'organisation'" :id="state.id"></page-organisation>
     <page-404 :if="state.page === '404'"></page-404>
     <page-poi-form :if="state.page === 'poi-form'" :id="state.id"></page-poi-form>
+    <page-upload :if="state.page === 'upload'" :id="state.id"></page-upload>
   </main>
   <lg-footer></lg-footer>
 </template>
