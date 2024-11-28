@@ -1,80 +1,69 @@
 <script>
-    const state = {}
+    const state = {};
     const methods = {
-      uploadYards(event) {
-        event.preventDefault();
-        const form = event.target;
-        console.log(form)
-        console.log(form.elements)
-        const formData = new FormData(form);
-        console.log(formData)
+        uploadYards(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
 
-    const fileInput = form.elements['sheet'];
-    if (!fileInput.files.length) {
-      alert('Veuillez selectionner un fichier avant de téléverser.');
-      return;
-    }
-
-    const organisation = form.elements['organisation'].value;
-    if (!organisation) {
-      alert('Veuillez selectionner une organisation.');
-      return;
-    }
-
-    fetch('/upload-farmyards', {
-      method: 'POST',
-      body: formData,
-    })
-      .then((response) => {
-        if (response.ok) {
-          alert('Upload successful!');
-        } else {
-          alert('Upload failed.');
-        }
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-        alert('An error occurred.');
-      });
+            const fileInput = form.elements['sheet'];
+            if (!fileInput.files.length) {
+                alert('Veuillez sélectionner un fichier avant de téléverser.');
+                return;
             }
 
+            const email = form.elements['email'].value;
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                alert('Veuillez entrer une adresse email valide.');
+                return;
+            }
 
+            fetch('/upload-farmyards', {
+                method: 'POST',
+                body: formData,
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        alert('Upload réussi!');
+                    } else {
+                        alert('Échec du téléversement.');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Erreur:', error);
+                    alert('Une erreur est survenue.');
+                });
         }
+    };
 </script>
 
 <template>
     <div class="fr-container fr-py-6w">
-      <div class="fr-grid-row">
-        <div class="fr-col-8 fr-py-4w">
-          <section>
-            <h1>Téléverser des chantiers</h1>
-            <p>
-              Selectionnez votre organisation, joignez votre fichier <strong>.xlsx</strong> et téléversez!
-            </p>
+        <div class="fr-grid-row">
+            <div class="fr-col-8 fr-py-4w">
+                <section>
+                    <h1>Téléverser des chantiers</h1>
+                    <p>
+                        Entrez votre email, joignez votre fichier <strong>.xlsx</strong>, et téléversez!
+                    </p>
 
-            <form @submit="uploadYards" class="fr-my-4w">
-              <div class="fr-input-group fr-my-4w">
-                <label class="fr-label" for="organisation">Organisation</label>
-                <select id="organisation" class="fr-select" name="organisation">
-                  <option value="" disabled selected>Sélectionnez une organisation</option>
-                  <option value="school">École</option>
-                  <option value="ngo">ONG</option>
-                  <option value="company">Entreprise</option>
-                  <option value="other">Autre</option>
-                </select>
-              </div>
+                    <form @submit="uploadYards" class="fr-my-4w">
+                        <div class="fr-input-group fr-my-4w">
+                            <label class="fr-label" for="email">Email du pourvoyeur</label>
+                            <input id="email" class="fr-input" type="email" name="email" placeholder="exemple@domaine.com" required>
+                        </div>
 
-              <div class="fr-input-group fr-my-4w">
-                <label class="fr-label" for="file-upload">Fichier Excel (.xlsx)</label>
-                <input id="file-upload" class="fr-input" type="file" name="sheet" accept=".xlsx">
-              </div>
+                        <div class="fr-input-group fr-my-4w">
+                            <label class="fr-label" for="file-upload">Fichier Excel (.xlsx)</label>
+                            <input id="file-upload" class="fr-input" type="file" name="sheet" accept=".xlsx">
+                        </div>
 
-              <div>
-                <button type="submit" class="fr-btn">Téléverser</button>
-              </div>
-            </form>
-          </section>
+                        <div>
+                            <button type="submit" class="fr-btn">Téléverser</button>
+                        </div>
+                    </form>
+                </section>
+            </div>
         </div>
-      </div>
     </div>
-  </template>
+</template>
