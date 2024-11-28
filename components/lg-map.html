@@ -27,6 +27,7 @@
       return `${day}/${month}/${year}`
     }
     const pois = await store.actions.loadPois()
+    console.log(pois.length)
     map = L.map(this.document.querySelector("#map")).setView([46.8, 3.4], 6)
 
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -76,7 +77,7 @@
       }
 
       if (coordinates) {
-        const circle = L.circle(coordinates, circleOptions)
+        const circle = L.circle(coordinates, {...circleOptions,color: poi.availability === "reserve" ? "#FFA500" : circleOptions.color})
           .bindPopup(
             `
         ${
