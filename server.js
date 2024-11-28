@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename)
 const upload = multer({ storage: multer.memoryStorage() })
 const limit = pLimit(5)
 
-const DIRECTUS_ADMIN_TOKEN = "B41pSo3f6xHytOAlY5FtvQcjlb9h0_75" // TODO: regenerer ce token sur le profile d'un super admin pour la prod
+const DIRECTUS_ADMIN_TOKEN = "u15h6aQ6o_4KfSF1gz3nGxl2ZvEN1A9u" // TODO: regenerer ce token sur le profile d'un super admin pour la prod
 
 app.post("/upload-farmyards", upload.single("sheet"), async (req, res) => {
   try {
@@ -28,7 +28,7 @@ app.post("/upload-farmyards", upload.single("sheet"), async (req, res) => {
     }
 
     // check si l'utilisateur existe
-    const userResponse = await fetch(`http://127.0.0.1:8055/users?filter[email][_eq]=${email}`, {
+    const userResponse = await fetch(`https://admin.1jeune1arbre.fr/users?filter[email][_eq]=${email}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${DIRECTUS_ADMIN_TOKEN}`,
@@ -42,7 +42,7 @@ app.post("/upload-farmyards", upload.single("sheet"), async (req, res) => {
 
     // check si le user a un profil de pourvoyeur
     const providerResponse = await fetch(
-      `http://127.0.0.1:8055/items/yard_providers?filter[user][_eq]=${user.data[0].id}`,
+      `https://admin.1jeune1arbre.fr/items/yard_providers?filter[user][_eq]=${user.data[0].id}`,
 
       {
         method: "GET",
@@ -159,7 +159,7 @@ app.post("/upload-farmyards", upload.single("sheet"), async (req, res) => {
     // Televerser les chantiers pédagogiques en les liant au provider
     farmyards.forEach(async (yard) => {
       await fetch(
-        "http://127.0.0.1:8055/items/farmyard" /*TODO: remplacer avec: "https://admin.1jeune1arbre.fr/items/farmyard"*/,
+        "https://admin.1jeune1arbre.fr/items/farmyard" /*TODO: remplacer avec: "https://admin.1jeune1arbre.fr/items/farmyard"*/,
         {
           method: "POST",
           body: JSON.stringify({ ...yard.data, provider: provider.data[0].id }),
