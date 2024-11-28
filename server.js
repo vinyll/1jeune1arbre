@@ -3,6 +3,7 @@ import path from "path"
 import { fileURLToPath } from "url"
 import multer from "multer"
 import xlsx from "xlsx"
+import pLimit from "p-limit"
 
 const app = express()
 const PORT = process.env.PORT || 3000
@@ -11,6 +12,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const upload = multer({ storage: multer.memoryStorage() })
+const limit = pLimit(5)
 
 const DIRECTUS_ADMIN_TOKEN = "B41pSo3f6xHytOAlY5FtvQcjlb9h0_75" // TODO: regenerer ce token sur le profile d'un super admin pour la prod
 
@@ -34,7 +36,7 @@ app.post("/upload-farmyards", upload.single("sheet"), async (req, res) => {
       },
     })
     if (!userResponse) {
-      return res.status(404).json({ error: "User not found" })
+      return res.status(404).json({ error: "User not found" }) //TODO: on peut avoir une réponse sans user mais quand meme avec le tableau donc il faut check cela pour renvoyer cette erreur.
     }
     const user = await userResponse.json()
 
@@ -74,8 +76,8 @@ app.post("/upload-farmyards", upload.single("sheet"), async (req, res) => {
       header: 1,
     })
     const headers = sheetData[1]
-    const rows = sheetData.slice(2) // On skip les deux premières lignes (headers + titres)
-
+    const extractedRows = sheetData.slice(2) // On skip les deux premières lignes (headers + titres)
+    const rows = extractedRows.filter((row) => row.length > 0)
     /**
      * Fonction qui permet de faire le formattage directus pour les dates
      *  (excel n'enregistre pas les dates commes elles sont ecrites dans le sheet)
@@ -85,76 +87,73 @@ app.post("/upload-farmyards", upload.single("sheet"), async (req, res) => {
       const excelEpoch = new Date(1899, 11, 30) // Excel epoch starts from Dec 30, 1899
       const days = Math.floor(serial)
       const date = new Date(excelEpoch.getTime() + days * 86400000)
-      console.log("date: ", date)
       return date.toISOString().split("T")[0] // Convertir en "yyyy-mm-dd"
     }
 
-    async function fetchCoordinates(city, zipcode) {
-      const apiUrl = `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(
-        city,
-      )}&postcode=${zipcode}&limit=1`
+    async function fetchCoordinates(city, department) {
+      const apiUrl = `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(city)}&code=${department}&limit=1`
       try {
         const response = await fetch(apiUrl)
-        console.log("RESPONSE", response)
         const data = await response.json()
-        console.log("DATA: ", data)
 
         if (data.features && data.features.length > 0) {
           return data.features[0].geometry.coordinates
         } else {
-          console.warn(`No coordinates found for city: ${city}, postcode: ${zipcode}`)
+          console.warn(`No coordinates found for city: ${city}, department: ${department}`)
           return [0, 0]
         }
       } catch (error) {
-        console.error(`Error fetching coordinates for city: ${city}, postcode: ${zipcode}`, error)
+        console.error(`Error fetching coordinates for city: ${city}, department: ${department}`, error)
         return [0, 0]
       }
     }
-
+    function delay(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms))
+    }
     // Construction des chantiers pedagogiques
     const farmyards = await Promise.all(
-      rows.map(async (row) => {
-        const rowObject = {}
-        headers.forEach((header, index) => {
-          rowObject[header] = row[index]
-        })
+      rows.map((row) =>
+        limit(async () => {
+          const rowObject = {}
+          headers.forEach((header, index) => {
+            rowObject[header] = row[index]
+          })
 
-        const city = rowObject["Commune "] || "undefined"
-        const zipcode = rowObject["Code postal"] || "undefined"
+          const city = rowObject["Commune "] || "undefined" // espace en plus dans l'excel, trim toutes les clefs?
+          const department = rowObject["Code postal"] || "undefined" // dans le excel, code postal est en fait le département
 
-        // Recuperations des coordonnées pour le flux fakeLat & fakeLong
-        let coordinates = [0, 0]
-        try {
-          coordinates = await fetchCoordinates(city, zipcode)
-        } catch (error) {
-          console.warn("Failed to fetch coordinates, using default [0, 0].")
-        }
+          let coordinates = [0, 0]
+          try {
+            coordinates = await fetchCoordinates(city, department)
+          } catch (error) {
+            console.warn("Failed to fetch coordinates, using default [0, 0].")
+          }
 
-        return {
-          data: {
-            status: rowObject["Etat"] || "draft",
-            title: rowObject["Titre de l'activité"] || "",
-            category: (rowObject["Catégorie"] || "").trim(),
-            description: rowObject["Description de l'activité proposée"] || "",
-            start_date: serialToDate(rowObject["Date de début de disponibilité"]) || null,
-            end_date: serialToDate(rowObject["Date de fin de disponibilité"]) || null,
-            max_attendees: rowObject["Nombre maximum d'élèves"] || null,
-            contact_name: rowObject["Nom du référent"] || "",
-            contact_position: rowObject["Rôle du référent"] || "",
-            phone: rowObject["Téléphone du référent"] || "",
-            email: rowObject["Email du référent"] || "",
-            zipcode: rowObject["Code postal"] || "undefined",
-            city: rowObject["Commune "] || "undefined",
-            bus_parking: rowObject["Accessible en bus ?"] === "OUI",
-            walkable: rowObject["Accessible à pied ?"] === "OUI",
-            type: "plantation",
-            location: {
-              type: "Point",
-              coordinates,
+          return {
+            data: {
+              status: rowObject["Etat"] || "draft",
+              title: rowObject["Titre de l'activité"] || "",
+              category: (rowObject["Catégorie"] || "").trim(),
+              description: rowObject["Description de l'activité proposée "] || "",
+              start_date: serialToDate(rowObject["Date de début de disponibilité"]) || null,
+              end_date: serialToDate(rowObject["Date de fin de disponibilité"]) || null,
+              max_attendees: rowObject["Nombre maximum d'élèves"] || null,
+              contact_name: rowObject["Nom du référent"] || "",
+              contact_position: rowObject["Rôle du référent"] || "",
+              phone: rowObject["Téléphone du référent"] || "",
+              email: rowObject["Email du référent"] || "",
+              city,
+              bus_parking: rowObject["Accessible en bus ?"] === "OUI",
+              walkable: rowObject["Accessible à pied ?"] === "OUI",
+              type: "plantation",
+              location: {
+                type: "Point",
+                coordinates,
+              },
             },
-          },
-        }
-      }),
+          }
+        }),
+      ),
     )
 
     // Televerser les chantiers pédagogiques en les liant au provider
@@ -171,7 +170,7 @@ app.post("/upload-farmyards", upload.single("sheet"), async (req, res) => {
         },
       )
     })
-
+    console.log("rows", rows.slice(-40, -1))
     res.status(200).json({ message: "Farmyards processed successfully", farmyards })
   } catch (error) {
     console.error("Error processing file:", error)
