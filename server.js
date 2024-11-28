@@ -89,38 +89,73 @@ app.post("/upload-farmyards", upload.single("sheet"), async (req, res) => {
       return date.toISOString().split("T")[0] // Convertir en "yyyy-mm-dd"
     }
 
-    // Construction des chantiers pedagogiques
-    const farmyards = rows.map((row) => {
-      const rowObject = {}
-      headers.forEach((header, index) => {
-        rowObject[header] = row[index]
-      })
+    async function fetchCoordinates(city, zipcode) {
+      const apiUrl = `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(
+        city,
+      )}&postcode=${zipcode}&limit=1`
+      try {
+        const response = await fetch(apiUrl)
+        console.log("RESPONSE", response)
+        const data = await response.json()
+        console.log("DATA: ", data)
 
-      return {
-        data: {
-          status: rowObject["Etat"] || "draft",
-          title: rowObject["Titre de l'activité"] || "",
-          category: (rowObject["Catégorie"] || "").trim(),
-          description: rowObject["Description de l'activité proposée"] || "",
-          start_date: serialToDate(rowObject["Date de début de disponibilité"]) || null,
-          end_date: serialToDate(rowObject["Date de fin de disponibilité"]) || null,
-          max_attendees: rowObject["Nombre maximum d'élèves"] || null,
-          contact_name: rowObject["Nom du référent"] || "",
-          contact_position: rowObject["Rôle du référent"] || "",
-          phone: rowObject["Téléphone du référent"] || "",
-          email: rowObject["Email du référent"] || "",
-          zipcode: rowObject["Code postal"] || "undefined",
-          city: rowObject["Commune "] || "undefined", //TODO: attention, il faut l'espace pour commune car c'est dans le template excel, sinon ca marche pas
-          bus_parking: rowObject["Accessible en bus ?"] === "OUI",
-          walkable: rowObject["Accessible à pied ?"] === "OUI",
-          type: "plantation",
-          location: {
-            type: "Point",
-            coordinates: [0, 0], // TODO: logique de récupération des coordonnées
-          },
-        },
+        if (data.features && data.features.length > 0) {
+          return data.features[0].geometry.coordinates
+        } else {
+          console.warn(`No coordinates found for city: ${city}, postcode: ${zipcode}`)
+          return [0, 0]
+        }
+      } catch (error) {
+        console.error(`Error fetching coordinates for city: ${city}, postcode: ${zipcode}`, error)
+        return [0, 0]
       }
-    })
+    }
+
+    // Construction des chantiers pedagogiques
+    const farmyards = await Promise.all(
+      rows.map(async (row) => {
+        const rowObject = {}
+        headers.forEach((header, index) => {
+          rowObject[header] = row[index]
+        })
+
+        const city = rowObject["Commune "] || "undefined"
+        const zipcode = rowObject["Code postal"] || "undefined"
+
+        // Recuperations des coordonnées pour le flux fakeLat & fakeLong
+        let coordinates = [0, 0]
+        try {
+          coordinates = await fetchCoordinates(city, zipcode)
+        } catch (error) {
+          console.warn("Failed to fetch coordinates, using default [0, 0].")
+        }
+
+        return {
+          data: {
+            status: rowObject["Etat"] || "draft",
+            title: rowObject["Titre de l'activité"] || "",
+            category: (rowObject["Catégorie"] || "").trim(),
+            description: rowObject["Description de l'activité proposée"] || "",
+            start_date: serialToDate(rowObject["Date de début de disponibilité"]) || null,
+            end_date: serialToDate(rowObject["Date de fin de disponibilité"]) || null,
+            max_attendees: rowObject["Nombre maximum d'élèves"] || null,
+            contact_name: rowObject["Nom du référent"] || "",
+            contact_position: rowObject["Rôle du référent"] || "",
+            phone: rowObject["Téléphone du référent"] || "",
+            email: rowObject["Email du référent"] || "",
+            zipcode: rowObject["Code postal"] || "undefined",
+            city: rowObject["Commune "] || "undefined",
+            bus_parking: rowObject["Accessible en bus ?"] === "OUI",
+            walkable: rowObject["Accessible à pied ?"] === "OUI",
+            type: "plantation",
+            location: {
+              type: "Point",
+              coordinates,
+            },
+          },
+        }
+      }),
+    )
 
     // Televerser les chantiers pédagogiques en les liant au provider
     farmyards.forEach(async (yard) => {
