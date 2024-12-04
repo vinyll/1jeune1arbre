@@ -124,6 +124,7 @@ const actions = {
               id
             }
             website
+            description
           }
         }
       `,
@@ -286,6 +287,7 @@ const actions = {
           logo {
             id
           }
+          description
         }
       }
     `)
