@@ -37,7 +37,7 @@
     const circleOptions = { color: "#009900", fillOpacity: 0.5, radius: 2500 }
     pois.forEach((poi) => {
       if (!poi.provider) return
-      const provider = poi.provider || { user: {} }
+      const provider = poi.provider || { user: {}, organisation: {id: null, name: ""} }
       const fullName = poi.contact_name || `${provider.user?.first_name} ${provider.user?.last_name}`
       const role = poi.contact_position || provider.position
       const phone = poi.phone || provider.phone
@@ -61,6 +61,8 @@
       } else if (poi.bus_parking === false) {
         bus_parking = "Non"
       }
+
+
 
       const unavailable = poi.availability !== "disponible"
       let unavailabilityTitle = ""
@@ -101,13 +103,20 @@
               <p>
                 Chantier disponible du
                 <strong>${formatDates(poi.start_date) || "Non spécifié"}</strong> au
-                <strong>${formatDates(poi.end_date) || "Non spécifié"}</strong>
+                <strong>${formatDates(poi.end_date) || "Non spécifique"}</strong>
               </p>
             `
               : ``
           }
 
-          <address class="fr-mt-2w">${poi.department || "Non spécifié "} (${poi.region || "Non spécifié"})</address>
+          <address class="fr-mt-2w">${poi.department || "Non spécifique "} (${poi.region || "Non spécifique"})</address>
+          <p class="${!provider.organisation ? 'hidden' : '' }">
+            Ce chantier est organisé par <a
+              class="fr-link"
+              href="/organisation/${provider.organisation?.id}">
+              ${provider.organisation?.name}
+            </a>
+          </p>
 
           ${
             unavailable
@@ -166,8 +175,7 @@
     color: inherit !important;
   }
 
-  /* on affiche les contacts que pour les chantiers disponibles */
-  article:not(.disponible) .contact {
+  .hidden {
     display: none;
   }
 
