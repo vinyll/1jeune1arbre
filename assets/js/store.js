@@ -38,7 +38,7 @@ const actions = {
           walkable
           bus_parking
           type
-          provider(filter: { status: { _eq: "published" } }) {
+          provider {
             id
             phone
             website
