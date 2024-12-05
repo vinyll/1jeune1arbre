@@ -36,7 +36,11 @@
     const treeIcon = L.icon({ iconUrl: "/assets/images/tree-icon.png", iconSize: [20, 30], iconAnchor: [10, 30] })
     const circleOptions = { color: "#009900", fillOpacity: 0.5, radius: 2500 }
     pois.forEach((poi) => {
-      if (!poi.provider) return
+      console.log("id: ",poi.id);
+      if (!poi.provider || !poi.fakeLat || !poi.fakeLong) {
+        console.warn("Certains chantiers sont incomplets")
+        return
+    }
       const provider = poi.provider || { user: {} }
       const fullName = poi.contact_name || `${provider.user?.first_name} ${provider.user?.last_name}`
       const role = poi.contact_position || provider.position

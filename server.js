@@ -12,9 +12,9 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const upload = multer({ storage: multer.memoryStorage() })
-const limit = pLimit(5)
+const limit = pLimit(1) //TODO: upscale?
 
-const DIRECTUS_ADMIN_TOKEN = "u15h6aQ6o_4KfSF1gz3nGxl2ZvEN1A9u" // TODO: regenerer ce token sur le profile d'un super admin pour la prod
+const DIRECTUS_ADMIN_TOKEN = "e2Qmoz6AlEFCaB2-u14od-H7EVJf-tVq" // TODO: regenerer ce token sur le profile d'un super admin pour la prod
 
 app.post("/upload-farmyards", upload.single("sheet"), async (req, res) => {
   try {
@@ -28,7 +28,7 @@ app.post("/upload-farmyards", upload.single("sheet"), async (req, res) => {
     }
 
     // check si l'utilisateur existe
-    const userResponse = await fetch(`https://admin.1jeune1arbre.fr/users?filter[email][_eq]=${email}`, {
+    const userResponse = await fetch(`http://127.0.0.1:8055/users?filter[email][_eq]=${email}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${DIRECTUS_ADMIN_TOKEN}`,
@@ -42,7 +42,7 @@ app.post("/upload-farmyards", upload.single("sheet"), async (req, res) => {
 
     // check si le user a un profil de pourvoyeur
     const providerResponse = await fetch(
-      `https://admin.1jeune1arbre.fr/items/yard_providers?filter[user][_eq]=${user.data[0].id}`,
+      `http://127.0.0.1:8055/items/yard_providers?filter[user][_eq]=${user.data[0].id}`,
 
       {
         method: "GET",
@@ -72,6 +72,7 @@ app.post("/upload-farmyards", upload.single("sheet"), async (req, res) => {
     // parsing des données excel
     const workbook = xlsx.read(req.file.buffer, { type: "buffer" })
     const sheetName = workbook.SheetNames[0]
+    console.log("SHEETNAMES: ", workbook.SheetNames)
     const sheetData = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName], {
       header: 1,
     })
@@ -145,6 +146,7 @@ app.post("/upload-farmyards", upload.single("sheet"), async (req, res) => {
               bus_parking: rowObject["Accessible en bus ?"] === "OUI",
               walkable: rowObject["Accessible à pied ?"] === "OUI",
               type: "plantation",
+              availability: rowObject["Etat "] === "Réservé" ? "reserve" : "disponible", //TODO: prendre en compte les autres états possibles
               location: {
                 type: "Point",
                 coordinates,
@@ -157,7 +159,8 @@ app.post("/upload-farmyards", upload.single("sheet"), async (req, res) => {
 
     // Televerser les chantiers pédagogiques en les liant au provider
     farmyards.forEach(async (yard) => {
-      await fetch("https://admin.1jeune1arbre.fr/items/farmyard" /*TODO: changer en local pour test*/, {
+      console.log("ID---", yard.data.id)
+      await fetch("http://127.0.0.1:8055/items/farmyard" /*TODO: changer en local pour test*/, {
         method: "POST",
         body: JSON.stringify({ ...yard.data, provider: provider.data[0].id }),
         headers: {

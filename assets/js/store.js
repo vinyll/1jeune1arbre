@@ -3,7 +3,7 @@ import { LegoStore } from "/node_modules/@polight/store/dist/store.min.js"
 import { Client, gql, cacheExchange, fetchExchange } from "https://cdn.jsdelivr.net/npm/urql@4.1.0/+esm"
 
 const api = new Client({
-  url: "https://admin.1jeune1arbre.fr/graphql",
+  url: "http://127.0.0.1:8055/graphql",
   exchanges: [cacheExchange, fetchExchange],
 })
 
@@ -16,7 +16,7 @@ const actions = {
   async loadPois() {
     const response = await api.query(gql`
       {
-        farmyard(filter: { status: { _eq: "published" } }) {
+        farmyard(filter: { status: { _eq: "published" } }, limit: 500) {
           id
           status
           title
