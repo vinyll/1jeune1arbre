@@ -36,7 +36,7 @@ app.post("/upload-farmyards", upload.single("sheet"), async (req, res) => {
       },
     })
     if (!userResponse) {
-      return res.status(404).json({ error: "User not found" }) //TODO: on peut avoir une réponse sans user mais quand meme avec le tableau donc il faut check cela pour renvoyer cette erreur.
+      return res.status(404).json({ error: "User not found" })
     }
     const user = await userResponse.json()
 
@@ -78,6 +78,7 @@ app.post("/upload-farmyards", upload.single("sheet"), async (req, res) => {
     const headers = sheetData[1]
     const extractedRows = sheetData.slice(2) // On skip les deux premières lignes (headers + titres)
     const rows = extractedRows.filter((row) => row.length > 0)
+
     /**
      * Fonction qui permet de faire le formattage directus pour les dates
      *  (excel n'enregistre pas les dates commes elles sont ecrites dans le sheet)
@@ -107,9 +108,7 @@ app.post("/upload-farmyards", upload.single("sheet"), async (req, res) => {
         return [0, 0]
       }
     }
-    function delay(ms) {
-      return new Promise((resolve) => setTimeout(resolve, ms))
-    }
+
     // Construction des chantiers pedagogiques
     const farmyards = await Promise.all(
       rows.map((row) =>
@@ -158,17 +157,14 @@ app.post("/upload-farmyards", upload.single("sheet"), async (req, res) => {
 
     // Televerser les chantiers pédagogiques en les liant au provider
     farmyards.forEach(async (yard) => {
-      await fetch(
-        "https://admin.1jeune1arbre.fr/items/farmyard" /*TODO: remplacer avec: "https://admin.1jeune1arbre.fr/items/farmyard"*/,
-        {
-          method: "POST",
-          body: JSON.stringify({ ...yard.data, provider: provider.data[0].id }),
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${DIRECTUS_ADMIN_TOKEN}`,
-          },
+      await fetch("https://admin.1jeune1arbre.fr/items/farmyard" /*TODO: changer en local pour test*/, {
+        method: "POST",
+        body: JSON.stringify({ ...yard.data, provider: provider.data[0].id }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${DIRECTUS_ADMIN_TOKEN}`,
         },
-      )
+      })
     })
     console.log("rows", rows.slice(-40, -1))
     res.status(200).json({ message: "Farmyards processed successfully", farmyards })
