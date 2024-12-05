@@ -3,7 +3,7 @@ import { LegoStore } from "/node_modules/@polight/store/dist/store.min.js"
 import { Client, gql, cacheExchange, fetchExchange } from "https://cdn.jsdelivr.net/npm/urql@4.1.0/+esm"
 
 const api = new Client({
-  url: "http://127.0.0.1:8055/graphql",
+  url: "https://admin.1jeune1arbre.fr/graphql",
   exchanges: [cacheExchange, fetchExchange],
 })
 
