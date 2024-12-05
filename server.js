@@ -3,8 +3,7 @@ import path from "path"
 import { fileURLToPath } from "url"
 import { Readable } from "stream"
 import { format } from "fast-csv"
-//TODO: verifier les libs
-//TODO: check pour filtrer les collèges en requete et non après
+
 const app = express()
 const PORT = process.env.PORT || 3000
 const INDEX_FILE = "index.html"
@@ -13,6 +12,7 @@ const __dirname = path.dirname(__filename)
 
 app.use(express.static(path.join(__dirname)))
 
+//TODO: Changer / adapter la requete api pour récupérer les "collèges" car actuellement on récupère tous les établissements et on filtre de manière textuelle
 app.get("/contact-farmyards", async (req, res) => {
   try {
     // Récupération des chantiers
@@ -37,6 +37,7 @@ app.get("/contact-farmyards", async (req, res) => {
 
     const rows = []
 
+    // Récupération des chantiers pour chaque collège
     for (const chantier of chantiers) {
       console.log("iteration " + chantier.id.toString())
       const { coordinates } = chantier.location
