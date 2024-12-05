@@ -16,7 +16,7 @@ const actions = {
   async loadPois() {
     const response = await api.query(gql`
       {
-        farmyard(filter: { status: { _eq: "published" } }) {
+        farmyard(filter: { status: { _eq: "published" } }, limit: 500) {
           id
           status
           title
