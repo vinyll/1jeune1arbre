@@ -2,7 +2,7 @@ import express from "express"
 import path from "path"
 import { fileURLToPath } from "url"
 import { Readable } from "stream"
-import { format } from "fast-csv"
+import * as XLSX from "xlsx"
 
 const app = express()
 const PORT = process.env.PORT || 3000
@@ -12,18 +12,20 @@ const __dirname = path.dirname(__filename)
 
 app.use(express.static(path.join(__dirname)))
 
-//TODO: Changer / adapter la requete api pour récupérer les "collèges" car actuellement on récupère tous les établissements et on filtre de manière textuelle
 app.get("/contact-farmyards", async (req, res) => {
   try {
     // Récupération des chantiers
-    const chantiersResponse = await fetch("https://admin.1jeune1arbre.fr/items/farmyard", {
-      method: "GET",
-      headers: {
-        // Authorization: `Bearer ${DIRECTUS_ADMIN_TOKEN}`,
-        "Content-Type": "application/json",
+    const chantiersResponse = await fetch(
+      /*"http://127.0.0.1:8055*/ "https://admin.1jeune1arbre.fr/items/farmyard?filter[availability][_eq]=disponible&fields=id,title,contact_name,phone,email,zipcode,location",
+      {
+        //TODO: implementer les vars d'env
+        method: "GET",
+        headers: {
+          // Authorization: `Bearer ${DIRECTUS_ADMIN_TOKEN}`,
+          "Content-Type": "application/json",
+        },
       },
-    })
-
+    )
     if (!chantiersResponse.ok) {
       return res.status(500).json({ error: "Issue when fetching farmyards" })
     }
@@ -31,6 +33,7 @@ app.get("/contact-farmyards", async (req, res) => {
     const chantiersJson = await chantiersResponse.json()
     const chantiers = chantiersJson.data
 
+    console.log("chantiers", JSON.stringify(chantiers))
     if (!chantiers || chantiers.length === 0) {
       return res.status(404).json({ error: "No farmyards found" })
     }
@@ -39,37 +42,34 @@ app.get("/contact-farmyards", async (req, res) => {
 
     // Récupération des chantiers pour chaque collège
     for (const chantier of chantiers) {
-      console.log("iteration " + chantier.id.toString())
       const { coordinates } = chantier.location
       const latitude = coordinates[1]
       const longitude = coordinates[0]
 
-      const overpassUrl = `https://overpass-api.de/api/interpreter?data=[out:json];node["amenity"="school"](around:20000,${latitude},${longitude});out;`
-
+      const collegeApiUrl = `https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-annuaire-education/records?select=nom_etablissement%2C%20mail%2C%20identifiant_de_l_etablissement&where=within_distance(position%2C%20geom%27POINT(${longitude}%20${latitude})%27%2C%2020km)&refine=type_etablissement%3A%22Coll%C3%A8ge%22`
       try {
-        const response = await fetch(overpassUrl)
+        const response = await fetch(collegeApiUrl)
         if (!response.ok) {
-          throw new Error(`Erreur lors de la requête Overpass API : ${response.statusText}`)
+          throw new Error(`Erreur lors de la requête de recherche de collèges : ${response.statusText}`)
         }
 
         const data = await response.json()
-        const nearbyColleges = data.elements
+        const nearbyColleges = data.results
 
         for (const college of nearbyColleges) {
-          console.log("college ", JSON.stringify(college))
-          const distance = calculateDistance(latitude, longitude, college.lat, college.lon)
-          if (distance <= 20 && college.tags.name && college.tags.name.includes("Collège")) {
-            rows.push({
-              chantier_id: chantier.id,
-              chantier_title: chantier.title,
-              chantier_lat: latitude,
-              chantier_lon: longitude,
-              college_nom: college.tags.name || "Nom inconnu",
-              college_lat: college.lat,
-              college_lon: college.lon,
-              distance: distance.toFixed(2),
-            })
-          }
+          rows.push({
+            chantier_id: chantier.id,
+            chantier_directus: `https://admin.1jeune1arbre.fr/items/farmyard/${chantier.id}`,
+            chantier_gmaps: `https://www.google.com/maps?q=${latitude},${longitude}`,
+            chantier_titre: chantier.title,
+            chantier_nom_contact: chantier.contact_name,
+            chantier_tel: chantier.phone,
+            chantier_email: chantier.email,
+            chantier_cp: chantier.zipcode,
+            college_id: college.identifiant_de_l_etablissement,
+            college_nom: college.nom_etablissement,
+            college_mail: college.mail,
+          })
         }
       } catch (error) {
         console.error(
@@ -83,34 +83,23 @@ app.get("/contact-farmyards", async (req, res) => {
       return res.status(404).json({ error: "No nearby colleges found" })
     }
 
-    // Configuration de la réponse CSV
-    res.setHeader("Content-Type", "text/csv")
-    res.setHeader("Content-Disposition", 'attachment; filename="results.csv"')
+    const workbook = XLSX.utils.book_new()
+    const worksheet = XLSX.utils.json_to_sheet(rows)
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Farmyards")
 
-    // Générer le CSV et le renvoyer directement
-    const csvStream = format({ headers: true })
-    const stream = Readable.from(rows)
-    stream.pipe(csvStream).pipe(res)
+    const buffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" })
+
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    res.setHeader("Content-Disposition", 'attachment; filename="results.xlsx"')
+
+    const stream = Readable.from(buffer)
+    stream.pipe(res)
   } catch (e) {
     console.error(e)
     return res.status(500).json({ error: "Error " + e.message })
   }
 })
 
-// Fonction pour calculer la distance géodésique
-function calculateDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371 // Rayon de la Terre en km
-  const toRadians = (degrees) => (degrees * Math.PI) / 180
-
-  const dLat = toRadians(lat2 - lat1)
-  const dLon = toRadians(lon2 - lon1)
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2)
-
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-  return R * c // Distance en km
-}
 
 // Forward any other URI to index.html
 app.get("*", (_, res) => {

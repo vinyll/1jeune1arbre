@@ -13,7 +13,8 @@
     "fast-csv": "^5.0.2",
     "navigo": "^8.11.1",
     "stream": "^0.0.3",
-    "urql": "^4.1.0"
+    "urql": "^4.1.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "concurrently": "*"
