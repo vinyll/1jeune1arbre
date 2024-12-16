@@ -12,11 +12,12 @@ const __dirname = path.dirname(__filename)
 
 app.use(express.static(path.join(__dirname)))
 
-app.get("/contact-farmyards", async (req, res) => {
+app.get("/contact-farmyards", async (req, res) => { 
   try {
     // Récupération des chantiers
     const chantiersResponse = await fetch(
-      /*"http://127.0.0.1:8055*/ "https://admin.1jeune1arbre.fr/items/farmyard?filter[availability][_eq]=disponible&fields=id,title,contact_name,phone,email,zipcode,location",
+      /*"http://127.0.0.1:8055*/
+      "https://admin.1jeune1arbre.fr/items/farmyard?filter[availability][_eq]=disponible&fields=id,title,contact_name,phone,email,zipcode,location",
       {
         //TODO: implementer les vars d'env
         method: "GET",
@@ -33,7 +34,7 @@ app.get("/contact-farmyards", async (req, res) => {
     const chantiersJson = await chantiersResponse.json()
     const chantiers = chantiersJson.data
 
-    console.log("chantiers", JSON.stringify(chantiers))
+    // console.log("chantiers", JSON.stringify(chantiers))
     if (!chantiers || chantiers.length === 0) {
       return res.status(404).json({ error: "No farmyards found" })
     }
@@ -42,11 +43,17 @@ app.get("/contact-farmyards", async (req, res) => {
 
     // Récupération des chantiers pour chaque collège
     for (const chantier of chantiers) {
-      const { coordinates } = chantier.location
-      const latitude = coordinates[1]
-      const longitude = coordinates[0]
-
-      const collegeApiUrl = `https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-annuaire-education/records?select=nom_etablissement%2C%20mail%2C%20identifiant_de_l_etablissement&where=within_distance(position%2C%20geom%27POINT(${longitude}%20${latitude})%27%2C%2020km)&refine=type_etablissement%3A%22Coll%C3%A8ge%22`
+      const { coordinates: [longitude, latitude] } = chantier.location
+      const select = `nom_etablissement, mail, identifiant_de_l_etablissement`
+      const geo = `within_distance(position, geom'POINT(${longitude} ${latitude})', 15km)`
+      const where = `statut_public_prive:"Public"`
+      const refine = `type_etablissement:"Collège"`
+      const collegeApiUrl = `\
+        https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-annuaire-education/records?\
+        select=${encodeURIComponent(select)}\
+        &where=${encodeURIComponent(geo)}\
+        &where=${encodeURIComponent(where)}\
+        &refine=${encodeURIComponent(refine)}`.replace(/\s/g, "")
       try {
         const response = await fetch(collegeApiUrl)
         if (!response.ok) {
@@ -55,6 +62,10 @@ app.get("/contact-farmyards", async (req, res) => {
 
         const data = await response.json()
         const nearbyColleges = data.results
+
+        if (!nearbyColleges || nearbyColleges.length === 0) {
+          console.info(`Aucun collège trouvé pour le chantier "${chantier.title}". code postal : ${chantier.zipcode}, latitude ${chantier.latitude} et longitude ${chantier.longitude}`)
+        }
 
         for (const college of nearbyColleges) {
           rows.push({
