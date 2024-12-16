@@ -12,35 +12,53 @@ const __dirname = path.dirname(__filename)
 
 app.use(express.static(path.join(__dirname)))
 
-app.get("/contact-farmyards", async (req, res) => {
-  try {
-    // Récupération des chantiers
+/**
+ * Fonction qui permet de recuperer tous les items en bypassant la limite imposee par directus
+ */
+const fetchAllFarmyards = async () => {
+  const limit = 500 // Limite max par req (config directus par defaut)
+  let offset = 0
+  let allFarmyards = []
+  let hasMoreData = true
+
+  while (hasMoreData) {
     const chantiersResponse = await fetch(
-      /*"http://127.0.0.1:8055*/ "https://admin.1jeune1arbre.fr/items/farmyard?filter[availability][_eq]=disponible&fields=id,title,contact_name,phone,email,zipcode,location",
+      `https://admin.1jeune1arbre.fr/items/farmyard?filter[availability][_eq]=disponible&fields=id,title,contact_name,phone,email,zipcode,location&limit=${limit}&offset=${offset}`,
       {
-        //TODO: implementer les vars d'env
         method: "GET",
         headers: {
-          // Authorization: `Bearer ${DIRECTUS_ADMIN_TOKEN}`,
           "Content-Type": "application/json",
         },
       },
     )
+
     if (!chantiersResponse.ok) {
-      return res.status(500).json({ error: "Issue when fetching farmyards" })
+      throw new Error("Issue when fetching farmyards")
     }
 
     const chantiersJson = await chantiersResponse.json()
     const chantiers = chantiersJson.data
 
-    console.log("chantiers", JSON.stringify(chantiers))
+    allFarmyards = allFarmyards.concat(chantiers)
+
+    // Verifie si il reste des items a recuperer
+    hasMoreData = chantiers.length === limit
+    offset += limit
+  }
+
+  return allFarmyards
+}
+
+app.get("/contact-farmyards", async (req, res) => {
+  try {
+    const chantiers = await fetchAllFarmyards()
+
     if (!chantiers || chantiers.length === 0) {
       return res.status(404).json({ error: "No farmyards found" })
     }
 
     const rows = []
 
-    // Récupération des chantiers pour chaque collège
     for (const chantier of chantiers) {
       const { coordinates } = chantier.location
       const latitude = coordinates[1]
@@ -99,7 +117,6 @@ app.get("/contact-farmyards", async (req, res) => {
     return res.status(500).json({ error: "Error " + e.message })
   }
 })
-
 
 // Forward any other URI to index.html
 app.get("*", (_, res) => {
