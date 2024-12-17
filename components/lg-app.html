@@ -21,6 +21,23 @@
     })
     router.resolve()
   }
+
+  // Desactivation du zoom pour ne pas rester coincé sur la carte
+  document.addEventListener('wheel', function (event) {
+    if (event.ctrlKey) {
+      event.preventDefault()
+    }
+  }, { passive: false })
+
+  document.addEventListener('keydown', function (event) {
+    if (
+      (event.ctrlKey || event.metaKey) &&  // Ctrl (Windows) ou Cmd (Mac)
+      (event.key === '+' || event.key === '-' || event.key === '=' || event.key === '0' ||
+      event.key === 'NumpadAdd' || event.key === 'NumpadSubtract' || event.key === 'Numpad0')
+    ) {
+        event.preventDefault()
+    }
+  })
 </script>
 
 <template>
