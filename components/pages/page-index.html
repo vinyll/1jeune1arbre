@@ -33,39 +33,25 @@
   <div class="fr-container">
     <section class="fr-grid-row fr-grid-row--gutters">
       <h1>Vous êtes enseignant au collège ?</h1>
-      <div class="fr-col-12">
-        <!-- <p class="c-head__metas">
-          <span>28 février 2024</span>
-          Communiqué de presse
-        </p> -->
+      <div class="fr-col-8">
         <h2 class="fr-mb-8v">Faites participer vos élèves à un chantier de plantation !</h2>
-        <p>Accompagnés par des professionnels locaux, vos élèves pourront participer et/ou visiter des plantations pour mieux comprendre les enjeux environnementaux liés à l’arbre et au renouvellement forestier.</p>
-        <p>Avec la plateforme « 1 Jeune 1 Arbre », trouvez une carte qui répertorie des activités pédagogiques sur le thème de l’arbre. Contactez nos partenaires pour organiser votre sortie scolaire en forêt, en campagne (haies, vergers…) ou en ville.</p>
-        <p>Les activités de plantation sont ouvertes de l'automne au printemps, en fonction des essences et des territoires.</p>
-        <p>Dans le cadre des opérations de plantation proposées, les plants sont fournis mais le déplacement des élèves sur le site de plantation n’est pas financé.</p>
+        <div class="fr-text--lead">
+          <p>Accompagnés par des professionnels locaux, vos élèves pourront participer et/ou visiter des plantations pour mieux comprendre les enjeux environnementaux liés à l’arbre et au renouvellement forestier.</p>
+          <p>Avec la plateforme « 1 Jeune 1 Arbre », trouvez une carte qui répertorie des activités pédagogiques sur le thème de l’arbre. Contactez nos partenaires pour organiser votre sortie scolaire en forêt, en campagne (haies, vergers…) ou en ville.</p>
+          <p>Les activités de plantation sont ouvertes de l'automne au printemps, en fonction des essences et des territoires.</p>
+          <p>Dans le cadre des opérations de plantation proposées, les plants sont fournis mais le déplacement des élèves sur le site de plantation n’est pas financé.</p>
+        </div>
       </div>
     </section>
 
     <section class="fr-grid-row fr-grid-row--gutters fr-py-8w" id="carte-chantiers">
       <div class="fr-col-12">
-        <h2>Trouver une activité</h2>
+        <h2>Trouvez une activité</h2>
         <div class="fr-grid-container">
           <div class="fr-grid-row fr-py-2w">
             <div class="fr-col-2">
               <button class="fr-btn fr-btn--primary" @click="localize">Me géolocaliser</button>
             </div>
-            <div class="fr-col-7"></div>
-            <div class="fr-col-3">
-              <a class="fr-btn fr-btn--secondary" href="/pourvoyeur">Proposer une activité</a>
-            </div>
-            <!-- <div class="fr-col-6">
-              <div class="fr-search-bar fr-my-2w" id="header-search" role="search"> <label class="fr-label"
-                  for="search-784-input"> Recherche
-                </label> <input class="fr-input" placeholder="Saisissez votre commune" type="search" id="search-784-input"
-                  name="search-784-input">
-                <button class="fr-btn" title="Rechercher">Rechercher</button>
-              </div>
-            </div> -->
             <div class="fr-col-12">
               <lg-map></lg-map>
             </div>
