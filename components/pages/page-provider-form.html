@@ -183,7 +183,7 @@
           </button>
         </p>
       </div>
-      
+
       <div class="fr-col-8 fr-mt-n4w">
         <h2 class="fr-mt-7w">Votre profil</h2>
         <p>Ces informations <strong>ne seront pas</strong> rendues publiques sur la plateforme 1Jeune1Arbre</p>
@@ -450,6 +450,18 @@
                     <option value="visit">Visite du site, je ne peux pas organiser une activité de plantation</option>
                   </select>
                 </div>
+                <div class="fr-col-6 fr-p-2v">
+                  <label class="fr-label" for="farmyard-availability-${farmyard.id}">Disponibilité du chantier</label>
+                   <select
+                    class="fr-input"
+                    id="farmyard-availability-${farmyard.id}"
+                    name="farmyard-availability-${farmyard.id}"
+                    required
+                   >
+                    <option value="disponible">Disponible</option>
+                    <option value="reserve">Déjà réservé par une classe</option>
+                  </select>
+                </div>
                 <div class="fr-col-12 fr-p-2v">
                   <label class="fr-label" for="farmyard-description-${farmyard.id}">Description</label>
                   <textarea
@@ -462,6 +474,7 @@ Contexte forestier :
 Variétés plantées :
                   </textarea>
                 </div>
+
               </div>
             </div>
 
