@@ -91,11 +91,10 @@
             : ""
         }
         <article class="${poi.availability}">
-          <h2>${poi.title}</h2>
+          <h2>${poi.title.trim()}, à ${poi.city || "France"}</h2>
           <div class="fr-grid-row fr-grid-row--gutters fr-m-1v">
-              <p class="info-item">
-                <span class="fr-text--bold">Activités possibles sur place</span>
-                <span>${getActivityString(poi.type)}</span>
+              <p>
+                <span class="fr-text--bold">Activités</span> : ${getActivityString(poi.type)}
               </p>
 
           </div>
@@ -114,7 +113,7 @@
 
           <address class="fr-mt-2w">${poi.department || "Non spécifique "} (${poi.region || "Non spécifique"})</address>
           <p class="${!provider.organisation ? 'hidden' : '' }">
-            Ce chantier est organisé par <a
+            Organisé par <a
               class="fr-link"
               href="/organisation/${provider.organisation?.id}">
               ${provider.organisation?.name}
@@ -137,9 +136,11 @@
           `
               : `
               <div class="fr-mt-2w">
-            <a href="/poi/${
-              poi.id
-            }?zoom=${map.getZoom()}" class="fr-btn fr-btn--primary">Consulter ou réserver ce chantier</a>
+            <button class="fr-btn fr-btn--primary">
+              <a href="/poi/${
+                poi.id
+              }?zoom=${map.getZoom()}">Informations et réservation</a>
+            </button>
           </div>
           `
           }
@@ -182,8 +183,7 @@
     display: none;
   }
 
-  .info-item {
-    display: flex;
-    flex-direction: column;
+  .leaflet-container button a {
+    color: white;
   }
 </style>
