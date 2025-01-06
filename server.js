@@ -64,7 +64,8 @@ app.get("/contact-farmyards", async (req, res) => {
     for (const chantier of chantiers) {
       const { coordinates: [longitude, latitude] } = chantier.location
       const select = `nom_etablissement, mail, identifiant_de_l_etablissement`
-      const geo = `within_distance(position, geom'POINT(${longitude} ${latitude})', 15km)`
+      const distance = req.query.km || 15
+      const geo = `within_distance(position, geom'POINT(${longitude} ${latitude})', ${distance}km)`
       const where = `statut_public_prive:"Public"`
       const refine = `type_etablissement:"Collège"`
       const collegeApiUrl = `\
@@ -118,9 +119,9 @@ app.get("/contact-farmyards", async (req, res) => {
     XLSX.utils.book_append_sheet(workbook, worksheet, "Farmyards")
 
     const buffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" })
-
+    const filename = `chantiers-colleges-${distance}km.xlsx`
     res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    res.setHeader("Content-Disposition", 'attachment; filename="results.xlsx"')
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`)
 
     const stream = Readable.from(buffer)
     stream.pipe(res)
