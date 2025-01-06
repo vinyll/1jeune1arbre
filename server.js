@@ -53,6 +53,7 @@ app.get("/contact-colleges", async (req, res) => {
   try {
     // Récupération des chantiers
     const chantiers = await fetchAllFarmyards()
+    const distance = req.query.km || 15
 
     if (!chantiers || chantiers.length === 0) {
       return res.status(404).json({ error: "No farmyards found" })
@@ -64,7 +65,6 @@ app.get("/contact-colleges", async (req, res) => {
     for (const chantier of chantiers) {
       const { coordinates: [longitude, latitude] } = chantier.location
       const select = `nom_etablissement, mail, identifiant_de_l_etablissement`
-      const distance = req.query.km || 15
       const geo = `within_distance(position, geom'POINT(${longitude} ${latitude})', ${distance}km)`
       const where = `statut_public_prive:"Public"`
       const refine = `type_etablissement:"Collège"`
