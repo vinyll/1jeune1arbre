@@ -12,29 +12,48 @@ const __dirname = path.dirname(__filename)
 
 app.use(express.static(path.join(__dirname)))
 
-app.get("/contact-farmyards", async (req, res) => { 
-  try {
-    // Récupération des chantiers
-    const chantiersResponse = await fetch(
-      /*"http://127.0.0.1:8055*/
-      "https://admin.1jeune1arbre.fr/items/farmyard?filter[availability][_eq]=disponible&fields=id,title,contact_name,phone,email,zipcode,location",
-      {
-        //TODO: implementer les vars d'env
-        method: "GET",
-        headers: {
-          // Authorization: `Bearer ${DIRECTUS_ADMIN_TOKEN}`,
-          "Content-Type": "application/json",
+/**
+ * Fonction qui permet de recuperer tous les items en bypassant la limite imposee par directus
+ */
+const fetchAllFarmyards = async () => {
+    const limit = 500 // Limite max par req (config directus par defaut)
+    let offset = 0
+    let allFarmyards = []
+    let hasMoreData = true
+
+    while (hasMoreData) {
+      const chantiersResponse = await fetch(
+        `https://admin.1jeune1arbre.fr/items/farmyard?filter[availability][_eq]=disponible&fields=id,title,contact_name,phone,email,zipcode,location&limit=${limit}&offset=${offset}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-      },
-    )
-    if (!chantiersResponse.ok) {
-      return res.status(500).json({ error: "Issue when fetching farmyards" })
+      )
+
+      if (!chantiersResponse.ok) {
+        throw new Error("Issue when fetching farmyards")
+      }
+
+      const chantiersJson = await chantiersResponse.json()
+      const chantiers = chantiersJson.data
+
+      allFarmyards = allFarmyards.concat(chantiers)
+
+      // Verifie si il reste des items a recuperer
+      hasMoreData = chantiers.length === limit
+      offset += limit
     }
 
-    const chantiersJson = await chantiersResponse.json()
-    const chantiers = chantiersJson.data
+    return allFarmyards
+}
 
-    // console.log("chantiers", JSON.stringify(chantiers))
+app.get("/contact-farmyards", async (req, res) => {
+  try {
+    // Récupération des chantiers
+    const chantiers = await fetchAllFarmyards()
+
     if (!chantiers || chantiers.length === 0) {
       return res.status(404).json({ error: "No farmyards found" })
     }
