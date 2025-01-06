@@ -49,7 +49,7 @@ const fetchAllFarmyards = async () => {
     return allFarmyards
 }
 
-app.get("/contact-farmyards", async (req, res) => {
+app.get("/contact-colleges", async (req, res) => {
   try {
     // Récupération des chantiers
     const chantiers = await fetchAllFarmyards()
